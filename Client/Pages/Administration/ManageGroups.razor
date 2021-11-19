@@ -1,15 +1,15 @@
 ﻿@page "/manage/groups"
+@attribute [Authorize(Roles = "Admin")]
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using ProITM.Client.Services
 @using ProITM.Shared
 @inject IGroupService GroupService
 @inject NavigationManager navMgr
-@attribute [Authorize]
 
-<h3>ManageGroups</h3>
+<h3>Manage Groups</h3>
 
-<AuthorizeView Roles="admin">
+<AuthorizeView Roles="Admin">
     <Authorized>
         <p>Yer an admin, Harry</p>
     </Authorized>
@@ -97,7 +97,7 @@ else
     protected async void DeleteGroup(string id)
     {
         var result = await GroupService.DeleteGroup(id);
-        if(result.IsSuccessStatusCode)
+        if (result.IsSuccessStatusCode)
         {
             navMgr.NavigateTo($"manage/groups", true);
         }

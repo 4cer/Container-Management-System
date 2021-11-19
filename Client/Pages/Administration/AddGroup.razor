@@ -1,4 +1,7 @@
 ﻿@page "/manage/groups/create"
+@attribute [Authorize(Roles = "Admin")]
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using ProITM.Shared
 @using ProITM.Client.Services
 @inject IGroupService GroupService

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using ProITM.Client.Services;
 using ProITM.Server.Data;
 using ProITM.Server.Models;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 
 namespace ProITM.Server
@@ -45,10 +46,17 @@ namespace ProITM.Server
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options => 
+                {
+                    options.IdentityResources["openid"].UserClaims.Add("role");
+                    options.ApiResources.Single().UserClaims.Add("role");
+                });
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();
+
+            // Need to do this as it maps "role" to ClaimTypes.Role and causes issues
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("role");
 
             services.AddControllersWithViews();
             services.AddRazorPages();
