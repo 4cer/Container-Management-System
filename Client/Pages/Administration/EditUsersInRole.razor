@@ -1,0 +1,53 @@
+﻿@page "/manage/groups/usersinrole/{Id}"
+@*@attribute [Authorize(Roles = "Admin")]*@
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using ProITM.Shared
+@using ProITM.Client.Services
+@inject IGroupService GroupService
+@inject NavigationManager navMgr
+
+<h3>EditUsersInRole</h3>
+<EditForm Model="users" OnSubmit="HandleSubmit">
+    <div class="card">
+        <div class="card-header">
+            <h4>Users in role</h4>
+        </div>
+        <div class="card-body">
+            @foreach (UserInRole usr in users)
+            {
+                <div class="form-check m-1">
+                    <InputCheckbox id="@usr.UserName" @bind-Value="usr.IsSelected" class="form-check-input" />
+                    <label for="@usr.UserName">@usr.UserName</label>
+                </div>
+            }
+        </div>
+        <div class="card-footer">
+            <input type="submit" value="Update" class="btn btn-primary"
+                   style="width:auto" />
+            <a href="manage/groups" class="btn btn-secondary">Cancel</a>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    public List<UserInRole> users = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await GroupService.GetUsersInRole(Id);
+    }
+
+    protected async void HandleSubmit()
+    {
+        var result = await GroupService.EditUsersInRole(users, Id);
+        if (result.IsSuccessStatusCode)
+        {
+            navMgr.NavigateTo($"manage/groups/edit/{Id}", forceLoad: true);
+        }
+    }
+}
