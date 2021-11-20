@@ -70,7 +70,7 @@ namespace ProITM.Server.Controllers.Admin
             return Ok(users);
         }
 
-        [HttpGet]
+        [HttpGet("users")]
         public async Task<IActionResult> GetUsers()
         {
             var users = userManager.Users;
@@ -81,7 +81,7 @@ namespace ProITM.Server.Controllers.Admin
             return Ok(users);
         }
 
-        [HttpGet("user/{Id}")]
+        [HttpGet("users/{Id}")]
         public async Task<IActionResult> GetUser(string id)
         {
             var user = await userManager.FindByIdAsync(id);
@@ -94,7 +94,7 @@ namespace ProITM.Server.Controllers.Admin
             return Ok(user);
         }
 
-        [HttpDelete("user/{Id}")]
+        [HttpDelete("users/{Id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await userManager.FindByIdAsync(id);
@@ -109,7 +109,7 @@ namespace ProITM.Server.Controllers.Admin
             return Problem("Administration:DELETE:DeleteUser(string id): Deletion unsuccessful");
         }
 
-        [HttpPut("user/promote/{Id}")]
+        [HttpPut("users/promote/{Id}")]
         public async Task<IActionResult> PromoteUser(string id)
         {
             var user = await userManager.FindByIdAsync(id);
@@ -125,7 +125,7 @@ namespace ProITM.Server.Controllers.Admin
             return Problem("Administration:PUT:PromoteUser(string id): Could not promote user");
         }
 
-        [HttpPut("user/demote/{Id}")]
+        [HttpPut("users/demote/{Id}")]
         public async Task<IActionResult> DemoteUser(string id)
         {
             var user = await userManager.FindByIdAsync(id);

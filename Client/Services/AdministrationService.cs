@@ -44,30 +44,55 @@ namespace ProITM.Client.Services
             //return await _httpClient.PostAsJsonAsync<Group>("Group/Delete", group);
         }
 
+        // =======================
         // TODO Above are obsolete
-        // TODO Refactor API route references to AdministrationController endpoints
+        // =======================
 
         public async Task<List<UserInRole>> GetUsersInRole(string id)
         {
-            return await _httpClient.GetFromJsonAsync<List<UserInRole>>($"Group/Edit/{id}");
+            return await _httpClient.GetFromJsonAsync<List<UserInRole>>($"Administration/Edit/{id}");
         }
 
         public async Task<HttpResponseMessage> EditUsersInRole(List<UserInRole> usersInRole, string id)
         {
             //Console.WriteLine("GroupService.EditUsersInRole: " + id);
-            return await _httpClient.PostAsJsonAsync<List<UserInRole>>($"Group/Edit/{id}", usersInRole);
+            return await _httpClient.PostAsJsonAsync<List<UserInRole>>($"Administration/Edit/{id}", usersInRole);
         }
 
         public async Task<Group> GetAdminRoleId()
         {
-            return await _httpClient.GetFromJsonAsync<Group>("Group/adminroleid");
+            return await _httpClient.GetFromJsonAsync<Group>("Administration/adminroleid");
         }
 
         public async Task<List<UserModel>> GetAdmins()
         {
-            return await _httpClient.GetFromJsonAsync<List<UserModel>>("Group/adminroleusers");
+            return await _httpClient.GetFromJsonAsync<List<UserModel>>("Administration/adminroleusers");
         }
 
-        // TODO Implement remaining methods for AdministrationController below
+        public async Task<List<UserModel>> GetUsers()
+        {
+            return await _httpClient.GetFromJsonAsync<List<UserModel>>("Administration/users");
+        }
+
+        public async Task<List<UserModel>> GetUser(string id)
+        {
+            return await _httpClient.GetFromJsonAsync<List<UserModel>>($"Administration/users/{id}");
+        }
+
+        public async Task<HttpResponseMessage> DeleteUser(string id)
+        {
+            return await _httpClient.DeleteAsync($"users/{id}");
+        }
+
+        public async Task<HttpResponseMessage> PromoteUser(string id)
+        {
+            return await _httpClient.PutAsJsonAsync<string>("/users/promote", id);
+        }
+
+        public async Task<HttpResponseMessage> DemoteUser(string id)
+        {
+
+            return await _httpClient.PutAsJsonAsync<string>("/users/demote", id);
+        }
     }
 }
