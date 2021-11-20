@@ -125,7 +125,7 @@ namespace ProITM.Server.Controllers.Admin
             return Problem("Administration:DELETE:DeleteUser(string id): Deletion unsuccessful");
         }
 
-        [HttpPut("Users/Promote/{Id}")]
+        [HttpPost("Users/Promote/{Id}")]
         public async Task<IActionResult> PromoteUser(string id)
         {
             var user = await userManager.FindByIdAsync(id);
@@ -141,7 +141,7 @@ namespace ProITM.Server.Controllers.Admin
             return Problem("Administration:PUT:PromoteUser(string id): Could not promote user");
         }
 
-        [HttpPut("Users/Demote/{Id}")]
+        [HttpPost("Users/Demote/{Id}")]
         public async Task<IActionResult> DemoteUser(string id)
         {
             var user = await userManager.FindByIdAsync(id);

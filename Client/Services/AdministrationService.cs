@@ -81,18 +81,18 @@ namespace ProITM.Client.Services
 
         public async Task<HttpResponseMessage> DeleteUser(string id)
         {
-            return await _httpClient.DeleteAsync($"users/{id}");
+            return await _httpClient.DeleteAsync($"Administration/users/{id}");
         }
 
         public async Task<HttpResponseMessage> PromoteUser(string id)
         {
-            return await _httpClient.PutAsJsonAsync<string>("/users/promote", id);
+            return await _httpClient.PostAsJsonAsync<string>($"Administration/users/promote/{id}", null);
         }
 
         public async Task<HttpResponseMessage> DemoteUser(string id)
         {
 
-            return await _httpClient.PutAsJsonAsync<string>("/users/demote", id);
+            return await _httpClient.PostAsJsonAsync<string>($"Administration/users/demote/{id}", null);
         }
     }
 }
