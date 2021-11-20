@@ -1,0 +1,119 @@
+﻿@page "/manage/admins"
+@attribute [Authorize(Roles = "Admin")]
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using ProITM.Client.Services
+@using ProITM.Shared
+@inject IGroupService GroupService
+@inject NavigationManager navMgr
+
+<h3>Manage Admins</h3>
+
+@if (admins == null || admin == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @*@if (statusCode != null)
+    {
+        <div class="alert alert-danger">
+            <h4>@statusCode.ReasonPhrase</h4>
+            <p>
+                @statusCode.RequestMessage.RequestUri;
+            </p>
+        </div>
+    }*@
+
+    <button class="btn btn-secondary" @onclick="(() => EditUsersInGroup(admin.Id))">Add or Remove Admins</button>
+
+    @if (!admins.Any())
+    {
+        <p>No admins added yet.</p>
+        <p>Sounds like your application has a major issue.</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Email
+                    </th>
+                    <th>
+                        Confirmed
+                    </th>
+                    <th>
+
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var adm in admins)
+                {
+                    <tr onclick="">
+                        <td>
+                            @adm.UserName
+                        </td>
+                        <td>
+                            @adm.Email
+                        </td>
+                        <td>
+                            @adm.EmailConfirmed
+                        </td>
+                        <td>
+                            <button class="btn btn-secondary" href="#">Delete</button>
+                            <button class="btn btn-secondary" href="#">Demote</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    }
+
+}
+
+
+@code {
+    private Group admin;
+
+    private List<UserModel> admins;
+
+    //private List<Group> groups;
+
+    //private HttpResponseMessage statusCode;
+
+    protected override async Task OnInitializedAsync()
+    {
+        admins = await GroupService.GetAdmins();
+        Console.WriteLine("Got admins");
+
+        admin = await GroupService.GetAdminRoleId();
+        Console.WriteLine("Got adminGID");
+
+        //groups = await GroupService.GetGroups();
+    }
+
+    protected void EditUsersInGroup(string id)
+    {
+        //navMgr.NavigateTo($"manage/groups/edit/{id}");
+        navMgr.NavigateTo($"manage/admins/usersinrole/{id}");
+
+    }
+
+    //protected async void DeleteGroup(string id)
+    //{
+    //    var result = await GroupService.DeleteGroup(id);
+    //    if (result.IsSuccessStatusCode)
+    //    {
+    //        navMgr.NavigateTo($"manage/admins", true);
+    //    }
+    //    statusCode = result;
+
+    //}
+
+}

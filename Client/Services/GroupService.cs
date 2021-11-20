@@ -54,5 +54,15 @@ namespace ProITM.Client.Services
             //Console.WriteLine("GroupService.EditUsersInRole: " + id);
             return await _httpClient.PostAsJsonAsync<List<UserInRole>>($"Group/Edit/{id}", usersInRole);
         }
+
+        public async Task<Group> GetAdminRoleId()
+        {
+            return await _httpClient.GetFromJsonAsync<Group>("Group/adminroleid");
+        }
+
+        public async Task<List<UserModel>> GetAdmins()
+        {
+            return await _httpClient.GetFromJsonAsync<List<UserModel>>("Group/adminroleusers");
+        }
     }
 }

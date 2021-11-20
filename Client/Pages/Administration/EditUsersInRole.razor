@@ -1,4 +1,4 @@
-﻿@page "/manage/groups/usersinrole/{Id}"
+﻿@page "/manage/admins/usersinrole/{Id}"
 @attribute [Authorize(Roles = "Admin")]
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
@@ -14,18 +14,26 @@
             <h4>Users in role</h4>
         </div>
         <div class="card-body">
-            @foreach (UserInRole usr in users)
+            @if (users == null)
             {
-                <div class="form-check m-1">
-                    <InputCheckbox id="@usr.UserName" @bind-Value="usr.IsSelected" class="form-check-input" />
-                    <label for="@usr.UserName">@usr.UserName</label>
-                </div>
+                <p><em>Loading...</em></p>
             }
+            else
+            {
+                @foreach (UserInRole usr in users)
+                {
+                    <div class="form-check m-1">
+                        <InputCheckbox id="@usr.UserName" @bind-Value="usr.IsSelected" class="form-check-input" />
+                        <label for="@usr.UserName">@usr.UserName</label>
+                    </div>
+                }
+            }
+
         </div>
         <div class="card-footer">
             <input type="submit" value="Update" class="btn btn-primary"
                    style="width:auto" />
-            <a href="manage/groups" class="btn btn-secondary">Cancel</a>
+            <a href="manage/admins" class="btn btn-secondary">Cancel</a>
         </div>
     </div>
 </EditForm>
@@ -46,7 +54,7 @@
         var result = await GroupService.EditUsersInRole(users, Id);
         if (result.IsSuccessStatusCode)
         {
-            navMgr.NavigateTo($"manage/groups/edit/{Id}", forceLoad: true);
+            navMgr.NavigateTo($"manage/admins", forceLoad: true);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿@page "/manage/groups/edit/{Id}"
+﻿@page "/MARKFORDELETE/manage/groups/edit/{Id}"
 @attribute [Authorize(Roles = "Admin")]
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
@@ -30,7 +30,7 @@
     <div class="form-group">
         <button type="submit" class="btn btn-primary">Submit</button>
         <a @onclick="(() => EditUsersInGroup(group.Id))" class="btn btn-primary">Edit Users In Group</a>
-        <a href="manage/groups" class="btn btn-secondary">Cancel</a>
+        <a href="manage/admins" class="btn btn-secondary">Cancel</a>
     </div>
 </EditForm>
 
@@ -58,7 +58,7 @@
         var result = await GroupService.EditGroup(group);
         if (result.IsSuccessStatusCode)
         {
-            navMgr.NavigateTo("manage/groups", forceLoad: true);
+            navMgr.NavigateTo("manage/admins", forceLoad: true);
         }
         else
         {

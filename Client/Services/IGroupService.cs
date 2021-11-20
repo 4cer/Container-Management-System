@@ -16,5 +16,7 @@ namespace ProITM.Client.Services
         public Task<HttpResponseMessage> DeleteGroup(string id);
         public Task<List<UserInRole>> GetUsersInRole(string id);
         public Task<HttpResponseMessage> EditUsersInRole(List<UserInRole> usersInRole, string id);
+        public Task<Group> GetAdminRoleId();
+        public Task<List<UserModel>> GetAdmins();
     }
 }

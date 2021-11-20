@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ProITM.Server.Controllers.Admin
 {
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [Route("[controller]")]
     [ApiController]
     public class GroupController : ControllerBase
@@ -26,11 +26,58 @@ namespace ProITM.Server.Controllers.Admin
             this.userManager = userManager;
         }
 
+        [HttpGet("Adminroleid")]
+        public async Task<IActionResult> GetAdminRoleId()
+        {
+            var adminRole = await roleManager.FindByNameAsync("Admin");
+
+            if(adminRole == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(adminRole);
+        }
+
+        [HttpGet("Adminroleusers")]
+        public async Task<IActionResult> GetAdmins()
+        {
+            var role = await roleManager.FindByNameAsync("Admin");
+
+            if (role == null)
+            {
+                return NotFound();
+            }
+
+            var users = new List<UserModel>();
+
+            foreach (var user in userManager.Users)
+            {
+                var userModel = new UserModel
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    EmailConfirmed = user.EmailConfirmed
+                };
+
+                if (await userManager.IsInRoleAsync(user, role.Name))
+                {
+                    users.Add(userModel);
+                }
+                
+            }
+
+            return Ok(users);
+        }
+
+        // Obsolete below
+
         [HttpGet]
         public async Task<IActionResult> GetGroups()
         {
             var roles = roleManager.Roles.ToArray();
-            System.Diagnostics.Debug.WriteLine("GroupController.cs: " + roles.ToString());
+            //System.Diagnostics.Debug.WriteLine("GroupController.cs: " + roles.ToString());
 
             return Ok(roles);
         }
