@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Shared\ProITM.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
+  </ItemGroup>
+
 </Project>
