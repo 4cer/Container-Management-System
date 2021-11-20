@@ -4,8 +4,8 @@
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using ProITM.Client.Services
 @using ProITM.Shared
-@inject IAdministrationService AdministrationService
-@inject NavigationManager navMgr
+@inject IAdministrationService administrationService
+@inject NavigationManager navigationManager
 
 <h3>Manage Admins</h3>
 
@@ -15,16 +15,6 @@
 }
 else
 {
-    @*@if (statusCode != null)
-    {
-        <div class="alert alert-danger">
-            <h4>@statusCode.ReasonPhrase</h4>
-            <p>
-                @statusCode.RequestMessage.RequestUri;
-            </p>
-        </div>
-    }*@
-
     <button class="btn btn-secondary" @onclick="(() => EditUsersInGroup(admin.Id))">Add or Remove Admins</button>
 
     @if (!admins.Any())
@@ -83,37 +73,19 @@ else
 
     private List<UserModel> admins;
 
-    //private List<Group> groups;
-
-    //private HttpResponseMessage statusCode;
-
     protected override async Task OnInitializedAsync()
     {
-        admins = await AdministrationService.GetAdmins();
+        admins = await administrationService.GetAdmins();
         Console.WriteLine("Got admins");
 
-        admin = await AdministrationService.GetAdminRoleId();
+        admin = await administrationService.GetAdminRoleId();
         Console.WriteLine("Got adminGID");
-
-        //groups = await GroupService.GetGroups();
     }
 
     protected void EditUsersInGroup(string id)
     {
-        //navMgr.NavigateTo($"manage/groups/edit/{id}");
-        navMgr.NavigateTo($"manage/admins/usersinrole/{id}");
+        navigationManager.NavigateTo($"manage/admins/usersinrole/{id}");
 
     }
-
-    //protected async void DeleteGroup(string id)
-    //{
-    //    var result = await GroupService.DeleteGroup(id);
-    //    if (result.IsSuccessStatusCode)
-    //    {
-    //        navMgr.NavigateTo($"manage/admins", true);
-    //    }
-    //    statusCode = result;
-
-    //}
 
 }

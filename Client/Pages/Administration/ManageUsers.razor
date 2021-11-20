@@ -4,10 +4,20 @@
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using ProITM.Client.Services
 @using ProITM.Shared
-@inject IAdministrationService AdministrationService
+@inject IAdministrationService administrationService
+@inject NavigationManager navigationManager
 
 <h3>Manage Users</h3>
 
+@if (message != null)
+{
+    <div class="alert alert-danger overflow-auto">
+        <h4>@message.ReasonPhrase</h4>
+        <p>
+            @message.RequestMessage;
+        </p>
+    </div>
+}
 
 @if (users == null)
 {
@@ -38,26 +48,29 @@ else
                     <td>@user.EmailConfirmed</td>
                     <td>---</td>
                     <td>
-                        @if (user.IsAdmin) { <p>Administrator</p> } else { <p>User</p> }
+                        @if (user.IsAdmin)
+                        {<p>Administrator</p> }
+                        else
+                        { <p>User</p>}
                     </td>
                     <td>
                         <button class="btn btn-secondary" href="#">Edit</button>
                         @if (user.IsAdmin)
                         {
-                            <button class="btn btn-primary" href="#">Demote</button>
+                            <button class="btn btn-primary" @onclick="(() => ClickDemoteUser(user.Id))">Demote</button>
                         }
                         else
                         {
-                            <button class="btn btn-primary" href="#">Promote</button>
+                            <button class="btn btn-primary" @onclick="(() => ClickPromoteUser(user.Id))">Promote</button>
                         }
-                        <button class="btn btn-danger" href="#">Delete</button>
+                        <button class="btn btn-danger" @onclick="(() => ClickDeleteUser(user.Id))">Delete</button>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 
-    
+
 }
 
 
@@ -66,8 +79,40 @@ else
 
     int counter = 0;
 
+    HttpResponseMessage message;
+
     protected override async Task OnInitializedAsync()
     {
-        users = await AdministrationService.GetUsers();
+        users = await administrationService.GetUsers();
+    }
+
+    protected async void ClickDeleteUser(string id)
+    {
+        var result = await administrationService.DeleteUser(id);
+        if (result.IsSuccessStatusCode)
+        {
+            navigationManager.NavigateTo($"manage/users", true);
+        }
+        message = result;
+    }
+    
+    protected async void ClickPromoteUser(string id)
+    {
+        var result = await administrationService.PromoteUser(id);
+        if (result.IsSuccessStatusCode)
+        {
+            navigationManager.NavigateTo($"manage/users", true);
+        }
+        message = result;
+    }
+    
+    protected async void ClickDemoteUser(string id)
+    {
+        var result = await administrationService.DemoteUser(id);
+        if (result.IsSuccessStatusCode)
+        {
+            navigationManager.NavigateTo($"manage/users", true);
+        }
+        message = result;
     }
 }
