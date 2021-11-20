@@ -11,15 +11,23 @@ using System.Threading.Tasks;
 
 namespace ProITM.Server.Controllers.Admin
 {
+    // Authorize attribute may also be given without specifing role
+    // making it available to all logged in users
     [Authorize(Roles = "Admin")]
+    // Controler listens on "{METHOD}:{URI}/ObsoleteExample/*" route,
+    // where {METHOD} is Http request method, {URI} is eg ProjectLocalIP:Port or
+    // proitm.tk, * specifies controller route
+    // example GET:proitm.tk/ObsoleteExample/Adminroleid
     [Route("[controller]")]
     [ApiController]
-    public class GroupController : ControllerBase
+    public class ObsoleteExampleController : ControllerBase
     {
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly UserManager<ApplicationUser> userManager;
 
-        public GroupController(RoleManager<IdentityRole> roleManager,
+        // Inject IdentityManager instances
+        // Other controllers may instead use a data context
+        public ObsoleteExampleController(RoleManager<IdentityRole> roleManager,
             UserManager<Models.ApplicationUser> userManager)
         {
             this.roleManager = roleManager;
@@ -29,13 +37,16 @@ namespace ProITM.Server.Controllers.Admin
         [HttpGet("Adminroleid")]
         public async Task<IActionResult> GetAdminRoleId()
         {
+            // Call injected RoleManager<IdentityRole> instance for identity information
             var adminRole = await roleManager.FindByNameAsync("Admin");
 
             if(adminRole == null)
             {
+                // If controller experienced a problem
                 return NotFound();
             }
 
+            // If controller got what was expected
             return Ok(adminRole);
         }
 

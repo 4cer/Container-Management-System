@@ -17,37 +17,6 @@ namespace ProITM.Client.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<Group>> GetGroups()
-        {
-            return await _httpClient.GetFromJsonAsync<List<Group>>("Group");
-        }
-
-        public async Task<Group> GetGroup(string id)
-        {
-            return await _httpClient.GetFromJsonAsync<Group>($"Group/{id}");
-        }
-
-        public async Task<HttpResponseMessage> CreateGroup(Group group)
-        {
-            //var result = await _httpClient.PostAsJsonAsync<Group>("Group", group);
-            return await _httpClient.PostAsJsonAsync<Group>("Group", group);
-        }
-
-        public async Task<HttpResponseMessage> EditGroup(Group group)
-        {
-            return await _httpClient.PostAsJsonAsync<Group>("Group/Edit", group);
-        }
-
-        public async Task<HttpResponseMessage> DeleteGroup(string id)
-        {
-            return await _httpClient.DeleteAsync($"Group/delete/{id}");
-            //return await _httpClient.PostAsJsonAsync<Group>("Group/Delete", group);
-        }
-
-        // =======================
-        // TODO Above are obsolete
-        // =======================
-
         public async Task<List<UserInRole>> GetUsersInRole(string id)
         {
             return await _httpClient.GetFromJsonAsync<List<UserInRole>>($"Administration/Edit/{id}");
@@ -55,7 +24,6 @@ namespace ProITM.Client.Services
 
         public async Task<HttpResponseMessage> EditUsersInRole(List<UserInRole> usersInRole, string id)
         {
-            //Console.WriteLine("GroupService.EditUsersInRole: " + id);
             return await _httpClient.PostAsJsonAsync<List<UserInRole>>($"Administration/Edit/{id}", usersInRole);
         }
 

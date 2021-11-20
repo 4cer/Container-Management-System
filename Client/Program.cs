@@ -27,6 +27,11 @@ namespace ProITM.Client
 
             builder.Services.AddScoped<IAdministrationService, AdministrationService>();
 
+            // Adding the service, such that it is globally available in client Blazor views:
+            //     Note that interface and its implementing classes are passed, allowing for
+            //     swapping the latter, simplifying the testing
+            // builder.Services.AddScoped<IObsoleteExampleService, ObsoleteExampleService>();
+
             builder.Services.AddApiAuthorization();
 
             await builder.Build().RunAsync();
