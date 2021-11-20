@@ -12,26 +12,26 @@ namespace ProITM.Server.Controllers.Admin
     [Route("[controller]")]
     public class ContainerController
     {
-        [HttpGet]
-        public Task GetUserContainers(string user)
+        [HttpGet("{userId}")]
+        public Task GetUserContainers(string userId)
         {
             throw new NotImplementedException("Implement me");
         }
 
-        [HttpPost]
-        public Task StartUsersContainer(string container)
+        [HttpPost("start/{containerId}")]
+        public Task StartUsersContainer(string containerId)
         {
             throw new NotImplementedException("Implement me");
         }
 
-        [HttpPost]
-        public Task StopUsersContainer(string container)
+        [HttpPost("stop/{containerId}")]
+        public Task StopUsersContainer(string containerId)
         {
             throw new NotImplementedException("Implement me");
         }
 
-        [HttpDelete]
-        public Task DeleteUsersContainer(string container)
+        [HttpDelete("{containerId}")]
+        public Task DeleteUsersContainer(string containerId)
         {
             throw new NotImplementedException("Implement me");
         }
