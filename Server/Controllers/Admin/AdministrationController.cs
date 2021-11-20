@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ProITM.Server.Models;
+using ProITM.Shared;
 
 namespace ProITM.Server.Controllers.Admin
 {
@@ -27,31 +28,117 @@ namespace ProITM.Server.Controllers.Admin
         [HttpGet]
         public async Task<IActionResult> GetUsers()
         {
-            throw new NotImplementedException("AdministrationController.GetUsers()");
+            var users = userManager.Users;
+
+            if (users == null)
+                return NotFound("Administration:GET:GetUsers(): User list not found");
+
+            return Ok(users);
         }
 
         [HttpGet("user/{Id}")]
-        public async Task<IActionResult> GetUser(string Id)
+        public async Task<IActionResult> GetUser(string id)
         {
-            throw new NotImplementedException("AdministrationController.GetUser(string Id)");
+            var user = await userManager.FindByIdAsync(id);
+
+            // TODO Error out if user not found?
+
+            if (user == null)
+                return NotFound("Administration:GET:GetUser(string id): User not found");
+
+            return Ok(user);
         }
 
         [HttpDelete("user/{Id}")]
-        public async Task<IActionResult> DeleteUser(string Id)
+        public async Task<IActionResult> DeleteUser(string id)
         {
-            throw new NotImplementedException("AdministrationController.DeleteUser(string Id)");
+            var user = await userManager.FindByIdAsync(id);
+
+            // TODO Error out if user not found?
+
+            IdentityResult result = await userManager.DeleteAsync(user);
+
+            if (result.Succeeded)
+                return Ok();
+
+            return Problem("Administration:DELETE:DeleteUser(string id): Deletion unsuccessful");
         }
 
         [HttpPut("user/promote/{Id}")]
-        public async Task<IActionResult> PromoteUser(string Id)
+        public async Task<IActionResult> PromoteUser(string id)
         {
-            throw new NotImplementedException("AdministrationController.PromoteUser(string Id)");
+            var user = await userManager.FindByIdAsync(id);
+
+            // TODO Error out if user/group not found?
+
+            
+            IdentityResult result = await userManager.AddToRoleAsync(user, "Admin");
+
+            if (result.Succeeded)
+                return Ok();
+
+            return Problem("Administration:PUT:PromoteUser(string id): Could not promote user");
         }
 
         [HttpPut("user/demote/{Id}")]
-        public async Task<IActionResult> DemoteUser(string Id)
+        public async Task<IActionResult> DemoteUser(string id)
         {
-            throw new NotImplementedException("AdministrationController.DemoteUser(string Id)");
+            var user = await userManager.FindByIdAsync(id);
+
+            // TODO Error out if user/group not found?
+
+
+            IdentityResult result = await userManager.RemoveFromRoleAsync(user, "Admin");
+
+            if (result.Succeeded)
+                return Ok();
+
+            return Problem("Administration:PUT:DemoteUser(string id): Could not demote user");
+        }
+
+        [HttpGet("Adminroleid")]
+        public async Task<IActionResult> GetAdminRoleId()
+        {
+            var adminRole = await roleManager.FindByNameAsync("Admin");
+
+            if (adminRole == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(adminRole);
+        }
+
+        [HttpGet("Adminroleusers")]
+        public async Task<IActionResult> GetAdmins()
+        {
+            var role = await roleManager.FindByNameAsync("Admin");
+
+            if (role == null)
+            {
+                return NotFound();
+            }
+
+            var users = new List<UserModel>();
+
+            foreach (var user in userManager.Users)
+            {
+                var userModel = new UserModel
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    EmailConfirmed = user.EmailConfirmed
+                };
+
+                if (await userManager.IsInRoleAsync(user, role.Name))
+                {
+                    users.Add(userModel);
+                }
+
+            }
+
+            return Ok(users);
         }
     }
 }
