@@ -4,7 +4,7 @@
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using ProITM.Client.Services
 @using ProITM.Shared
-@inject IAdministrationService GroupService
+@inject IAdministrationService AdministrationService
 @inject NavigationManager navMgr
 
 <h3>Manage Admins</h3>
@@ -89,10 +89,10 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        admins = await GroupService.GetAdmins();
+        admins = await AdministrationService.GetAdmins();
         Console.WriteLine("Got admins");
 
-        admin = await GroupService.GetAdminRoleId();
+        admin = await AdministrationService.GetAdminRoleId();
         Console.WriteLine("Got adminGID");
 
         //groups = await GroupService.GetGroups();

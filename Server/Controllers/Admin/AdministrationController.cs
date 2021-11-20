@@ -70,7 +70,7 @@ namespace ProITM.Server.Controllers.Admin
             return Ok(users);
         }
 
-        [HttpGet("users")]
+        [HttpGet("Users")]
         public async Task<IActionResult> GetUsers()
         {
             var users = userManager.Users;
@@ -78,10 +78,26 @@ namespace ProITM.Server.Controllers.Admin
             if (users == null)
                 return NotFound("Administration:GET:GetUsers(): User list not found");
 
-            return Ok(users);
+            var usersDigested = new List<UserModel>();
+
+            foreach (var user in users)
+            {
+                bool isAdmin = await userManager.IsInRoleAsync(user, "Admin");
+
+                usersDigested.Add(new UserModel
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    EmailConfirmed = user.EmailConfirmed,
+                    IsAdmin = isAdmin
+                });
+            }
+
+            return Ok(usersDigested);
         }
 
-        [HttpGet("users/{Id}")]
+        [HttpGet("Users/{Id}")]
         public async Task<IActionResult> GetUser(string id)
         {
             var user = await userManager.FindByIdAsync(id);
@@ -94,7 +110,7 @@ namespace ProITM.Server.Controllers.Admin
             return Ok(user);
         }
 
-        [HttpDelete("users/{Id}")]
+        [HttpDelete("Users/{Id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await userManager.FindByIdAsync(id);
@@ -109,12 +125,12 @@ namespace ProITM.Server.Controllers.Admin
             return Problem("Administration:DELETE:DeleteUser(string id): Deletion unsuccessful");
         }
 
-        [HttpPut("users/promote/{Id}")]
+        [HttpPut("Users/Promote/{Id}")]
         public async Task<IActionResult> PromoteUser(string id)
         {
             var user = await userManager.FindByIdAsync(id);
 
-            // TODO Error out if user/group not found?
+            // TODO Error out if user not found?
 
             
             IdentityResult result = await userManager.AddToRoleAsync(user, "Admin");
@@ -125,12 +141,12 @@ namespace ProITM.Server.Controllers.Admin
             return Problem("Administration:PUT:PromoteUser(string id): Could not promote user");
         }
 
-        [HttpPut("users/demote/{Id}")]
+        [HttpPut("Users/Demote/{Id}")]
         public async Task<IActionResult> DemoteUser(string id)
         {
             var user = await userManager.FindByIdAsync(id);
 
-            // TODO Error out if user/group not found?
+            // TODO Error out if user not found?
 
 
             IdentityResult result = await userManager.RemoveFromRoleAsync(user, "Admin");
