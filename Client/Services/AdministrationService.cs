@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace ProITM.Client.Services
 {
-    public class GroupService : IGroupService
+    public class AdministrationService : IAdministrationService
     {
         private readonly HttpClient _httpClient;
 
-        public GroupService(HttpClient httpClient)
+        public AdministrationService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
@@ -44,6 +44,9 @@ namespace ProITM.Client.Services
             //return await _httpClient.PostAsJsonAsync<Group>("Group/Delete", group);
         }
 
+        // TODO Above are obsolete
+        // TODO Refactor API route references to AdministrationController endpoints
+
         public async Task<List<UserInRole>> GetUsersInRole(string id)
         {
             return await _httpClient.GetFromJsonAsync<List<UserInRole>>($"Group/Edit/{id}");
@@ -64,5 +67,7 @@ namespace ProITM.Client.Services
         {
             return await _httpClient.GetFromJsonAsync<List<UserModel>>("Group/adminroleusers");
         }
+
+        // TODO Implement remaining methods for AdministrationController below
     }
 }

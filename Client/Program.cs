@@ -25,7 +25,7 @@ namespace ProITM.Client
             // Supply HttpClient instances that include access tokens when making requests to the server project
             builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("ProITM.ServerAPI"));
 
-            builder.Services.AddScoped<IGroupService, GroupService>();
+            builder.Services.AddScoped<IAdministrationService, AdministrationService>();
 
             builder.Services.AddApiAuthorization();
 

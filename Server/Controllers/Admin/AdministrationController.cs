@@ -25,6 +25,51 @@ namespace ProITM.Server.Controllers.Admin
             this.userManager = userManager;
         }
 
+        [HttpGet("Adminroleid")]
+        public async Task<IActionResult> GetAdminRoleId()
+        {
+            var adminRole = await roleManager.FindByNameAsync("Admin");
+
+            if (adminRole == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(adminRole);
+        }
+
+        [HttpGet("Adminroleusers")]
+        public async Task<IActionResult> GetAdmins()
+        {
+            var role = await roleManager.FindByNameAsync("Admin");
+
+            if (role == null)
+            {
+                return NotFound();
+            }
+
+            var users = new List<UserModel>();
+
+            foreach (var user in userManager.Users)
+            {
+                var userModel = new UserModel
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    EmailConfirmed = user.EmailConfirmed
+                };
+
+                if (await userManager.IsInRoleAsync(user, role.Name))
+                {
+                    users.Add(userModel);
+                }
+
+            }
+
+            return Ok(users);
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetUsers()
         {
@@ -94,51 +139,6 @@ namespace ProITM.Server.Controllers.Admin
                 return Ok();
 
             return Problem("Administration:PUT:DemoteUser(string id): Could not demote user");
-        }
-
-        [HttpGet("Adminroleid")]
-        public async Task<IActionResult> GetAdminRoleId()
-        {
-            var adminRole = await roleManager.FindByNameAsync("Admin");
-
-            if (adminRole == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(adminRole);
-        }
-
-        [HttpGet("Adminroleusers")]
-        public async Task<IActionResult> GetAdmins()
-        {
-            var role = await roleManager.FindByNameAsync("Admin");
-
-            if (role == null)
-            {
-                return NotFound();
-            }
-
-            var users = new List<UserModel>();
-
-            foreach (var user in userManager.Users)
-            {
-                var userModel = new UserModel
-                {
-                    Id = user.Id,
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    EmailConfirmed = user.EmailConfirmed
-                };
-
-                if (await userManager.IsInRoleAsync(user, role.Name))
-                {
-                    users.Add(userModel);
-                }
-
-            }
-
-            return Ok(users);
         }
     }
 }
