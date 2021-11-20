@@ -9,6 +9,8 @@
 
 <h3>Manage Users</h3>
 
+<p>TODO (Fix numbering persistence)</p>
+
 @if (message != null)
 {
     <div class="alert alert-danger overflow-auto">
@@ -54,7 +56,7 @@ else
                         { <p>User</p>}
                     </td>
                     <td>
-                        <button class="btn btn-secondary" href="#">Edit</button>
+                        <button class="btn btn-secondary" @onclick="(() => ClickEditUser(user.Id))">Edit</button>
                         @if (user.IsAdmin)
                         {
                             <button class="btn btn-primary" @onclick="(() => ClickDemoteUser(user.Id))">Demote</button>
@@ -114,5 +116,11 @@ else
             navigationManager.NavigateTo($"manage/users", true);
         }
         message = result;
+    }
+    
+    protected async void ClickEditUser(string id)
+    {
+        
+        navigationManager.NavigateTo($"/manage/users/edit/{id}", true);
     }
 }
