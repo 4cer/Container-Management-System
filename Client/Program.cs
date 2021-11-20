@@ -26,6 +26,7 @@ namespace ProITM.Client
             builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("ProITM.ServerAPI"));
 
             builder.Services.AddScoped<IContainerService, ContainerService>();
+            builder.Services.AddScoped<IHostService, HostService>();
 
             builder.Services.AddApiAuthorization();
 

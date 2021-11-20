@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProITM.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,24 +14,24 @@ namespace ProITM.Server.Controllers.Admin
     public class HostController
     {
         [HttpPost]
-        public Task AddHost()
+        public Task AddHost(HostModel host)
         {
             throw new NotImplementedException("Implement me");
         }
 
-        [HttpDelete]
-        public Task DeleteHost()
+        [HttpDelete("{hostId}")]
+        public Task DeleteHost(string hostId)
         {
             throw new NotImplementedException("Implement me");
         }
 
-        [HttpGet]
+        [HttpGet("list")]
         public Task GetHosts()
         {
             throw new NotImplementedException("Implement me");
         }
 
-        [HttpGet]
+        [HttpGet("logs/{hostId}")]
         public Task GetHostLogs(string hostId)
         {
             throw new NotImplementedException("Implement me");
