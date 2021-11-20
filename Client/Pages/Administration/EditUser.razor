@@ -8,8 +8,6 @@
 
 <h3>Edit User</h3>
 
-<p>TODO (Implement Server.AdministrationController.EditUser(UserModel user))</p>
-
 @if (message != null)
 {
     <div class="alert alert-danger overflow-auto">
@@ -71,7 +69,7 @@ else
         var result = await administrationService.EditUser(user);
         if (result.IsSuccessStatusCode)
         {
-            navigationManager.NavigateTo($"manage/admins", forceLoad: true);
+            navigationManager.NavigateTo($"manage/users", forceLoad: true);
         }
         message = result;
     }

@@ -1,4 +1,4 @@
-﻿@page "/manage/admins/usersinrole/{Id}"
+﻿@page "/manage/admins/usersinrole"
 @attribute [Authorize(Roles = "Admin")]
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
@@ -39,13 +39,13 @@
 </EditForm>
 
 @code {
-    [Parameter]
     public string Id { get; set; }
 
     public List<UserInRole> users = new();
 
     protected override async Task OnInitializedAsync()
     {
+        Id = (await administrationService.GetAdminRoleId()).Id;
         users = await administrationService.GetUsersInRole(Id);
     }
 

@@ -25,51 +25,6 @@ namespace ProITM.Server.Controllers.Admin
             this.userManager = userManager;
         }
 
-        [HttpGet("Adminroleid")]
-        public async Task<IActionResult> GetAdminRoleId()
-        {
-            var adminRole = await roleManager.FindByNameAsync("Admin");
-
-            if (adminRole == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(adminRole);
-        }
-
-        [HttpGet("Adminroleusers")]
-        public async Task<IActionResult> GetAdmins()
-        {
-            var role = await roleManager.FindByNameAsync("Admin");
-
-            if (role == null)
-            {
-                return NotFound();
-            }
-
-            var users = new List<UserModel>();
-
-            foreach (var user in userManager.Users)
-            {
-                var userModel = new UserModel
-                {
-                    Id = user.Id,
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    EmailConfirmed = user.EmailConfirmed
-                };
-
-                if (await userManager.IsInRoleAsync(user, role.Name))
-                {
-                    users.Add(userModel);
-                }
-
-            }
-
-            return Ok(users);
-        }
-
         [HttpGet("Users")]
         public async Task<IActionResult> GetUsers()
         {
@@ -110,11 +65,23 @@ namespace ProITM.Server.Controllers.Admin
             return Ok(user);
         }
 
-        [HttpPost("Users/Edit/{Id}")]
+        [HttpPost("Users/Edit")]
         public async Task<IActionResult> EditUser(UserModel user)
         {
-            // TODO Implement EditUser
-            throw new NotImplementedException("AdministrationController.EditUser(UserModel user): Unimplemented");
+            var userEdit = await userManager.FindByIdAsync(user.Id);
+
+            userEdit.UserName = user.UserName;
+            userEdit.Email = user.Email;
+            userEdit.EmailConfirmed = user.EmailConfirmed;
+
+            IdentityResult result = await userManager.UpdateAsync(userEdit);
+
+            if (result.Succeeded)
+            {
+                return Ok();
+            }
+
+            return Problem("Administration:DELETE:EditUser(UserModel user): Edition unsuccessful");
         }
 
         [HttpDelete("Users/{Id}")]
@@ -162,6 +129,109 @@ namespace ProITM.Server.Controllers.Admin
                 return Ok();
 
             return Problem("Administration:PUT:DemoteUser(string id): Could not demote user");
+        }
+
+        [HttpGet("Adminroleid")]
+        public async Task<IActionResult> GetAdminRoleId()
+        {
+            var adminRole = await roleManager.FindByNameAsync("Admin");
+
+            if (adminRole == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(adminRole);
+        }
+
+        [HttpGet("Adminroleusers")]
+        public async Task<IActionResult> GetAdmins()
+        {
+            var role = await roleManager.FindByNameAsync("Admin");
+
+            if (role == null)
+            {
+                return NotFound();
+            }
+
+            var users = new List<UserModel>();
+
+            foreach (var user in userManager.Users)
+            {
+                var userModel = new UserModel
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    EmailConfirmed = user.EmailConfirmed
+                };
+
+                if (await userManager.IsInRoleAsync(user, role.Name))
+                {
+                    users.Add(userModel);
+                }
+
+            }
+
+            return Ok(users);
+        }
+
+        [HttpGet("Edit/{id}")]
+        public async Task<IActionResult> GetUsersInGroup(string id)
+        {
+            var role = await roleManager.FindByIdAsync(id);
+
+            if (role == null)
+            {
+                return NotFound();
+            }
+
+            var users = new List<UserInRole>();
+
+            foreach (var user in userManager.Users)
+            {
+                var userInRole = new UserInRole
+                {
+                    Id = user.Id,
+                    UserName = user.UserName
+                };
+
+                if (await userManager.IsInRoleAsync(user, role.Name))
+                {
+                    userInRole.IsSelected = true;
+                }
+                users.Add(userInRole);
+            }
+
+            return Ok(users);
+        }
+
+        [HttpPost("Edit/{id}")]
+        public async Task<IActionResult> PostUsersInGroup(List<UserInRole> usersInRole, string id)
+        {
+            var role = await roleManager.FindByIdAsync(id);
+
+            if (role == null)
+            {
+                return NotFound();
+            }
+
+            foreach (var user in usersInRole)
+            {
+                var usr = await userManager.FindByIdAsync(user.Id);
+                bool nowInRole = await userManager.IsInRoleAsync(usr, role.Name);
+
+                if (nowInRole && !user.IsSelected)
+                {
+                    await userManager.RemoveFromRoleAsync(usr, role.Name);
+                }
+                if (!nowInRole && user.IsSelected)
+                {
+                    await userManager.AddToRoleAsync(usr, role.Name);
+                }
+            }
+
+            return Ok();
         }
     }
 }

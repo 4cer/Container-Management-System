@@ -9,8 +9,6 @@
 
 <h3>Manage Users</h3>
 
-<p>TODO (Fix numbering persistence)</p>
-
 @if (message != null)
 {
     <div class="alert alert-danger overflow-auto">
@@ -40,35 +38,38 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var user in users)
-            {
-                counter++;
-                <tr>
-                    <td>@counter</td>
-                    <td>@user.UserName</td>
-                    <td>@user.Email</td>
-                    <td>@user.EmailConfirmed</td>
-                    <td>---</td>
-                    <td>
-                        @if (user.IsAdmin)
-                        {<p>Administrator</p> }
-                        else
-                        { <p>User</p>}
-                    </td>
-                    <td>
-                        <button class="btn btn-secondary" @onclick="(() => ClickEditUser(user.Id))">Edit</button>
-                        @if (user.IsAdmin)
-                        {
-                            <button class="btn btn-primary" @onclick="(() => ClickDemoteUser(user.Id))">Demote</button>
-                        }
-                        else
-                        {
-                            <button class="btn btn-primary" @onclick="(() => ClickPromoteUser(user.Id))">Promote</button>
-                        }
-                        <button class="btn btn-danger" @onclick="(() => ClickDeleteUser(user.Id))">Delete</button>
-                    </td>
-                </tr>
-            }
+            @{ 
+                var counter = 1;
+                foreach (var user in users)
+                {
+                    <tr>
+                        <td>@counter</td>
+                        <td>@user.UserName</td>
+                        <td>@user.Email</td>
+                        <td>@user.EmailConfirmed</td>
+                        <td>---</td>
+                        <td>
+                            @if (user.IsAdmin)
+                            {<p>Administrator</p> }
+                            else
+                            { <p>User</p>}
+                        </td>
+                        <td>
+                            <button class="btn btn-secondary" @onclick="(() => ClickEditUser(user.Id))">Edit</button>
+                            @if (user.IsAdmin)
+                            {
+                                <button class="btn btn-primary" @onclick="(() => ClickDemoteUser(user.Id))">Demote</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-primary" @onclick="(() => ClickPromoteUser(user.Id))">Promote</button>
+                            }
+                            <button class="btn btn-danger" @onclick="(() => ClickDeleteUser(user.Id))">Delete</button>
+                        </td>
+                    </tr>
+                    counter++;
+                }
+                }
         </tbody>
     </table>
 
@@ -78,8 +79,6 @@ else
 
 @code {
     List<UserModel> users;
-
-    int counter = 0;
 
     HttpResponseMessage message;
 

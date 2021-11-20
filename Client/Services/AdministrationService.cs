@@ -17,26 +17,6 @@ namespace ProITM.Client.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<UserInRole>> GetUsersInRole(string id)
-        {
-            return await _httpClient.GetFromJsonAsync<List<UserInRole>>($"Administration/Edit/{id}");
-        }
-
-        public async Task<HttpResponseMessage> EditUsersInRole(List<UserInRole> usersInRole, string id)
-        {
-            return await _httpClient.PostAsJsonAsync<List<UserInRole>>($"Administration/Edit/{id}", usersInRole);
-        }
-
-        public async Task<Group> GetAdminRoleId()
-        {
-            return await _httpClient.GetFromJsonAsync<Group>("Administration/adminroleid");
-        }
-
-        public async Task<List<UserModel>> GetAdmins()
-        {
-            return await _httpClient.GetFromJsonAsync<List<UserModel>>("Administration/adminroleusers");
-        }
-
         public async Task<List<UserModel>> GetUsers()
         {
             return await _httpClient.GetFromJsonAsync<List<UserModel>>("Administration/users");
@@ -66,6 +46,26 @@ namespace ProITM.Client.Services
         {
 
             return await _httpClient.PostAsJsonAsync<string>($"Administration/users/demote/{id}", null);
+        }
+
+        public async Task<Group> GetAdminRoleId()
+        {
+            return await _httpClient.GetFromJsonAsync<Group>("Administration/Adminroleid");
+        }
+
+        public async Task<List<UserModel>> GetAdmins()
+        {
+            return await _httpClient.GetFromJsonAsync<List<UserModel>>("Administration/Adminroleusers");
+        }
+
+        public async Task<List<UserInRole>> GetUsersInRole(string id)
+        {
+            return await _httpClient.GetFromJsonAsync<List<UserInRole>>($"Administration/Edit/{id}");
+        }
+
+        public async Task<HttpResponseMessage> EditUsersInRole(List<UserInRole> usersInRole, string id)
+        {
+            return await _httpClient.PostAsJsonAsync<List<UserInRole>>($"Administration/Edit/{id}", usersInRole);
         }
     }
 }

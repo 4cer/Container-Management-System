@@ -106,7 +106,7 @@ namespace ProITM.Server.Controllers.Admin
         [HttpPost]
         public async Task<IActionResult> CreateGroup(Group group)
         {
-            IdentityRole identityRole = new IdentityRole
+            IdentityRole identityRole = new()
             {
                 Name = group.Name
             };
@@ -192,8 +192,6 @@ namespace ProITM.Server.Controllers.Admin
             {
                 return NotFound();
             }
-
-            var users = new List<UserInRole>();
 
             foreach (var user in usersInRole)
             {
