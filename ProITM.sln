@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31410.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProITM.Server", "Server\ProITM.Server.csproj", "{0857B71D-BB3B-4394-B14C-78FF7761782B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProITM.Server", "Server\ProITM.Server.csproj", "{0857B71D-BB3B-4394-B14C-78FF7761782B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProITM.Client", "Client\ProITM.Client.csproj", "{4EB80B2F-10E3-413D-97DF-4E45EA5BC143}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProITM.Client", "Client\ProITM.Client.csproj", "{4EB80B2F-10E3-413D-97DF-4E45EA5BC143}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProITM.Shared", "Shared\ProITM.Shared.csproj", "{9D5B0ACA-1A07-40CC-AC07-CE8F17BD0D3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProITM.Shared", "Shared\ProITM.Shared.csproj", "{9D5B0ACA-1A07-40CC-AC07-CE8F17BD0D3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

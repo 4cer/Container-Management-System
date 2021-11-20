@@ -1,0 +1,76 @@
+﻿@page "/manage/users/edit/{Id}"
+@attribute [Authorize(Roles = "Admin")]
+@using Microsoft.AspNetCore.Authorization
+@using ProITM.Client.Services
+@using ProITM.Shared
+@inject IAdministrationService administrationService
+@inject NavigationManager navigationManager
+
+<h3>Edit User</h3>
+
+@if (message != null)
+{
+    <div class="alert alert-danger overflow-auto">
+        <h4>@message.ReasonPhrase</h4>
+        <p>
+            @message.RequestMessage;
+        </p>
+    </div>
+}
+
+@if (user == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <EditForm Model="user" OnSubmit="OnSubmit">
+        <div class="form-group">
+            <label for="user-id">Id</label>
+            <InputText id="user-id" @bind-Value="@user.Id" class="form-control" disabled="true"></InputText>
+        </div>
+        <div class="form-group">
+            <label for="user-name">User Name</label>
+            <InputText id="user-name" @bind-Value="@user.UserName" class="form-control"></InputText>
+        </div>
+        <div class="form-group">
+            <label for="user-email">Email</label>
+            <InputText id="user-email" @bind-Value="@user.Email" class="form-control"></InputText>
+        </div>
+        <div class="form-group">
+            <InputCheckbox id="user-confirmed" @bind-Value="user.EmailConfirmed" class="form-check-input" />
+            <label for="user-confirmed">Activate account</label>
+        </div>
+        <div class="form-check">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <a href="manage/users" class="btn btn-secondary">Cancel</a>
+        </div>
+
+
+    </EditForm>
+}
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    UserModel user;
+
+    HttpResponseMessage message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await administrationService.GetUser(Id);
+    }
+
+    protected async void OnSubmit()
+    {
+        var result = await administrationService.EditUser(user);
+        if (result.IsSuccessStatusCode)
+        {
+            navigationManager.NavigateTo($"manage/users", forceLoad: true);
+        }
+        message = result;
+    }
+}
