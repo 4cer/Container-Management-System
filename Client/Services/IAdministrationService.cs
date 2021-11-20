@@ -21,7 +21,8 @@ namespace ProITM.Client.Services
         public Task<List<UserModel>> GetAdmins();
         // TODO Prototype methods for AdministrationController below
         public Task<List<UserModel>> GetUsers();
-        public Task<List<UserModel>> GetUser(string id);
+        public Task<UserModel> GetUser(string id);
+        public Task<HttpResponseMessage> EditUser(UserModel user);
         public Task<HttpResponseMessage> DeleteUser(string id);
         public Task<HttpResponseMessage> PromoteUser(string id);
         public Task<HttpResponseMessage> DemoteUser(string id);

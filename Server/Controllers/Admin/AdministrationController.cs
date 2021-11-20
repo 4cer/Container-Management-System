@@ -102,7 +102,7 @@ namespace ProITM.Server.Controllers.Admin
         {
             var user = await userManager.FindByIdAsync(id);
 
-            // TODO Error out if user not found?
+            // Error out if user not found?
 
             if (user == null)
                 return NotFound("Administration:GET:GetUser(string id): User not found");
@@ -110,12 +110,19 @@ namespace ProITM.Server.Controllers.Admin
             return Ok(user);
         }
 
+        [HttpPost("Users/Edit/{Id}")]
+        public async Task<IActionResult> EditUser(UserModel user)
+        {
+            // TODO Implement EditUser
+            throw new NotImplementedException("AdministrationController.EditUser(UserModel user): Unimplemented");
+        }
+
         [HttpDelete("Users/{Id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await userManager.FindByIdAsync(id);
 
-            // TODO Error out if user not found?
+            // Error out if user not found?
 
             IdentityResult result = await userManager.DeleteAsync(user);
 
@@ -130,7 +137,7 @@ namespace ProITM.Server.Controllers.Admin
         {
             var user = await userManager.FindByIdAsync(id);
 
-            // TODO Error out if user not found?
+            // Error out if user not found?
 
             
             IdentityResult result = await userManager.AddToRoleAsync(user, "Admin");
@@ -146,7 +153,7 @@ namespace ProITM.Server.Controllers.Admin
         {
             var user = await userManager.FindByIdAsync(id);
 
-            // TODO Error out if user not found?
+            // Error out if user not found?
 
 
             IdentityResult result = await userManager.RemoveFromRoleAsync(user, "Admin");

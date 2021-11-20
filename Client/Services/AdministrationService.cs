@@ -74,9 +74,14 @@ namespace ProITM.Client.Services
             return await _httpClient.GetFromJsonAsync<List<UserModel>>("Administration/users");
         }
 
-        public async Task<List<UserModel>> GetUser(string id)
+        public async Task<UserModel> GetUser(string id)
         {
-            return await _httpClient.GetFromJsonAsync<List<UserModel>>($"Administration/users/{id}");
+            return await _httpClient.GetFromJsonAsync<UserModel>($"Administration/users/{id}");
+        }
+
+        public async Task<HttpResponseMessage> EditUser(string id, UserModel user)
+        {
+            return await _httpClient.PostAsJsonAsync<UserModel>($"Administration/users/Edit/{id}", user);
         }
 
         public async Task<HttpResponseMessage> DeleteUser(string id)

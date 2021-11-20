@@ -1,0 +1,36 @@
+﻿@page "/manage/users/edit/{Id}"
+@attribute [Authorize(Roles = "Admin")]
+@using Microsoft.AspNetCore.Authorization
+@using ProITM.Client.Services
+@using ProITM.Shared
+@inject IAdministrationService administrationService
+@inject NavigationManager navigationManager
+
+<h3>Edit User</h3>
+
+<p>TODO</p>
+
+<EditForm Model="user" OnSubmit="OnSubmit">
+
+</EditForm>
+
+@code {
+    [Parameter]
+    string Id { get; set; }
+
+    UserModel user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await administrationService.GetUser(Id);
+    }
+
+    protected async void OnSubmit()
+    {
+        var result = await administrationService.EditUser(user);
+        if (result.IsSuccessStatusCode)
+        {
+            navigationManager.NavigateTo($"manage/admins", forceLoad: true);
+        }
+    }
+}
