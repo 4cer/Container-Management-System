@@ -1,9 +1,6 @@
 ﻿@page "/manage/users"
 @attribute [Authorize(Roles = "Admin")]
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@using ProITM.Client.Services
-@using ProITM.Shared
+
 @inject IAdministrationService administrationService
 @inject NavigationManager navigationManager
 
