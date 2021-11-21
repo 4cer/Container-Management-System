@@ -13,26 +13,31 @@ namespace ProITM.Server.Controllers.Admin
     [Route("[controller]")]
     public class HostController
     {
+        // TODO Inject database Host context
+            // TODO Implement HostContext
+
+        // TODO Implement HostController endpoint methods
+
         [HttpPost]
-        public async Task AddHost(HostModel host)
+        public async Task<IActionResult> AddHost(HostModel host)
         {
             throw new NotImplementedException("Implement me");
         }
 
         [HttpDelete("{hostId}")]
-        public async Task DeleteHost(string hostId)
+        public async Task<IActionResult> DeleteHost(string hostId)
         {
             throw new NotImplementedException("Implement me");
         }
 
         [HttpGet("list")]
-        public async Task GetHosts()
+        public async Task<IActionResult> GetHosts()
         {
             throw new NotImplementedException("Implement me");
         }
 
         [HttpGet("logs/{hostId}")]
-        public async Task GetHostLogs(string hostId)
+        public async Task<IActionResult> GetHostLogs(string hostId)
         {
             throw new NotImplementedException("Implement me");
         }

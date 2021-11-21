@@ -15,44 +15,50 @@ namespace ProITM.Server.Controllers
     {
         private Docker.DotNet.DockerClient c;
 
-        [HttpGet]
-        public async Task<IEnumerable<ContainerListResponse>> ListContainers()
-        {
-            throw new NotImplementedException("Implement me");
-        }
+        // TODO Inject database Container context
+            // TODO Implement ContainerContext
+        // TODO Inject Docker.DotNet.DockerClient
 
-        [HttpPost]
-        public async Task StartContainer(string id)
-        {
-            throw new NotImplementedException("Implement me");
-        }
-
-        [HttpPost]
-        public async Task StopContainer(string id)
-        {
-            throw new NotImplementedException("Implement me");
-        }
+        // TODO Implement ContainerController endpoint methods
 
         [HttpGet]
-        public async Task GetContainerStats(string id)
+        public async Task<IActionResult> ListContainers()
         {
             throw new NotImplementedException("Implement me");
         }
 
         [HttpPost]
-        public async Task CreateContainer(string id)
+        public async Task<IActionResult> StartContainer(string id)
+        {
+            throw new NotImplementedException("Implement me");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> StopContainer(string id)
+        {
+            throw new NotImplementedException("Implement me");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetContainerStats(string id)
+        {
+            throw new NotImplementedException("Implement me");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateContainer(string id)
         {
             throw new NotImplementedException("Implement me");
         }
 
         [HttpDelete]
-        public async Task DeleteContainer(string id)
+        public async Task<IActionResult> DeleteContainer(string id)
         {
             throw new NotImplementedException("Implement me");
         }
 
         [HttpGet]
-        public async Task GetContainerLogs(string id)
+        public async Task<IActionResult> GetContainerLogs(string id)
         {
             throw new NotImplementedException("Implement me");
         }

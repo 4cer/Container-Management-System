@@ -20,6 +20,6 @@ namespace ProITM.Shared
 
         public string MachineId { get; set; }
 
-        // TODO Describe containers below
+        // TODO Describe additional Container datum
     }
 }

@@ -1,13 +1,9 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using ProITM.Client.Services;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ProITM.Client
@@ -27,6 +23,7 @@ namespace ProITM.Client
 
             builder.Services.AddScoped<IContainerService, ContainerService>();
             builder.Services.AddScoped<IHostService, HostService>();
+            builder.Services.AddScoped<IImageService, ImageService>();
 
             builder.Services.AddApiAuthorization();
 

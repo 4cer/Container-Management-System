@@ -14,7 +14,7 @@ namespace ProITM.Shared
 
         string HostUri { get; set; }
 
-        // TODO Describe host in more detail
+        // TODO Describe Host datum
 
         // public List<ContainerModel> Containers { get; set; } = new();
 
