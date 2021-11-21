@@ -16,43 +16,43 @@ namespace ProITM.Server.Controllers
         private Docker.DotNet.DockerClient c;
 
         [HttpGet]
-        public Task<IEnumerable<ContainerListResponse>> ListContainers()
+        public async Task<IEnumerable<ContainerListResponse>> ListContainers()
         {
             throw new NotImplementedException("Implement me");
         }
 
         [HttpPost]
-        public Task StartContainer(string id)
+        public async Task StartContainer(string id)
         {
             throw new NotImplementedException("Implement me");
         }
 
         [HttpPost]
-        public Task StopContainer(string id)
+        public async Task StopContainer(string id)
         {
             throw new NotImplementedException("Implement me");
         }
 
         [HttpGet]
-        public Task GetContainerStats(string id)
+        public async Task GetContainerStats(string id)
         {
             throw new NotImplementedException("Implement me");
         }
 
         [HttpPost]
-        public Task CreateContainer(string id)
+        public async Task CreateContainer(string id)
         {
             throw new NotImplementedException("Implement me");
         }
 
         [HttpDelete]
-        public Task DeleteContainer(string id)
+        public async Task DeleteContainer(string id)
         {
             throw new NotImplementedException("Implement me");
         }
 
         [HttpGet]
-        public Task GetContainerLogs(string id)
+        public async Task GetContainerLogs(string id)
         {
             throw new NotImplementedException("Implement me");
         }

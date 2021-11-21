@@ -14,25 +14,25 @@ namespace ProITM.Server.Controllers.Admin
     public class HostController
     {
         [HttpPost]
-        public Task AddHost(HostModel host)
+        public async Task AddHost(HostModel host)
         {
             throw new NotImplementedException("Implement me");
         }
 
         [HttpDelete("{hostId}")]
-        public Task DeleteHost(string hostId)
+        public async Task DeleteHost(string hostId)
         {
             throw new NotImplementedException("Implement me");
         }
 
         [HttpGet("list")]
-        public Task GetHosts()
+        public async Task GetHosts()
         {
             throw new NotImplementedException("Implement me");
         }
 
         [HttpGet("logs/{hostId}")]
-        public Task GetHostLogs(string hostId)
+        public async Task GetHostLogs(string hostId)
         {
             throw new NotImplementedException("Implement me");
         }
