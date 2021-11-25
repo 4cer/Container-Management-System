@@ -1,7 +1,22 @@
 ﻿@page "/"
+@using ProITM.Client.Pages.Views
+@inject NavigationManager Navigation
 
-<h1>Hello, world!</h1>
+<AuthorizeView>
+    <Authorized>
+        <ContainerList></ContainerList>
+    </Authorized>
+    <NotAuthorized>
+        Musisz się zalogować, aby wyświetlić tę stronę...<br />
+        <button class="btn btn-primary" @onclick="redirectToLogin">
+            Zaloguj się
+        </button>
+    </NotAuthorized>
+</AuthorizeView>
 
-Welcome to your new app.
-
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code{
+    public void redirectToLogin()
+    {
+        Navigation.NavigateTo($"authentication/login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}");
+    }
+}

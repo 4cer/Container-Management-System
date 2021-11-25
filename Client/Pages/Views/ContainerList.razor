@@ -1,0 +1,47 @@
+﻿@inject NavigationManager Navigation
+
+<h3>Lista kontenerów, do których masz dostęp</h3>
+
+<table class="container-table table table-hover table-dark">
+    <thead>
+        <tr>
+            @foreach (string header in headers)
+            {
+                <th>@header</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (string[] container in containers)
+        {
+            <tr @onclick="() => showDetails(container)">
+                @foreach (string property in container)
+                {
+                    <td>@property</td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    String[] headers = new[] { "ID", "Nazwa", "Szczegóły" };
+    String[][] containers = new[]
+    {
+        new [] { "0", "name", "dupa"},
+        new [] { "1", "name", "dupa"},
+        new [] { "2", "name", "dupa"},
+        new [] { "3", "name", "dupa"},
+        new [] { "4", "name", "dupa"},
+        new [] { "5", "name", "dupa"},
+        new [] { "6", "name", "dupa"},
+        new [] { "7", "name", "dupa"},
+        new [] { "8", "name", "dupa"},
+        new [] { "9", "name", "dupa"}
+    };
+
+    public void showDetails(string[] container)
+    {
+        Navigation.NavigateTo($"details?id="+container[0]);
+    }
+}

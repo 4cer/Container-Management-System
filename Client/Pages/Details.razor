@@ -1,0 +1,22 @@
+﻿@page "/details"
+@using ProITM.Client.Pages.Views
+@inject NavigationManager Navigation
+
+<AuthorizeView>
+    <Authorized>
+        <ContainerDetails></ContainerDetails>
+    </Authorized>
+    <NotAuthorized>
+        Musisz się zalogować, aby wyświetlić tę stronę...<br />
+        <button class="btn btn-primary" @onclick="redirectToLogin">
+            Zaloguj się
+        </button>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code{
+    public void redirectToLogin()
+    {
+        
+    }
+}
