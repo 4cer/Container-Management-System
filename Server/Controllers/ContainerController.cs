@@ -15,11 +15,16 @@ namespace ProITM.Server.Controllers
     {
         private Docker.DotNet.DockerClient c;
 
-        // TODO Inject database Container context
-            // TODO Implement ContainerContext
-        // TODO Inject Docker.DotNet.DockerClient
+        public ContainerController ()
+        {
+            // Tu wstrzyknąć zależności
+        }
 
-        // TODO Implement ContainerController endpoint methods
+        // TODO 142 Inject database Container context
+            // TODO 141 Implement ContainerContext
+        // TODO 143 Inject Docker.DotNet.DockerClient
+
+        // TODO 144 Implement ContainerController endpoint methods
 
         [HttpGet]
         public async Task<IActionResult> ListContainers()

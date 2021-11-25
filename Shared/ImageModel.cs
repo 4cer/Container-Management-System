@@ -16,7 +16,7 @@ namespace ProITM.Shared
 
         public string UriPath { get; set; }
 
-        // TODO describe Image datum
+        // TODO 150 describe Image datum
 
         // public string Path { get; set; }
     }

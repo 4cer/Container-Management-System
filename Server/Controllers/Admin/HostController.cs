@@ -13,10 +13,10 @@ namespace ProITM.Server.Controllers.Admin
     [Route("[controller]")]
     public class HostController
     {
-        // TODO Inject database Host context
-            // TODO Implement HostContext
+        // TODO 138 Inject database Host context
+            // TODO 137 Implement HostContext
 
-        // TODO Implement HostController endpoint methods
+        // TODO 140 Implement HostController endpoint methods
 
         [HttpPost]
         public async Task<IActionResult> AddHost(HostModel host)

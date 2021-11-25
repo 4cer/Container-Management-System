@@ -16,7 +16,7 @@ namespace ProITM.Client.Services
             _httpClient = httpClient;
         }
 
-        // TODO Implement ImageService methods
+        // TODO 134 Implement ImageService methods
 
         public Task<List<ImageModel>> GetImageList()
         {
