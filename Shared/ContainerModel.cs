@@ -23,6 +23,9 @@ namespace ProITM.Shared
 
         public HostModel Machine { get; set; }
 
+        // Ignore for DB purposes
+        public string State { get; set; }
+
         public bool IsRunning { get; set; }
 
         // TODO 148 Describe additional Container datum
