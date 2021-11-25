@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,18 +10,18 @@ namespace ProITM.Shared
 {
     public class HostModel
     {
-        string Id { get; set; }
+        public string Id { get; set; }
 
-        string HostName { get; set; }
+        public string DisplayName { get; set; }
 
-        string HostUri { get; set; }
+        public bool IsWindows { get; set; }
+
+        public string IP { get; set; }
+
+        public string Port { get; set; }
+
+        public string URI { get; set; }
 
         // TODO 149 Describe Host datum
-
-        // public List<ContainerModel> Containers { get; set; } = new();
-
-        // public string AddedByUserOfId { get; set; }
-
-        // 
     }
 }

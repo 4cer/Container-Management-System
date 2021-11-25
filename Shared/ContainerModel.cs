@@ -8,9 +8,10 @@ namespace ProITM.Shared
 {
     public class ContainerModel
     {
-        public string OwnerId { get; set; }
-
         public string Id { get; set; }
+
+        // TODO Pull UserModel to get access to class:
+        //public UserModel Owner { get; set; }
 
         public string Name { get; set; }
 
@@ -18,7 +19,11 @@ namespace ProITM.Shared
 
         public string Description { get; set; }
 
-        public string MachineId { get; set; }
+        public int PortId { get; set; }
+
+        public HostModel Machine { get; set; }
+
+        public bool IsRunning { get; set; }
 
         // TODO 148 Describe additional Container datum
     }
