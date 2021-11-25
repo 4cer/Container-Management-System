@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProITM.Server.Data;
 
 namespace ProITM.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211125224053_AddedRefContainerToPort")]
+    partial class AddedRefContainerToPort
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -331,7 +333,7 @@ namespace ProITM.Server.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsRunning")
                         .HasColumnType("bit");
@@ -352,8 +354,6 @@ namespace ProITM.Server.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ImageId");
 
                     b.HasIndex("MachineId");
 
@@ -507,10 +507,6 @@ namespace ProITM.Server.Data.Migrations
 
             modelBuilder.Entity("ProITM.Shared.ContainerModel", b =>
                 {
-                    b.HasOne("ProITM.Shared.ImageModel", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId");
-
                     b.HasOne("ProITM.Shared.HostModel", "Machine")
                         .WithMany()
                         .HasForeignKey("MachineId");
@@ -522,8 +518,6 @@ namespace ProITM.Server.Data.Migrations
                     b.HasOne("ProITM.Shared.ContainerPortModel", "Port")
                         .WithMany()
                         .HasForeignKey("PortId");
-
-                    b.Navigation("Image");
 
                     b.Navigation("Machine");
 

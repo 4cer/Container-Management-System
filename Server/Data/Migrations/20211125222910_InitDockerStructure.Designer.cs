@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProITM.Server.Data;
 
 namespace ProITM.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211125222910_InitDockerStructure")]
+    partial class InitDockerStructure
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -331,7 +333,7 @@ namespace ProITM.Server.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsRunning")
                         .HasColumnType("bit");
@@ -345,41 +347,19 @@ namespace ProITM.Server.Data.Migrations
                     b.Property<string>("OwnerId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("PortId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("PortId")
+                        .HasColumnType("int");
 
                     b.Property<string>("State")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ImageId");
-
                     b.HasIndex("MachineId");
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("PortId");
-
                     b.ToTable("Containers");
-                });
-
-            modelBuilder.Entity("ProITM.Shared.ContainerPortModel", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("HostId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("Port")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("HostId");
-
-                    b.ToTable("ContainerPorts");
                 });
 
             modelBuilder.Entity("ProITM.Shared.HostModel", b =>
@@ -396,8 +376,8 @@ namespace ProITM.Server.Data.Migrations
                     b.Property<bool>("IsWindows")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Port")
-                        .HasColumnType("int");
+                    b.Property<string>("Port")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("URI")
                         .HasColumnType("nvarchar(max)");
@@ -507,10 +487,6 @@ namespace ProITM.Server.Data.Migrations
 
             modelBuilder.Entity("ProITM.Shared.ContainerModel", b =>
                 {
-                    b.HasOne("ProITM.Shared.ImageModel", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageId");
-
                     b.HasOne("ProITM.Shared.HostModel", "Machine")
                         .WithMany()
                         .HasForeignKey("MachineId");
@@ -519,26 +495,9 @@ namespace ProITM.Server.Data.Migrations
                         .WithMany()
                         .HasForeignKey("OwnerId");
 
-                    b.HasOne("ProITM.Shared.ContainerPortModel", "Port")
-                        .WithMany()
-                        .HasForeignKey("PortId");
-
-                    b.Navigation("Image");
-
                     b.Navigation("Machine");
 
                     b.Navigation("Owner");
-
-                    b.Navigation("Port");
-                });
-
-            modelBuilder.Entity("ProITM.Shared.ContainerPortModel", b =>
-                {
-                    b.HasOne("ProITM.Shared.HostModel", "Host")
-                        .WithMany()
-                        .HasForeignKey("HostId");
-
-                    b.Navigation("Host");
                 });
 #pragma warning restore 612, 618
         }
