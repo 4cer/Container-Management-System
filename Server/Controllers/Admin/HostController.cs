@@ -14,7 +14,6 @@ namespace ProITM.Server.Controllers.Admin
     public class HostController
     {
         // TODO 138 Inject database Host context
-            // TODO 137 Implement HostContext
 
         // TODO 140 Implement HostController endpoint methods
 

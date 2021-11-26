@@ -21,7 +21,7 @@ namespace ProITM.Server.Controllers
         }
 
         // TODO 142 Inject database Container context
-            // TODO 141 Implement ContainerContext
+
         // TODO 143 Inject Docker.DotNet.DockerClient
 
         // TODO 144 Implement ContainerController endpoint methods

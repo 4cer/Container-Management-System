@@ -12,7 +12,6 @@ namespace ProITM.Server.Controllers
     public class ImageController : ControllerBase
     {
         // TODO 146 Inject database Image context
-            // TODO 145 Implement ImageContext
 
         // TODO implement ImageController endpoint methods
 
