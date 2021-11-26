@@ -1,0 +1,122 @@
+﻿@page "/manage/users"
+@attribute [Authorize(Roles = "Admin")]
+
+@inject IAdministrationService administrationService
+@inject NavigationManager navigationManager
+
+<h3>Manage Users</h3>
+
+@if (message != null)
+{
+    <div class="alert alert-danger overflow-auto">
+        <h4>@message.ReasonPhrase</h4>
+        <p>
+            @message.RequestMessage;
+        </p>
+    </div>
+}
+
+@if (users == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nr.</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Confirmed</th>
+                <th>Active containers</th>
+                <th>Auth level</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ 
+                var counter = 1;
+                foreach (var user in users)
+                {
+                    <tr>
+                        <td>@counter</td>
+                        <td>@user.UserName</td>
+                        <td>@user.Email</td>
+                        <td>@user.EmailConfirmed</td>
+                        <td>---</td>
+                        <td>
+                            @if (user.IsAdmin)
+                            {<p>Administrator</p> }
+                            else
+                            { <p>User</p>}
+                        </td>
+                        <td>
+                            <button class="btn btn-secondary" @onclick="(() => ClickEditUser(user.Id))">Edit</button>
+                            @if (user.IsAdmin)
+                            {
+                                <button class="btn btn-primary" @onclick="(() => ClickDemoteUser(user.Id))">Demote</button>
+                            }
+                            else
+                            {
+                                <button class="btn btn-primary" @onclick="(() => ClickPromoteUser(user.Id))">Promote</button>
+                            }
+                            <button class="btn btn-danger" @onclick="(() => ClickDeleteUser(user.Id))">Delete</button>
+                        </td>
+                    </tr>
+                    counter++;
+                }
+                }
+        </tbody>
+    </table>
+
+
+}
+
+
+@code {
+    List<UserModel> users;
+
+    HttpResponseMessage message;
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await administrationService.GetUsers();
+    }
+
+    protected async void ClickDeleteUser(string id)
+    {
+        var result = await administrationService.DeleteUser(id);
+        if (result.IsSuccessStatusCode)
+        {
+            navigationManager.NavigateTo($"manage/users", true);
+        }
+        message = result;
+    }
+    
+    protected async void ClickPromoteUser(string id)
+    {
+        var result = await administrationService.PromoteUser(id);
+        if (result.IsSuccessStatusCode)
+        {
+            navigationManager.NavigateTo($"manage/users", true);
+        }
+        message = result;
+    }
+    
+    protected async void ClickDemoteUser(string id)
+    {
+        var result = await administrationService.DemoteUser(id);
+        if (result.IsSuccessStatusCode)
+        {
+            navigationManager.NavigateTo($"manage/users", true);
+        }
+        message = result;
+    }
+    
+    protected async void ClickEditUser(string id)
+    {
+        
+        navigationManager.NavigateTo($"/manage/users/edit/{id}", true);
+    }
+}

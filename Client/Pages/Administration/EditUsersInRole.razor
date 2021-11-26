@@ -1,0 +1,57 @@
+﻿@page "/manage/admins/usersinrole"
+@attribute [Authorize(Roles = "Admin")]
+
+@inject IAdministrationService administrationService
+@inject NavigationManager navigationManager
+
+<h3>EditUsersInRole</h3>
+<EditForm Model="users" OnSubmit="HandleSubmit">
+    <div class="card">
+        <div class="card-header">
+            <h4>Users in role</h4>
+        </div>
+        <div class="card-body">
+            @if (users == null)
+            {
+                <p><em>Loading...</em></p>
+            }
+            else
+            {
+                @foreach (UserInRole usr in users)
+                {
+                    <div class="form-check m-1">
+                        <InputCheckbox id="@usr.UserName" @bind-Value="usr.IsSelected" class="form-check-input" />
+                        <label for="@usr.UserName">@usr.UserName</label>
+                    </div>
+                }
+            }
+
+        </div>
+        <div class="card-footer">
+            <input type="submit" value="Update" class="btn btn-primary"
+                   style="width:auto" />
+            <a href="manage/admins" class="btn btn-secondary">Cancel</a>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public string Id { get; set; }
+
+    public List<UserInRole> users = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Id = (await administrationService.GetAdminRoleId()).Id;
+        users = await administrationService.GetUsersInRole(Id);
+    }
+
+    protected async void HandleSubmit()
+    {
+        var result = await administrationService.EditUsersInRole(users, Id);
+        if (result.IsSuccessStatusCode)
+        {
+            navigationManager.NavigateTo($"manage/admins", forceLoad: true);
+        }
+    }
+}
