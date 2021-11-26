@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProITM.Server.Data;
 
-namespace ProITM.Server.Data.Migrations
+namespace ProITM.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211125223710_UpdatedModelAddedPortContainerMapping")]
-    partial class UpdatedModelAddedPortContainerMapping
+    [Migration("20211125233007_NewDataStruct")]
+    partial class NewDataStruct
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -271,6 +271,9 @@ namespace ProITM.Server.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ContainersId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -313,6 +316,8 @@ namespace ProITM.Server.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ContainersId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -333,7 +338,7 @@ namespace ProITM.Server.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsRunning")
                         .HasColumnType("bit");
@@ -344,20 +349,19 @@ namespace ProITM.Server.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OwnerId")
+                    b.Property<string>("PortId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("PortId")
-                        .HasColumnType("int");
 
                     b.Property<string>("State")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ImageId");
+
                     b.HasIndex("MachineId");
 
-                    b.HasIndex("OwnerId");
+                    b.HasIndex("PortId");
 
                     b.ToTable("Containers");
                 });
@@ -430,28 +434,6 @@ namespace ProITM.Server.Data.Migrations
                     b.ToTable("Images");
                 });
 
-            modelBuilder.Entity("ProITM.Shared.UserModel", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UserModel");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -503,19 +485,34 @@ namespace ProITM.Server.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ProITM.Server.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("ProITM.Shared.ContainerModel", "Containers")
+                        .WithMany()
+                        .HasForeignKey("ContainersId");
+
+                    b.Navigation("Containers");
+                });
+
             modelBuilder.Entity("ProITM.Shared.ContainerModel", b =>
                 {
+                    b.HasOne("ProITM.Shared.ImageModel", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageId");
+
                     b.HasOne("ProITM.Shared.HostModel", "Machine")
                         .WithMany()
                         .HasForeignKey("MachineId");
 
-                    b.HasOne("ProITM.Shared.UserModel", "Owner")
+                    b.HasOne("ProITM.Shared.ContainerPortModel", "Port")
                         .WithMany()
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("PortId");
+
+                    b.Navigation("Image");
 
                     b.Navigation("Machine");
 
-                    b.Navigation("Owner");
+                    b.Navigation("Port");
                 });
 
             modelBuilder.Entity("ProITM.Shared.ContainerPortModel", b =>

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProITM.Server.Data;
 
-namespace ProITM.Server.Data.Migrations
+namespace ProITM.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -147,6 +147,15 @@ namespace ProITM.Server.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "49cea4da-b5fd-4d88-971e-00e9ac7ec7af",
+                            ConcurrencyStamp = "5d017e37-0c3f-46eb-b2bb-5283482c2f33",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -269,6 +278,9 @@ namespace ProITM.Server.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ContainersId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -311,6 +323,8 @@ namespace ProITM.Server.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ContainersId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -342,9 +356,6 @@ namespace ProITM.Server.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("PortId")
                         .HasColumnType("nvarchar(450)");
 
@@ -356,8 +367,6 @@ namespace ProITM.Server.Data.Migrations
                     b.HasIndex("ImageId");
 
                     b.HasIndex("MachineId");
-
-                    b.HasIndex("OwnerId");
 
                     b.HasIndex("PortId");
 
@@ -432,28 +441,6 @@ namespace ProITM.Server.Data.Migrations
                     b.ToTable("Images");
                 });
 
-            modelBuilder.Entity("ProITM.Shared.UserModel", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UserModel");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -505,6 +492,15 @@ namespace ProITM.Server.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ProITM.Server.Models.ApplicationUser", b =>
+                {
+                    b.HasOne("ProITM.Shared.ContainerModel", "Containers")
+                        .WithMany()
+                        .HasForeignKey("ContainersId");
+
+                    b.Navigation("Containers");
+                });
+
             modelBuilder.Entity("ProITM.Shared.ContainerModel", b =>
                 {
                     b.HasOne("ProITM.Shared.ImageModel", "Image")
@@ -515,10 +511,6 @@ namespace ProITM.Server.Data.Migrations
                         .WithMany()
                         .HasForeignKey("MachineId");
 
-                    b.HasOne("ProITM.Shared.UserModel", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
-
                     b.HasOne("ProITM.Shared.ContainerPortModel", "Port")
                         .WithMany()
                         .HasForeignKey("PortId");
@@ -526,8 +518,6 @@ namespace ProITM.Server.Data.Migrations
                     b.Navigation("Image");
 
                     b.Navigation("Machine");
-
-                    b.Navigation("Owner");
 
                     b.Navigation("Port");
                 });
