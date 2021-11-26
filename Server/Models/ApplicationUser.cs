@@ -9,6 +9,6 @@ namespace ProITM.Server.Models
 {
     public class ApplicationUser : IdentityUser
     {
-         public virtual ContainerModel Containers {get; set;}
+         public virtual List<ContainerModel> Containers {get; set;}
     }
 }
