@@ -1,22 +1,8 @@
 ﻿@page "/"
-@using ProITM.Client.Pages.Views
 @inject NavigationManager Navigation
 
-<AuthorizeView>
-    <Authorized>
-        <ContainerList></ContainerList>
-    </Authorized>
-    <NotAuthorized>
-        Musisz się zalogować, aby wyświetlić tę stronę...<br />
-        <button class="btn btn-primary" @onclick="redirectToLogin">
-            Zaloguj się
-        </button>
-    </NotAuthorized>
-</AuthorizeView>
+Nothing here...
 
 @code{
-    public void redirectToLogin()
-    {
-        Navigation.NavigateTo($"authentication/login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}");
-    }
+    
 }

@@ -1,0 +1,28 @@
+﻿@page "/images"
+@inject NavigationManager Navigation
+
+<h3>List of images</h3>
+
+{ TODO (można wzorować się na Containers.razor) }
+
+@code {
+    String[] headers = new[] { "ID", "Nazwa", "Szczegóły" };
+    String[][] ExampleImages = new[]
+    {
+        new [] { "0", "todo", "todo"},
+        new [] { "1", "todo", "todo"},
+        new [] { "2", "todo", "todo"},
+        new [] { "3", "todo", "todo"},
+        new [] { "4", "todo", "todo"},
+        new [] { "5", "todo", "todo"},
+        new [] { "6", "todo", "todo"},
+        new [] { "7", "todo", "todo"},
+        new [] { "8", "todo", "todo"},
+        new [] { "9", "todo", "todo" }
+    };
+
+    public void showDetails(string[] container)
+    {
+        Navigation.NavigateTo($"/images/details?id="+container[0]);
+    }
+}

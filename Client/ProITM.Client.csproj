@@ -17,8 +17,6 @@
 
   <ItemGroup>
     <None Include="Pages\Authentication.razor" />
-    <None Include="Pages\Counter.razor" />
-    <None Include="Pages\FetchData.razor" />
     <None Include="Pages\Index.razor" />
     <None Include="Shared\LoginDisplay.razor" />
     <None Include="Shared\MainLayout.razor" />
