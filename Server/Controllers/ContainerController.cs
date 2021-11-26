@@ -26,44 +26,44 @@ namespace ProITM.Server.Controllers
 
         // TODO 144 Implement ContainerController endpoint methods
 
-        [HttpGet]
+        [HttpGet("containers")]
         public async Task<IActionResult> ListContainers()
         {
             throw new NotImplementedException("Implement me");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> StartContainer(string id)
+        [HttpPost("start/{containerId}")]
+        public async Task<IActionResult> StartContainer(string containerId)
         {
             throw new NotImplementedException("Implement me");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> StopContainer(string id)
+        [HttpPost("stop/{containerId}")]
+        public async Task<IActionResult> StopContainer(string containerId)
         {
             throw new NotImplementedException("Implement me");
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetContainerStats(string id)
+        [HttpGet("containers/stats/{containerId}")]
+        public async Task<IActionResult> GetContainerStats(string containerId)
         {
             throw new NotImplementedException("Implement me");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateContainer(string id)
+        [HttpPost("containers/create")]
+        public async Task<IActionResult> CreateContainer()
         {
             throw new NotImplementedException("Implement me");
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteContainer(string id)
+        [HttpDelete("containers/{containerId}")]
+        public async Task<IActionResult> DeleteContainer(string containerId)
         {
             throw new NotImplementedException("Implement me");
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetContainerLogs(string id)
+        [HttpGet("containers/logs/{containerId}")]
+        public async Task<IActionResult> GetContainerLogs(string containerId)
         {
             throw new NotImplementedException("Implement me");
         }

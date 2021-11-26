@@ -18,7 +18,7 @@ namespace ProITM.Server.Controllers.Admin
 
         // TODO 140 Implement HostController endpoint methods
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> AddHost(HostModel host)
         {
             throw new NotImplementedException("Implement me");
