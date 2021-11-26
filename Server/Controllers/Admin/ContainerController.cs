@@ -12,8 +12,7 @@ namespace ProITM.Server.Controllers.Admin
     [Route("[controller]")]
     public class ContainerController
     {
-        // TODO 136 Inject database Container context
-            // TODO 135 Implement ContainerContext
+        // TODO 156 Inject database ApplicationDbContext
 
         // TODO 139 Implement ContainerController endpoint methods
 

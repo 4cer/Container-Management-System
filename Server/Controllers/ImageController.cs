@@ -11,10 +11,9 @@ namespace ProITM.Server.Controllers
     [ApiController]
     public class ImageController : ControllerBase
     {
-        // TODO 146 Inject database Image context
-            // TODO 145 Implement ImageContext
+        // TODO 156 Inject database ApplicationDbContext
 
-        // TODO implement ImageController endpoint methods
+        // TODO 147 implement ImageController endpoint methods
 
         [HttpGet("images")]
         public async Task<IActionResult> GetImageList()

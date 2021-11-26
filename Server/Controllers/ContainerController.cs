@@ -20,8 +20,8 @@ namespace ProITM.Server.Controllers
             // Tu wstrzyknąć zależności
         }
 
-        // TODO 142 Inject database Container context
-            // TODO 141 Implement ContainerContext
+        // TODO 156 Inject database ApplicationDbContext
+
         // TODO 143 Inject Docker.DotNet.DockerClient
 
         // TODO 144 Implement ContainerController endpoint methods
