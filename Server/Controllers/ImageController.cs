@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ProITM.Server.Data;
+using ProITM.Shared;
 
 namespace ProITM.Server.Controllers
 {
@@ -25,42 +26,36 @@ namespace ProITM.Server.Controllers
 
 
         [HttpGet("images")]
-        public async Task<IActionResult> GetImageList()
+        public async Task<List<ImageModel>> GetImageList()
         {
             return db.Images.ToList();
             //throw new NotImplementedException("ImageController.GetImageList()");
         }
 
         [HttpGet("images/{id}")]
-        public async Task<IActionResult> GetImageDetails(string imageId)
+        public async Task<ImageModel> GetImageDetails(string id)
         {
-            return db.Images.Find(imageId);
+            return db.Images.Find(id);
             //throw new NotImplementedException("ImageController.GetImageDetails()");
         }
 
 
-        [HttpPost("images/upload/{url}")]
-        public async Task<IActionResult> UploadImageFromUrl(string url)
+        [HttpPost("images/upload/{name}/{version}")]
+        public async Task<IActionResult> GetImageFromDockerHub(string name, string version, [FromBody] string description)
         {
             ImageModel model = new ImageModel();
-            model.Id = null;//Tu trzeba to przegadać, bo tu cos niejasne. Imo. tu powinnismy sami generowac jakies Id
             model.ImageId = null;//A to Id nie powinno byc w bazie, bo na kazdej maszynce bedzie inne
             //I dopierow przy klikaniu "uzyj obrazu X" powinno byc sciagane na danego dockera, bo tak bedzie prosciej.
             model.Created = DateTime.Now;
-            model.Name = url;
-            model.Description = "Do uzupelnienia";//To nie wiem, ja jestem naprawde chujowy z weba :C, ktos powiedz mi jak dwa argumenty z url zdjac
-            model.Tag = "latest"; //do sprawdzenia, czy to sie jakos inaczej da.
+            model.Name = name;
+            model.Description = description;
+            model.Version = version;
             
             db.Images.Add(model);
-            db.SaveChangesAsync();
+            await db.SaveChangesAsync();
+            return Ok();
             //throw new NotImplementedException("ImageController.UploadImageFromUdl");
         }
-
-
-
-
-
-
 
 
         // Extra-curricular functionality below

@@ -30,7 +30,7 @@ namespace ProITM.Client.Services
 
         
 
-        public Task<HttpResponseMessage> UploadImageFromUrl()
+        public Task<HttpResponseMessage> GetImageFromDockerHub()
         {
             throw new NotImplementedException();
         }
