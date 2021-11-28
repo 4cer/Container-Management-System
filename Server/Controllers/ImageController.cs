@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ProITM.Server.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,12 @@ namespace ProITM.Server.Controllers
     [ApiController]
     public class ImageController : ControllerBase
     {
-        // TODO 156 Inject database ApplicationDbContext
+        private readonly ApplicationDbContext dbContext;
+
+        public ImageController(ApplicationDbContext dbContext)
+        {
+            this.dbContext = dbContext;
+        }
 
         // TODO 147 implement ImageController endpoint methods
 

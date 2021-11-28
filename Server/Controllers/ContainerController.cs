@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Docker.DotNet.Models;
+using ProITM.Server.Data;
 
 namespace ProITM.Server.Controllers
 {
@@ -14,13 +15,13 @@ namespace ProITM.Server.Controllers
     public class ContainerController : ControllerBase
     {
         private Docker.DotNet.DockerClient c;
+        private readonly ApplicationDbContext dbContext;
 
-        public ContainerController ()
+        public ContainerController(ApplicationDbContext dbContext)
         {
-            // Tu wstrzyknąć zależności
+            this.dbContext = dbContext;
         }
 
-        // TODO 156 Inject database ApplicationDbContext
 
         // TODO 143 Inject Docker.DotNet.DockerClient
 
