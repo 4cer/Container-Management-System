@@ -26,16 +26,16 @@ namespace ProITM.Server.Controllers
 
 
         [HttpGet("images")]
-        public async Task<List<ImageModel>> GetImageList()
+        public async Task<IActionResult> GetImageList()
         {
-            return db.Images.ToList();
+            return Ok(db.Images.ToList());
             //throw new NotImplementedException("ImageController.GetImageList()");
         }
 
         [HttpGet("images/{id}")]
-        public async Task<ImageModel> GetImageDetails(string id)
+        public async Task<IActionResult> GetImageDetails(string id)
         {
-            return db.Images.Find(id);
+            return Ok(db.Images.Find(id));
             //throw new NotImplementedException("ImageController.GetImageDetails()");
         }
 
