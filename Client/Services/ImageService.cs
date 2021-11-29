@@ -28,12 +28,16 @@ namespace ProITM.Client.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<ImageModel>> GetUserImageList(string userId)
+        
+
+        public Task<HttpResponseMessage> GetImageFromDockerHub()
         {
             throw new NotImplementedException();
         }
 
-        public Task<HttpResponseMessage> UploadImageFromUrl()
+        // Extra-curricular functionality below
+
+        public Task<List<ImageModel>> GetUserImageList(string userId)
         {
             throw new NotImplementedException();
         }
