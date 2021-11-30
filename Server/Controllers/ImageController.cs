@@ -19,29 +19,23 @@ namespace ProITM.Server.Controllers
         public ImageController(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
+            // Do not think below code necessary - Szymon Brawański
+            //this.dbContext.Database.EnsureCreated();
         }
 
         // TODO 147 implement ImageController endpoint methods
-        private readonly ApplicationDbContext db;
-
-        public ImageController(ApplicationDbContext _db)
-        {
-            db = _db;
-            db.Database.EnsureCreated();
-        }
-
 
         [HttpGet("images")]
         public async Task<IActionResult> GetImageList()
         {
-            return Ok(db.Images.ToList());
+            return Ok(dbContext.Images.ToList());
             //throw new NotImplementedException("ImageController.GetImageList()");
         }
 
         [HttpGet("images/{id}")]
         public async Task<IActionResult> GetImageDetails(string id)
         {
-            return Ok(db.Images.Find(id));
+            return Ok(dbContext.Images.Find(id));
             //throw new NotImplementedException("ImageController.GetImageDetails()");
         }
 
@@ -57,8 +51,8 @@ namespace ProITM.Server.Controllers
             model.Description = description;
             model.Version = version;
             
-            db.Images.Add(model);
-            await db.SaveChangesAsync();
+            dbContext.Images.Add(model);
+            await dbContext.SaveChangesAsync();
             return Ok();
             //throw new NotImplementedException("ImageController.UploadImageFromUdl");
         }
