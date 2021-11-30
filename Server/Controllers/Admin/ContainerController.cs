@@ -8,7 +8,7 @@ using Docker.DotNet.Models;
 using System.Threading;
 using ProITM.Server.Data;
 
-namespace ProITM.Server.Controllers
+namespace ProITM.Server.Controllers.Admin
 {
     //  [Authorize(Roles = "User")]
     [ApiController]
