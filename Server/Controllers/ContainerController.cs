@@ -9,7 +9,6 @@ using ProITM.Server.Data;
 
 namespace ProITM.Server.Controllers
 {
-    [Authorize(Roles = "User")]
     [ApiController]
     [Route("[controller]")]
     public class ContainerController : ControllerBase
