@@ -27,7 +27,7 @@ namespace ProITM.Server.Controllers
         // TODO 144 Implement ContainerController endpoint methods
 
         [HttpGet("containers")]
-        public async Task<IActionResult> ListContainers()
+        public async Task<IActionResult> ListContainers(string userId)
         {
             throw new NotImplementedException("Implement me");
         }

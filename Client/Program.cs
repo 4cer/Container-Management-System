@@ -29,7 +29,7 @@ namespace ProITM.Client
             //     swapping the latter, simplifying the testing
             // builder.Services.AddScoped<IObsoleteExampleService, ObsoleteExampleService>();
 
-            builder.Services.AddScoped<IContainerService, ContainerService>();
+            builder.Services.AddScoped<IAdminContainerService, AdminContainerService>();
             builder.Services.AddScoped<IHostService, HostService>();
             builder.Services.AddScoped<IImageService, ImageService>();
 
