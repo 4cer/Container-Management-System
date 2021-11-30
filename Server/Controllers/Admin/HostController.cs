@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProITM.Server.Data;
 using ProITM.Shared;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,12 @@ namespace ProITM.Server.Controllers.Admin
     [Route("[controller]")]
     public class HostController
     {
-        // TODO 156 Inject database ApplicationDbContext
+        private readonly ApplicationDbContext dbContext;
+
+        public HostController(ApplicationDbContext dbContext)
+        {
+            this.dbContext = dbContext;
+        }
 
         // TODO 140 Implement HostController endpoint methods
 

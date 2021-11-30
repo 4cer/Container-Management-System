@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProITM.Server.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,12 @@ namespace ProITM.Server.Controllers.Admin
     [Route("[controller]")]
     public class ContainerController
     {
-        // TODO 156 Inject database ApplicationDbContext
+        private readonly ApplicationDbContext dbContext;
+
+        public ContainerController(ApplicationDbContext dbContext)
+        {
+            this.dbContext = dbContext;
+        }
 
         // TODO 139 Implement ContainerController endpoint methods
 
