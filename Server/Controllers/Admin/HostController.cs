@@ -15,6 +15,7 @@ namespace ProITM.Server.Controllers.Admin
     public class HostController
     {
         private readonly ApplicationDbContext dbContext;
+        //whatever
 
         public HostController(ApplicationDbContext dbContext)
         {
