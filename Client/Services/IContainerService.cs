@@ -13,6 +13,9 @@ namespace ProITM.Client.Services
         public Task<HttpResponseMessage> StartContainer(string containerId);
         public Task<HttpResponseMessage> StopContainer(string containerId);
         public Task<ContainerModel> GetContainerStats(string containerId);
-        //public Task
+        public Task<HttpResponseMessage> CreateContainer();
+        public Task<HttpResponseMessage> DeleteContainer(string containerId);
+        public Task<List<string>> GetContainerLogs(string containerId);
+        
     }
 }

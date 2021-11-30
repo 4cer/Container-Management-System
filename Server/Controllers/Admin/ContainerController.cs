@@ -22,25 +22,25 @@ namespace ProITM.Server.Controllers.Admin
 
         // TODO 139 Implement ContainerController endpoint methods
 
-        [HttpGet("{userId}")]
+        [HttpGet("manage/{userId}")]
         public async Task<IActionResult> GetUserContainers(string userId)
         {
             throw new NotImplementedException("Implement me");
         }
 
-        [HttpPost("start/{containerId}")]
+        [HttpPost("manage/start/{containerId}")]
         public async Task<IActionResult> StartUsersContainer(string containerId)
         {
             throw new NotImplementedException("Implement me");
         }
 
-        [HttpPost("stop/{containerId}")]
+        [HttpPost("manage/stop/{containerId}")]
         public async Task<IActionResult> StopUsersContainer(string containerId)
         {
             throw new NotImplementedException("Implement me");
         }
 
-        [HttpDelete("{containerId}")]
+        [HttpDelete("manage/{containerId}")]
         public async Task<IActionResult> DeleteUsersContainer(string containerId)
         {
             throw new NotImplementedException("Implement me");
