@@ -122,6 +122,10 @@ namespace ProITM.Server.Controllers.Admin
 
             // Error out if user not found?
 
+            // Guard against demoting only admin in system
+            var numInRole = (await userManager.GetUsersInRoleAsync("Admin")).Count;
+            if (numInRole < 2)
+                return Problem("Administration:PUT:DemoteUser(string id): Cannot demote only admin in system");
 
             IdentityResult result = await userManager.RemoveFromRoleAsync(user, "Admin");
 
