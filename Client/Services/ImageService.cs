@@ -9,6 +9,20 @@ namespace ProITM.Client.Services
 {
     public class ImageService : IImageService
     {
+        private List<ImageModel> Images = new()
+        {
+            new ImageModel() { Id = "0", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
+            new ImageModel() { Id = "1", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
+            new ImageModel() { Id = "2", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
+            new ImageModel() { Id = "3", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
+            new ImageModel() { Id = "4", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
+            new ImageModel() { Id = "5", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
+            new ImageModel() { Id = "6", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
+            new ImageModel() { Id = "7", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
+            new ImageModel() { Id = "8", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
+            new ImageModel() { Id = "9", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" }
+        };
+
         private readonly HttpClient _httpClient;
 
         public ImageService(HttpClient httpClient)
@@ -20,12 +34,12 @@ namespace ProITM.Client.Services
 
         public Task<List<ImageModel>> GetImageList()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(this.Images);
         }
 
         public Task<ImageModel> GetImageDetails(string imageId)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(Images.Find(img => img.Id == imageId));
         }
 
         

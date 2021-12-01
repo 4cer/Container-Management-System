@@ -1,14 +1,51 @@
-﻿@page "/images/details" 
+﻿@page "/images/details"
+@using Microsoft.AspNetCore.WebUtilities
 @inject NavigationManager Navigation
+@inject IImageService ImgSrvc
 
-<style></style>
 
 <h3>Image details</h3>
 
 <div>
-    { TODO }
+    <table class="image-details-table table table-hover table-dark">
+        <tbody>
+            <tr>
+                <td>Id</td>
+                <td>@Image.Id</td>
+            </tr>
+            <tr>
+                <td>ImageId</td>
+                <td>@Image.ImageId</td>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td>@Image.Name</td>
+            </tr>
+            <tr>
+                <td>Description</td>
+                <td>@Image.Description</td>
+            </tr>
+            <tr>
+                <td>Created</td>
+                <td>@Image.Created</td>
+            </tr>
+            <tr>
+                <td>Version</td>
+                <td>@Image.Version</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 @code {
-   
+    public ImageModel Image { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _imageID))
+        {
+            var ID = _imageID;
+            Image = await ImgSrvc.GetImageDetails(ID);
+        }
+    }
 }

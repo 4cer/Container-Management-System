@@ -54,7 +54,11 @@ a, .btn-link {
     text-align: right;
 }
 
+.image-details-table {
+    font-size: 16pt;
+}
 
-.container-details-table tr td:first-child{
+.image-details-table tr td:first-child {
+    font-weight: bold;
     text-align: right;
 }

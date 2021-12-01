@@ -1,9 +1,44 @@
 ﻿@page "/hosts"
 @inject NavigationManager Navigation
+@inject IHostService HostSrvc
 
 <h3>List of host machines</h3>
-{ TODO }
+
+<table class="host-table table table-hover table-dark">
+    <thead>
+        <tr>
+            @foreach (string header in headers)
+            {
+                <th>@header</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (HostModel hs in hosts)
+        {
+            <tr @onclick="() => showDetails(hs)">
+                <td>@hs.Id</td>
+                <td>@hs.DisplayName</td>
+                <td>@hs.IsWindows</td>
+                <td>@hs.IP</td>
+                <td>@hs.Port</td>
+                <td>@hs.URI</td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 @code {
-    
+    String[] headers = new[] { "ID", "Name", "Is Windows", "IP", "Port", "URI" };
+    List<HostModel> hosts;
+
+    public void showDetails(HostModel host)
+    {
+        Navigation.NavigateTo($"/hosts/details?id=" + host.Id);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        hosts = await HostSrvc.GetHosts();
+    }
 }

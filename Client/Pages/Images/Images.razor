@@ -1,28 +1,44 @@
 ﻿@page "/images"
 @inject NavigationManager Navigation
+@inject IImageService ImgSrvc
 
 <h3>List of images</h3>
 
-{ TODO (można wzorować się na Containers.razor) }
+<table class="image-table table table-hover table-dark">
+    <thead>
+        <tr>
+            @foreach (string header in headers)
+            {
+                <th>@header</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (ImageModel img in images)
+        {
+        <tr @onclick="() => showDetails(img)">
+            <td>@img.Id</td>
+            <td>@img.ImageId</td>
+            <td>@img.Name</td>
+            <td>@img.Description</td>
+            <td>@img.Created</td>
+            <td>@img.Version</td>
+        </tr>
+        }
+    </tbody>
+</table>
 
 @code {
-    String[] headers = new[] { "ID", "Nazwa", "Szczegóły" };
-    String[][] ExampleImages = new[]
-    {
-        new [] { "0", "todo", "todo"},
-        new [] { "1", "todo", "todo"},
-        new [] { "2", "todo", "todo"},
-        new [] { "3", "todo", "todo"},
-        new [] { "4", "todo", "todo"},
-        new [] { "5", "todo", "todo"},
-        new [] { "6", "todo", "todo"},
-        new [] { "7", "todo", "todo"},
-        new [] { "8", "todo", "todo"},
-        new [] { "9", "todo", "todo" }
-    };
+    String[] headers = new[] { "ID", "ImageId", "Name", "Description", "Created", "Version" };
+    List<ImageModel> images;
 
-    public void showDetails(string[] container)
+    public void showDetails(ImageModel image)
     {
-        Navigation.NavigateTo($"/images/details?id="+container[0]);
+        Navigation.NavigateTo($"/images/details?id=" + image.Id);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        images = await ImgSrvc.GetImageList();
     }
 }
