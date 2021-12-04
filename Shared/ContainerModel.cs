@@ -13,7 +13,7 @@ namespace ProITM.Shared
         public string Id { get; set; }
 
         // TODO Pull UserModel to get access to class:
-        //public Application Owner { get; set; }
+        public UserModel Owner { get; set; }
         //public string UserId { get; set; }
         // Moved to ApplicationUser as list
 
