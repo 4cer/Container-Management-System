@@ -1,47 +1,59 @@
 ﻿using ProITM.Shared;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace ProITM.Client.Services
 {
     public class ContainerService : IContainerService
     {
-        public Task<HttpResponseMessage> CreateContainer()
+        private readonly HttpClient _httpClient;
+
+        public ContainerService(HttpClient httpClient)
         {
-            throw new NotImplementedException("ContainerService.CreateContainer()");
+            _httpClient = httpClient;
         }
 
-        public Task<HttpResponseMessage> DeleteContainer(string containerId)
+        //TODO POPRAWIĆ JAK BĘDZIE WŁAŚCIWE ZAPYTANIE W KOTNROLERZE
+        public async Task<List<ContainerModel>> ListContainers(long limit)
         {
-            throw new NotImplementedException("ContainerService.DeleteContainer(string containerId)");
+            return await _httpClient.GetFromJsonAsync<List<ContainerModel>>($"Container//{limit}");
         }
 
-        public Task<List<string>> GetContainerLogs(string containerId)
+        public async Task<HttpResponseMessage> StartContainer(string containerId)
         {
-            throw new NotImplementedException("ContainerService.GetContainerLogs(string containerId)");
+            return await _httpClient.PostAsJsonAsync<string>($"Container/start/{containerId}", null);
         }
 
-        public Task<ContainerModel> GetContainerStats(string containerId)
+        public async Task<HttpResponseMessage> StopContainer(string containerId)
         {
-            throw new NotImplementedException("ContainerService.GetContainerStats(string containerId)");
+            return await _httpClient.PostAsJsonAsync<string>($"Container/stop/{containerId}", null);
         }
 
-        public Task<List<ContainerModel>> ListContainers(string userId)
+        public async Task<HttpResponseMessage> DeleteContainer(string containerId)
         {
-            throw new NotImplementedException("ContainerService.ListContainers(string userId)");
+            return await _httpClient.DeleteAsync($"Container/{containerId}");
         }
 
-        public Task<HttpResponseMessage> StartContainer(string containerId)
+        public async Task<Stream> GetContainerStats(string containerId)
         {
-            throw new NotImplementedException("ContainerService.StartContainer(string containerId)");
+            return await _httpClient.GetFromJsonAsync<Stream>($"Container/containers/stats/{containerId}");
         }
 
-        public Task<HttpResponseMessage> StopContainer(string containerId)
+        //To na pewno zadziała? żadnej nazwy ani nic
+        public async Task<HttpResponseMessage> CreateContainer()
         {
-            throw new NotImplementedException("ContainerService.StopContainer(string containerId)");
+            return await _httpClient.PostAsJsonAsync<string>($"Container/containers/create", null);
+        }
+
+        //jak przesłać resztę argumentów?
+        public async Task<Stream> GetContainerLogs(string containerId, string since, string tail)
+        {
+            return await _httpClient.GetFromJsonAsync<Stream>($"Container/containers/logs/{containerId}");
         }
     }
 }

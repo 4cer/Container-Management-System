@@ -10,10 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace ProITM.Server.Controllers.Admin
 {
-    [Authorize(Roles = "Admin")]
+    //  [Authorize(Roles = "User")]
     [ApiController]
     [Route("[controller]")]
     public class ContainerController : ControllerBase
