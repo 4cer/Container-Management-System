@@ -5,11 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ProITM.Server.Data;
 using ProITM.Shared;
+using Docker.DotNet;
 
 namespace ProITM.Server.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ImageController : ControllerBase

@@ -14,7 +14,7 @@ using System.Threading;
 
 namespace ProITM.Server.Controllers.Admin
 {
-    //  [Authorize(Roles = "User")]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("[controller]")]
     public class ContainerController : ControllerBase
