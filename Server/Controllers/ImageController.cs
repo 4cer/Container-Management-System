@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ProITM.Shared;
 using Docker.DotNet;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ProITM.Server.Controllers
 {
