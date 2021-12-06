@@ -18,10 +18,9 @@ namespace ProITM.Client.Services
             _httpClient = httpClient;
         }
 
-        //TODO POPRAWIĆ JAK BĘDZIE WŁAŚCIWE ZAPYTANIE W KOTNROLERZE
-        public async Task<List<ContainerModel>> ListContainers(long limit)
+        public async Task<List<ContainerModel>> ListContainers(string userId, long limit)
         {
-            return await _httpClient.GetFromJsonAsync<List<ContainerModel>>($"Container//{limit}");
+            return await _httpClient.GetFromJsonAsync<List<ContainerModel>>($"Container/{userId}/{limit}");
         }
 
         public async Task<HttpResponseMessage> StartContainer(string containerId)
@@ -44,16 +43,15 @@ namespace ProITM.Client.Services
             return await _httpClient.GetFromJsonAsync<Stream>($"Container/containers/stats/{containerId}");
         }
 
-        //To na pewno zadziała? żadnej nazwy ani nic
-        public async Task<HttpResponseMessage> CreateContainer()
+        public async Task<HttpResponseMessage> CreateContainer(ContainerModel model)
         {
-            return await _httpClient.PostAsJsonAsync<string>($"Container/containers/create", null);
+            return await _httpClient.PostAsJsonAsync<ContainerModel>($"Container/containers/create", model);
         }
 
-        //jak przesłać resztę argumentów?
+        //TODO format since i tail
         public async Task<Stream> GetContainerLogs(string containerId, string since, string tail)
         {
-            return await _httpClient.GetFromJsonAsync<Stream>($"Container/containers/logs/{containerId}");
+            return await _httpClient.GetFromJsonAsync<Stream>($"Container/containers/logs/{containerId}/{since}/{tail}");
         }
     }
 }
