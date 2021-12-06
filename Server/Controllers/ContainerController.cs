@@ -8,6 +8,7 @@ using Docker.DotNet.Models;
 using ProITM.Server.Data;
 using System.Threading;
 using Docker.DotNet;
+using ProITM.Shared;
 
 namespace ProITM.Server.Controllers
 {
@@ -101,9 +102,9 @@ namespace ProITM.Server.Controllers
         }
 
         [HttpPost("containers/create/{isWindows}/{imageId}")]
-        public async Task<IActionResult> CreateContainer(bool isWindows, string imageId)
+        public async Task<IActionResult> CreateContainer(ContainerModel model)
         {
-            // TODO Get container host URI by selecting less busy host of given system
+            // TODO Get container host URI by selecting least busy host of given system
             string URI = "GET ME AN URI";
 
             // Make new instance of DockerClient from URI
@@ -111,7 +112,7 @@ namespace ProITM.Server.Controllers
 
             await dockerClient.Containers.CreateContainerAsync(new CreateContainerParameters()
             {
-                Image = "fedora/memcached",
+                Image = model.Image.Name,
                 HostConfig = new HostConfig()
                 {
                     DNS = new[] { "8.8.8.8", "8.8.4.4" }
