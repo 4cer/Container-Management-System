@@ -1,0 +1,92 @@
+﻿@page "/container/add"
+@inject NavigationManager Navigation
+
+<style>
+    h3 {
+        font-size: 32px;
+        font-weight: normal;
+    }
+</style>
+
+<h3>Dodaj kontener</h3>
+
+<MudItem style="width: 410px">
+    <MudTextField @bind-Value="NameValue" Label="Nazwa kontenera" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+</MudItem>
+@*<MudTabs>
+    <MudTabPanel Text="Podstawowe">*@
+<MudItem style="width: 410px">
+    <MudTextField @bind-Value="ImageName" Label="Obraz źródłowy" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+</MudItem>
+<MudGrid>
+    <MudItem>
+        <MudTextField @bind-Value="ContainerPort" Label="Port kontenera" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    </MudItem>
+    <MudItem>
+        <MudTextField @bind-Value="TargerPort" Label="Port docelowy" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    </MudItem>
+</MudGrid>
+@*</MudTabPanel>
+        <MudTabPanel Text="Zaawansowane">
+            <MudItem style="width: 410px">
+                <MudTextField @bind-Value="Flags" Label="Flagi uruchomienia" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+            </MudItem>
+            <br />
+            <p>Dockerfile</p>
+            <br />
+            <p>Kontekst</p>
+            <br />
+
+            <MudGrid>
+                <InputFile id="fileInput" OnChange="UploadFiles" hidden />
+
+                <MudButton HtmlTag="label"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Filled.CloudUpload"
+                           for="fileInput">
+                    Upload Files
+                </MudButton>
+
+                @if (files != null)
+                {
+                    <MudList Style="padding:0px 20px">
+                        @foreach (var file in files)
+                        {
+                            <MudListItem @key="@file" Style="padding:0px 20px">
+                                @file.Name
+                            </MudListItem>
+                        }
+                    </MudList>
+                }
+
+            </MudGrid>
+        </MudTabPanel>
+    </MudTabs>*@
+<br />
+
+<MudItem >
+    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Utwórz" Class="mud-theme-info py-4 px-6 rounded-lg"/>
+</MudItem>
+
+
+
+
+@code {
+    public string NameValue { get; set; }
+    public string ImageName { get; set; }
+    public string ContainerPort { get; set; }
+    public string TargerPort { get; set; }
+    public string Flags { get; set; }
+
+
+    IList<IBrowserFile> files = new List<IBrowserFile>();
+    private void UploadFiles(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles())
+        {
+            files.Add(file);
+        }
+        //TODO upload the files to the server
+    }
+}
