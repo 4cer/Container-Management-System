@@ -5,26 +5,26 @@
 <h3>List of images</h3>
 
 <div>
-    <MatTable Items="images" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent">
-        <MatTableHeader>
-            <th>ID</th>
-            <th>Image ID</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Created</th>
-            <th>Version</th>
-            <th>Actions</th>
-        </MatTableHeader>
-        <MatTableRow>
-            <td>@context.Id</td>
-            <td>@context.ImageId</td>
-            <td>@context.Name</td>
-            <td>@context.Description</td>
-            <td>@context.Created</td>
-            <td>@context.Version</td>
-            <td></td>
-        </MatTableRow>
-    </MatTable>
+    <MudTable Items="images" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent">
+        <HeaderContent>
+            <MudTh>ID</MudTh>
+            <MudTh>Image ID</MudTh>
+            <MudTh>Name</MudTh>
+            <MudTh>Description</MudTh>
+            <MudTh>Created</MudTh>
+            <MudTh>Version</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Id</MudTd>
+            <MudTd>@context.ImageId</MudTd>
+            <MudTd>@context.Name</MudTd>
+            <MudTd>@context.Description</MudTd>
+            <MudTd>@context.Created</MudTd>
+            <MudTd>@context.Version</MudTd>
+            <MudTd></MudTd>
+        </RowTemplate>
+    </MudTable>
 </div>
 
 @code {

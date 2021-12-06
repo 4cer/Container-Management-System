@@ -3,33 +3,24 @@
 
 
 <div class="page">
-    <MatAppBarContainer>
-        <MatAppBar Fixed="true" Style="background-color: rgb(27, 95, 222)">
-            <MatAppBarRow>
-                <MatAppBarSection>
-                    <MatIconButton Icon="menu" @onclick="ButtonClicked"></MatIconButton>
-                    <MatAppBarTitle>ProITM - Docker manager</MatAppBarTitle>
-                </MatAppBarSection>
-                <MatAppBarSection Align="@MatAppBarSectionAlign.End">
-                    <LoginDisplay />
-                </MatAppBarSection>
-            </MatAppBarRow>
-        </MatAppBar>
+    <MudAppBar Style="background-color: rgb(27, 95, 222)" Fixed="false" Dense="true">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => MenuClicked())" />
+        ProITM - Docker manager
+        <MudSpacer />
+        <LoginDisplay />
+    </MudAppBar>
 
-        <MatAppBarContent>
-            <MatDrawerContainer Style="width: 100%; height: 100%;">
-                <MatDrawer @bind-Opened="@Opened" Style="position: fixed; background-color: rgb(227, 227, 227)">
-                    <NavMenu />
-                </MatDrawer>
-                <MatDrawerContent>
-                    <div class="main">
-                        @Body
-                    </div>
-                </MatDrawerContent>
-            </MatDrawerContainer>
+    <MudDrawerContainer>
+        <MudDrawer @bind-Open="@Open" Style="background-color: rgb(227, 227, 227)" Variant="@DrawerVariant.Persistent">
+            <NavMenu />
+        </MudDrawer>
 
-        </MatAppBarContent>
-    </MatAppBarContainer>
+        <MudMainContent>
+            <div class="main">
+                @Body
+            </div>
+        </MudMainContent>
+    </MudDrawerContainer>
 
 
 </div>
@@ -37,11 +28,11 @@
 
 @code
 {
-    bool Opened = true;
+    bool Open = true;
 
-    void ButtonClicked()
+    void MenuClicked()
     {
-        Opened = !Opened;
+        Open = !Open;
     }
 
 }

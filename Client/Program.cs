@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using MudBlazor.Services;
 using ProITM.Client.Services;
 using System;
 using System.Net.Http;
@@ -33,6 +34,8 @@ namespace ProITM.Client
             builder.Services.AddScoped<IImageService, ImageService>();
 
             builder.Services.AddApiAuthorization();
+
+            builder.Services.AddMudServices();
 
             await builder.Build().RunAsync();
         }

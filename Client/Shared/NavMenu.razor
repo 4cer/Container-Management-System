@@ -1,24 +1,24 @@
-﻿    <MatNavMenu Style="padding-top: 20px;">
+﻿<MudNavMenu>
     <AuthorizeView>
         <Authorized>
-            <MatNavItem Href="/" NavLinkMatch="NavLinkMatch.All"><MatIcon Icon="grade"></MatIcon>&nbsp; Index </MatNavItem>
-            <MatNavItem Href="containers" NavLinkMatch="NavLinkMatch.Prefix"><MatIcon Icon="grade"></MatIcon>&nbsp; Containers </MatNavItem>
-            <MatNavItem Href="images" NavLinkMatch="NavLinkMatch.Prefix"><MatIcon Icon="grade"></MatIcon>&nbsp; Images </MatNavItem>
-            <MatNavItem Href="hosts" NavLinkMatch="NavLinkMatch.Prefix"><MatIcon Icon="grade"></MatIcon>&nbsp; Hosts </MatNavItem>
-            <MatNavItem Href="authentication/profile" NavLinkMatch="NavLinkMatch.Prefix"><MatIcon Icon="grade"></MatIcon>&nbsp; Account settings </MatNavItem>
+            <MudNavLink Href="/" NavLinkMatch="NavLinkMatch.All" Icon="@Icons.Filled.Grade">&nbsp; Index </MudNavLink>
+            <MudNavLink Href="containers" NavLinkMatch="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade">&nbsp; Containers </MudNavLink>
+            <MudNavLink Href="images" NavLinkMatch="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade">&nbsp; Images </MudNavLink>
+            <MudNavLink Href="hosts" NavLinkMatch="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade">&nbsp; Hosts </MudNavLink>
+            <MudNavLink Href="authentication/profile" NavLinkMatch="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade">&nbsp; Account settings </MudNavLink>
         </Authorized>
         <NotAuthorized>
-            <MatNavItem Href="authentication/login" NavLinkMatch="NavLinkMatch.Prefix"><MatIcon Icon="grade"></MatIcon>&nbsp; Login </MatNavItem>
-            <MatNavItem Href="authentication/register" NavLinkMatch="NavLinkMatch.Prefix"><MatIcon Icon="grade"></MatIcon>&nbsp; Register </MatNavItem>
+            <MudNavLink Href="authentication/login" NavLinkMatch="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade">&nbsp; Login </MudNavLink>
+            <MudNavLink Href="authentication/register" NavLinkMatch="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade">&nbsp; Register </MudNavLink>
         </NotAuthorized>
     </AuthorizeView>
     <AuthorizeView Roles="Admin">
         <Authorized>
-            <MatNavItem Href="manage/users" NavLinkMatch="NavLinkMatch.Prefix"><MatIcon Icon="grade"></MatIcon>&nbsp; Manage Users </MatNavItem>
-            <MatNavItem Href="manage/admins" NavLinkMatch="NavLinkMatch.Prefix"><MatIcon Icon="grade"></MatIcon>&nbsp; Manage Admins </MatNavItem>
+            <MudNavLink Href="manage/users" NavLinkMatch="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade">&nbsp; Manage Users </MudNavLink>
+            <MudNavLink Href="manage/admins" NavLinkMatch="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade">&nbsp; Manage Admins </MudNavLink>
         </Authorized>
     </AuthorizeView>
-</MatNavMenu>
+</MudNavMenu>
 
 
 
