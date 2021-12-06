@@ -6,7 +6,7 @@
 
 <div>
     <MudTable Items="images" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent" Hover="true" Dense="true"
-              RowClassFunc="@SelectedRowClassFunc" OnRowClick="e => RowClickEvent(e)" @ref="mudTable" >
+              RowClassFunc="@SelectedRowClassFunc" OnRowClick="e => RowClickEvent(e)" @ref="mudTable" T="ImageModel">
         <HeaderContent>
             <MudTh>ID</MudTh>
             <MudTh>Image ID</MudTh>
@@ -26,7 +26,7 @@
             <MudTd Class="actions-cell">
                 <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary"/>
                 <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Info"/>
-                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteImage(e)"/>
+                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteImage(context)"/>
             </MudTd>
         </RowTemplate>
     </MudTable>
@@ -55,9 +55,9 @@
     }
 
 
-    private void RowClickEvent(ChangeEventArgs tableRowClickEventArgs)
+    private void RowClickEvent(TableRowClickEventArgs<ImageModel> tableRowClickEventArgs)
     {
-
+        return;
     }
 
     private string SelectedRowClassFunc(ImageModel image, int rowNumber)
