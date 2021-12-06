@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using ProITM.Server.Utilities;
 
 namespace ProITM.Server.Controllers.Admin
 {
@@ -20,12 +21,10 @@ namespace ProITM.Server.Controllers.Admin
     public class ContainerController : ControllerBase
     {
         private readonly ApplicationDbContext dbContext;
-        private readonly DockerClient dockerClient;
 
-        public ContainerController(ApplicationDbContext dbContext, DockerClient dockerClient)
+        public ContainerController(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
-            this.dockerClient = dockerClient;
         }
 
         [HttpGet("manage/{userId}/{limit}")]
@@ -42,12 +41,19 @@ namespace ProITM.Server.Controllers.Admin
         [HttpGet("manage/list/{limit}")]
         public async Task<List<ContainerModel>> GetContainers(int limit)
         {
-            return await dbContext.Containers.Take(limit).ToListAsync();
+            return await dbContext.Containers
+                .AsNoTracking()
+                .Take(limit)
+                .ToListAsync();
         }
 
         [HttpPost("manage/start/{containerId}")]
         public async Task<IActionResult> StartUsersContainer(string containerId)
         {
+            var dockerClient = GetContainerById(containerId)
+                .Machine
+                .GetDockerClient();
+
             var success = await dockerClient.Containers
                 .StartContainerAsync(containerId, new ContainerStartParameters());
 
@@ -64,6 +70,10 @@ namespace ProITM.Server.Controllers.Admin
         [HttpPost("manage/stop/{containerId}")]
         public async Task<IActionResult> StopUsersContainer(string containerId)
         {
+            var dockerClient = GetContainerById(containerId)
+                .Machine
+                .GetDockerClient();
+
             var stopped = await dockerClient.Containers
                 .StopContainerAsync(containerId, new ContainerStopParameters()
                 {
@@ -83,10 +93,22 @@ namespace ProITM.Server.Controllers.Admin
         [HttpDelete("manage/{containerId}")]
         public async Task<IActionResult> DeleteUsersContainer(string containerId)
         {
+            var dockerClient = GetContainerById(containerId)
+                .Machine
+                .GetDockerClient();
+
             await dockerClient.Containers
                 .RemoveContainerAsync(containerId, new ContainerRemoveParameters());
 
             return Ok();
+        }
+
+        private ContainerModel GetContainerById(string containerId)
+        {
+            return dbContext.Containers
+                .AsNoTracking()
+                .Include(c => c.Machine)
+                .First(c => c.Id == containerId);
         }
     }
 }
