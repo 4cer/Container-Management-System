@@ -3,7 +3,7 @@
 
 
 <div class="page">
-    <MudAppBar Style="background-color: rgb(27, 95, 222)" Fixed="false" Dense="true">
+    <MudAppBar Fixed="false" Dense="true">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => MenuClicked())" />
         ProITM - Docker manager
         <MudSpacer />
@@ -11,7 +11,7 @@
     </MudAppBar>
 
     <MudDrawerContainer>
-        <MudDrawer @bind-Open="@Open" Style="background-color: rgb(227, 227, 227)" Variant="@DrawerVariant.Persistent">
+        <MudDrawer @bind-Open="@Open"  Variant="@DrawerVariant.Persistent">
             <NavMenu />
         </MudDrawer>
 

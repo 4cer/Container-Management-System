@@ -1,4 +1,4 @@
-<MudThemeProvider />
+<MudThemeProvider Theme="BlueTheme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <CascadingAuthenticationState>
@@ -24,3 +24,15 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
+
+@code{
+    MudTheme BlueTheme = new MudTheme()
+    {
+        Palette = new Palette()
+        {
+            DrawerBackground = "#e3e3e3",
+            AppbarBackground = "#1b5fde",
+            AppbarText = "#ffffff",
+        }
+    };
+}

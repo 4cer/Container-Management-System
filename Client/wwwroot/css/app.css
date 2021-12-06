@@ -54,15 +54,13 @@ a, .btn-link {
 #loading {
 }
 
-.mdc-table{
-    table-layout: auto;
-    width: 100%;
+.actions-cell{
+    padding: 0;
+}
+.actions-cell button {
+    padding: 3px;
 }
 
-thead{
-    width: 100% !important;
-}
-.mdc-table td:last-child {
-    border-right: none;
-    width: auto;
+.selected {
+    background-color: #e3e3e3;
 }
