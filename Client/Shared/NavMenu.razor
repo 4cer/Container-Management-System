@@ -1,21 +1,21 @@
 ﻿<MudNavMenu>
     <AuthorizeView>
         <Authorized>
-            <MudNavLink Href="/" NavLinkMatch="NavLinkMatch.All" Icon="@Icons.Filled.Grade">&nbsp; Index </MudNavLink>
-            <MudNavLink Href="containers" NavLinkMatch="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade">&nbsp; Containers </MudNavLink>
-            <MudNavLink Href="images" NavLinkMatch="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade">&nbsp; Images </MudNavLink>
-            <MudNavLink Href="hosts" NavLinkMatch="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade">&nbsp; Hosts </MudNavLink>
-            <MudNavLink Href="authentication/profile" NavLinkMatch="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade">&nbsp; Account settings </MudNavLink>
+            <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Filled.Grade"> Index </MudNavLink>
+            <MudNavLink Href="containers" Match="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade"> Containers </MudNavLink>
+            <MudNavLink Href="images" Match="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade"> Images </MudNavLink>
+            <MudNavLink Href="hosts" Match="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade"> Hosts </MudNavLink>
+            <MudNavLink Href="authentication/profile" Match="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade"> Account settings </MudNavLink>
         </Authorized>
         <NotAuthorized>
-            <MudNavLink Href="authentication/login" NavLinkMatch="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade">&nbsp; Login </MudNavLink>
-            <MudNavLink Href="authentication/register" NavLinkMatch="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade">&nbsp; Register </MudNavLink>
+            <MudNavLink Href="authentication/login" Match="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade"> Login </MudNavLink>
+            <MudNavLink Href="authentication/register" Match="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade"> Register </MudNavLink>
         </NotAuthorized>
     </AuthorizeView>
     <AuthorizeView Roles="Admin">
         <Authorized>
-            <MudNavLink Href="manage/users" NavLinkMatch="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade">&nbsp; Manage Users </MudNavLink>
-            <MudNavLink Href="manage/admins" NavLinkMatch="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade">&nbsp; Manage Admins </MudNavLink>
+            <MudNavLink Href="manage/users" Match="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade"> Manage Users </MudNavLink>
+            <MudNavLink Href="manage/admins" Match="NavLinkMatch.Prefix" Icon="@Icons.Filled.Grade"> Manage Admins </MudNavLink>
         </Authorized>
     </AuthorizeView>
 </MudNavMenu>
