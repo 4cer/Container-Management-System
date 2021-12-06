@@ -6,13 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>ProITM</title>
     <base href="/" />
-    <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
-    <link href="css/app.css" rel="stylesheet" />
+    <!--bootstrap replaced with material -->
+    <!--link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://kit.fontawesome.com/f352d69a94.js" crossorigin="anonymous"></script-->
     <link href="ProITM.Client.styles.css" rel="stylesheet" />
+    <script src="_content/MatBlazor/dist/matBlazor.js"></script>
+    <link href="_content/MatBlazor/dist/matBlazor.css" rel="stylesheet" />
+    <link href="css/app.css" rel="stylesheet" />
 </head>
 
 <body>
-    <div id="app">Loading...</div>
+    <div id="app">
+        <div style="  border-radius: 70px;
+                                border: 5px solid yellow;
+                                display: flex;
+                                font-weight: bold;
+                                align-items: center;
+                                justify-content: center;
+                                font-size: 36pt;
+                                width: 700px;
+                                height: 300px;
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                transform: translate(-50%, -50%);
+                                background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+                                color: yellow;">
+            App loading...
+            <br /><br />
+        </div>
+        <div class="progress" style="height: 50px; border-radius: 50px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, 30px); width: 600px;">
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+        </div>
+    </div>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.

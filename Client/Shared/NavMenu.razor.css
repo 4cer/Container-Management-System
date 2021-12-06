@@ -18,6 +18,11 @@
     top: -2px;
 }
 
+.mdc-list-item--selected::before {
+    background-color: var(--mdc-theme-primary, #6200ee);
+    opacity: 0.1;
+}
+
 .nav-item {
     font-size: 0.9rem;
     padding-bottom: 0.5rem;

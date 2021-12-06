@@ -2,6 +2,8 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    height: 100%;
+    margin: 0;
 }
 
 a, .btn-link {
@@ -49,16 +51,18 @@ a, .btn-link {
         top: 0.5rem;
     }
 
-
-.container-details-table tr td:first-child{
-    text-align: right;
+#loading {
 }
 
-.image-details-table {
-    font-size: 16pt;
+.mdc-table{
+    table-layout: auto;
+    width: 100%;
 }
 
-.image-details-table tr td:first-child {
-    font-weight: bold;
-    text-align: right;
+thead{
+    width: 100% !important;
+}
+.mdc-table td:last-child {
+    border-right: none;
+    width: auto;
 }

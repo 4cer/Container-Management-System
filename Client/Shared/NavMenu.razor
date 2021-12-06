@@ -1,14 +1,32 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">ProITM</a>
-    <button class="navbar-toggler" @onclick="ToggleNavMenu">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-</div>
+﻿    <MatNavMenu Style="padding-top: 20px;">
+    <AuthorizeView>
+        <Authorized>
+            <MatNavItem Href="/" NavLinkMatch="NavLinkMatch.All"><MatIcon Icon="grade"></MatIcon>&nbsp; Index </MatNavItem>
+            <MatNavItem Href="containers" NavLinkMatch="NavLinkMatch.Prefix"><MatIcon Icon="grade"></MatIcon>&nbsp; Containers </MatNavItem>
+            <MatNavItem Href="images" NavLinkMatch="NavLinkMatch.Prefix"><MatIcon Icon="grade"></MatIcon>&nbsp; Images </MatNavItem>
+            <MatNavItem Href="hosts" NavLinkMatch="NavLinkMatch.Prefix"><MatIcon Icon="grade"></MatIcon>&nbsp; Hosts </MatNavItem>
+            <MatNavItem Href="authentication/profile" NavLinkMatch="NavLinkMatch.Prefix"><MatIcon Icon="grade"></MatIcon>&nbsp; Account settings </MatNavItem>
+        </Authorized>
+        <NotAuthorized>
+            <MatNavItem Href="authentication/login" NavLinkMatch="NavLinkMatch.Prefix"><MatIcon Icon="grade"></MatIcon>&nbsp; Login </MatNavItem>
+            <MatNavItem Href="authentication/register" NavLinkMatch="NavLinkMatch.Prefix"><MatIcon Icon="grade"></MatIcon>&nbsp; Register </MatNavItem>
+        </NotAuthorized>
+    </AuthorizeView>
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <MatNavItem Href="manage/users" NavLinkMatch="NavLinkMatch.Prefix"><MatIcon Icon="grade"></MatIcon>&nbsp; Manage Users </MatNavItem>
+            <MatNavItem Href="manage/admins" NavLinkMatch="NavLinkMatch.Prefix"><MatIcon Icon="grade"></MatIcon>&nbsp; Manage Admins </MatNavItem>
+        </Authorized>
+    </AuthorizeView>
+</MatNavMenu>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <ul class="nav flex-column">
+
+
+
+
+    <!--ul class="flex-column">
         <AuthorizeView>
-            <Authorized >
+            <Authorized>
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                         <span class="oi oi-home" aria-hidden="true"></span> Index
@@ -48,7 +66,7 @@
                 </li>
             </NotAuthorized>
         </AuthorizeView>
-    
+
         <AuthorizeView Roles="Admin">
             <Authorized>
                 <li class="nav-item px-3">
@@ -63,16 +81,6 @@
                 </li>
             </Authorized>
         </AuthorizeView>
-    </ul>
-</div>
-
+    </ul-->
 @code {
-    private bool collapseNavMenu = true;
-
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
 }

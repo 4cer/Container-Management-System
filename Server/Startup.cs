@@ -1,15 +1,12 @@
+using MatBlazor;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ProITM.Client.Services;
 using ProITM.Server.Data;
 using ProITM.Server.Models;
 using System.IdentityModel.Tokens.Jwt;
@@ -35,6 +32,7 @@ namespace ProITM.Server
             //    .AddCertificate()
             //    .AddCertificateCache();
 
+            
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
@@ -60,6 +58,9 @@ namespace ProITM.Server
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services.AddMatBlazor();
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

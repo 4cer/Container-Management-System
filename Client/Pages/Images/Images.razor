@@ -4,29 +4,28 @@
 
 <h3>List of images</h3>
 
-<table class="image-table table table-hover table-dark">
-    <thead>
-        <tr>
-            @foreach (string header in headers)
-            {
-                <th>@header</th>
-            }
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (ImageModel img in images)
-        {
-        <tr @onclick="() => showDetails(img)">
-            <td>@img.Id</td>
-            <td>@img.ImageId</td>
-            <td>@img.Name</td>
-            <td>@img.Description</td>
-            <td>@img.Created</td>
-            <td>@img.Version</td>
-        </tr>
-        }
-    </tbody>
-</table>
+<div>
+    <MatTable Items="images" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent">
+        <MatTableHeader>
+            <th>ID</th>
+            <th>Image ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Created</th>
+            <th>Version</th>
+            <th>Actions</th>
+        </MatTableHeader>
+        <MatTableRow>
+            <td>@context.Id</td>
+            <td>@context.ImageId</td>
+            <td>@context.Name</td>
+            <td>@context.Description</td>
+            <td>@context.Created</td>
+            <td>@context.Version</td>
+            <td></td>
+        </MatTableRow>
+    </MatTable>
+</div>
 
 @code {
     String[] headers = new[] { "ID", "ImageId", "Name", "Description", "Created", "Version" };
@@ -35,6 +34,12 @@
     public void showDetails(ImageModel image)
     {
         Navigation.NavigateTo($"/images/details?id=" + image.Id);
+    }
+
+
+    public void SelectionChangedEvent(object row)
+    {
+        //Navigation.NavigateTo($"/images/details?id=" + (row as ImageModel).Id);
     }
 
     protected override async Task OnInitializedAsync()

@@ -3,13 +3,14 @@
 
 <h3>Lista kontenerów, do których masz dostęp</h3>
 
-<table class="container-table table table-hover table-dark">
+<table class="container-table table table-hover table-bordered">
     <thead>
         <tr>
             @foreach (string header in headers)
             {
                 <th>@header</th>
             }
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -20,6 +21,11 @@
                 {
                     <td>@property</td>
                 }
+                <td>
+                    <button class="btn" style="color: red">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
             </tr>
         }
     </tbody>
