@@ -6,7 +6,7 @@
 
 <div>
     <MudTable Items="images" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent" Hover="true" Dense="true"
-              RowClassFunc="@SelectedRowClassFunc" OnRowClick="e => RowClickEvent(e)" @ref="mudTable" >
+              RowClassFunc="@SelectedRowClassFunc" OnRowClick="(e => RowClickEvent(e)" @ref="mudTable" >
         <HeaderContent>
             <MudTh>ID</MudTh>
             <MudTh>Image ID</MudTh>
