@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace ProITM.Client.Services
@@ -18,19 +19,19 @@ namespace ProITM.Client.Services
 
         // TODO 134 Implement ImageService methods
 
-        public Task<List<ImageModel>> GetImageList()
+        public async Task<List<ImageModel>> GetImageList()
         {
-            throw new NotImplementedException();
+            return await _httpClient.GetFromJsonAsync<List<ImageModel>>($"Image/images");
         }
 
-        public Task<ImageModel> GetImageDetails(string imageId)
+        public async Task<ImageModel> GetImageDetails(string imageId)
         {
-            throw new NotImplementedException();
+            return await _httpClient.GetFromJsonAsync<ImageModel>($"Image/images/{imageId}");
         }
 
-        public Task<HttpResponseMessage> GetImageFromDockerHub()
+        public async Task<HttpResponseMessage> GetImageFromDockerHub(string name, string version, string description)
         {
-            throw new NotImplementedException();
+            return await _httpClient.PostAsJsonAsync<string>($"Image/images/{name}/{version}", description);
         }
 
         # region Extra-curricular functionality
