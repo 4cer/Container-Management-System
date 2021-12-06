@@ -17,14 +17,14 @@ namespace ProITM.Client.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<ContainerModel>> GetUserContainers(string userId)
+        public async Task<List<ContainerModel>> GetUserContainers(string userId, int limit)
         {
-            return await _httpClient.GetFromJsonAsync<List<ContainerModel>>($"Container/manage/{userId}");
+            return await _httpClient.GetFromJsonAsync<List<ContainerModel>>($"Container/manage/{userId}/{limit}");
         }
 
-        public async Task<List<ContainerModel>> GetContainers()
+        public async Task<List<ContainerModel>> GetContainers(int limit)
         {
-            return await _httpClient.GetFromJsonAsync<List<ContainerModel>>($"Container/manage/list");
+            return await _httpClient.GetFromJsonAsync<List<ContainerModel>>($"Container/manage/list/{limit}");
         }
 
         public async Task<HttpResponseMessage> StartUsersContainer(string containerId)
