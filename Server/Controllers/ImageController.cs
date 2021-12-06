@@ -60,8 +60,7 @@ namespace ProITM.Server.Controllers
         }
 
 
-        // Extra-curricular functionality below
-
+        #region Extra-curricular functionality
         [HttpGet("images/users/{id}")]
         public async Task<IActionResult> GetUserImageList(string userId)
         {
@@ -91,5 +90,6 @@ namespace ProITM.Server.Controllers
         {
             throw new NotImplementedException("ImageController.ExportImage()");
         }
+        #endregion
     }
 }

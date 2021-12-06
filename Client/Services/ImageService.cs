@@ -28,14 +28,12 @@ namespace ProITM.Client.Services
             throw new NotImplementedException();
         }
 
-        
-
         public Task<HttpResponseMessage> GetImageFromDockerHub()
         {
             throw new NotImplementedException();
         }
 
-        // Extra-curricular functionality below
+        # region Extra-curricular functionality
 
         public Task<List<ImageModel>> GetUserImageList(string userId)
         {
@@ -61,5 +59,6 @@ namespace ProITM.Client.Services
         {
             throw new NotImplementedException();
         }
+        #endregion
     }
 }
