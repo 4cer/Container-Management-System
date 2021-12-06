@@ -28,20 +28,21 @@ namespace ProITM.Server.Controllers.Admin
             this.dockerClient = dockerClient;
         }
 
-        [HttpGet("manage/{userId}")]
-        public async Task<List<ContainerModel>> GetUserContainers(string userId)
+        [HttpGet("manage/{userId}/{limit}")]
+        public async Task<List<ContainerModel>> GetUserContainers(string userId, int limit)
         {
             return await dbContext.Containers
                 .AsNoTracking()
                 .Include(c => c.Owner)
                 .Where(c => c.Owner.Id == userId)
+                .Take(limit)
                 .ToListAsync();
         }
 
-        [HttpGet("manage/list")]
-        public async Task<List<ContainerModel>> GetContainers()
+        [HttpGet("manage/list/{limit}")]
+        public async Task<List<ContainerModel>> GetContainers(int limit)
         {
-            return await dbContext.Containers.ToListAsync();
+            return await dbContext.Containers.Take(limit).ToListAsync();
         }
 
         [HttpPost("manage/start/{containerId}")]
