@@ -1,54 +1,87 @@
 ﻿@page "/containers"
 @inject NavigationManager Navigation
+@inject IContainerService ContSrvc
 
-<h3>Lista kontenerów, do których masz dostęp</h3>
+<h2>Lista kontenerów, do których masz dostęp</h2>
 
-<table class="container-table table table-hover table-bordered">
-    <thead>
-        <tr>
-            @foreach (string header in headers)
-            {
-                <th>@header</th>
-            }
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (string[] container in containers)
-        {
-            <tr @onclick="() => showDetails(container)">
-                @foreach (string property in container)
-                {
-                    <td>@property</td>
-                }
-                <td>
-                    <button class="btn" style="color: red">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div>
+    <MudTable Items="containers" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent" Hover="true" Dense="true"
+              RowClassFunc="@SelectedRowClassFunc" OnRowClick="e => RowClickEvent(e)" @ref="mudTable" T="ContainerModel">
+        <HeaderContent>
+            <MudTh>ID</MudTh>
+            <MudTh>Name</MudTh>
+            <MudTh>Image</MudTh>
+            <MudTh>Description</MudTh>
+            <MudTh>Port</MudTh>
+            <MudTh>Machine</MudTh>
+            <MudTh>State</MudTh>
+            <MudTh>Is running</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Id</MudTd>
+            <MudTd>@context.Name</MudTd>
+            <MudTd>@context.Image</MudTd>
+            <MudTd>@context.Description</MudTd>
+            <MudTd>@context.Port</MudTd>
+            <MudTd>@context.Machine</MudTd>
+            <MudTd>@context.State</MudTd>
+            <MudTd>@context.IsRunning</MudTd>
+            <MudTd Class="actions-cell">
+                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" />
+                <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Info" />
+                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteImage(context)" />
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</div>
 
 @code {
-    String[] headers = new[] { "ID", "Nazwa", "Szczegóły" };
-    String[][] containers = new[]
-    {
-        new [] { "0", "name", "dupa"},
-        new [] { "1", "name", "dupa"},
-        new [] { "2", "name", "dupa"},
-        new [] { "3", "name", "dupa"},
-        new [] { "4", "name", "dupa"},
-        new [] { "5", "name", "dupa"},
-        new [] { "6", "name", "dupa"},
-        new [] { "7", "name", "dupa"},
-        new [] { "8", "name", "dupa"},
-        new [] { "9", "name", "dupa"}
-    };
+    List<ContainerModel> containers;
+
+    private int selectedRowNumber = -1;
+    private MudTable<ContainerModel> mudTable;
 
     public void showDetails(string[] container)
     {
         Navigation.NavigateTo($"/containers/details?id=" + container[0]);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        containers = await ContSrvc.ListContainers("DUPA");
+    }
+
+    public void SelectionChangedEvent(object row)
+    {
+        //Navigation.NavigateTo($"/images/details?id=" + (row as ImageModel).Id);
+    }
+
+    private void RowClickEvent(TableRowClickEventArgs<ContainerModel> tableRowClickEventArgs)
+    {
+        return;
+    }
+
+    private string SelectedRowClassFunc(ContainerModel container, int rowNumber)
+    {
+        if (selectedRowNumber == rowNumber)
+        {
+            selectedRowNumber = -1;
+            return string.Empty;
+        }
+        else if (mudTable.SelectedItem != null && mudTable.SelectedItem.Equals(container))
+        {
+            selectedRowNumber = rowNumber;
+            return "selected";
+        }
+        else
+        {
+            return string.Empty;
+        }
+    }
+
+    private void DeleteImage(ContainerModel container)
+    {
+        return;
     }
 }

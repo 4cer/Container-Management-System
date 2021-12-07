@@ -9,6 +9,20 @@ namespace ProITM.Client.Services
 {
     public class ContainerService : IContainerService
     {
+        private List<ContainerModel> Containers = new()
+        {
+            new ContainerModel() { Id = "0", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
+            new ContainerModel() { Id = "1", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
+            new ContainerModel() { Id = "2", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
+            new ContainerModel() { Id = "3", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
+            new ContainerModel() { Id = "4", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
+            new ContainerModel() { Id = "5", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
+            new ContainerModel() { Id = "6", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
+            new ContainerModel() { Id = "7", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
+            new ContainerModel() { Id = "8", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
+            new ContainerModel() { Id = "8", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true }
+        };
+
         public Task<HttpResponseMessage> CreateContainer()
         {
             throw new NotImplementedException("ContainerService.CreateContainer()");
@@ -31,7 +45,7 @@ namespace ProITM.Client.Services
 
         public Task<List<ContainerModel>> ListContainers(string userId)
         {
-            throw new NotImplementedException("ContainerService.ListContainers(string userId)");
+            return Task.FromResult(this.Containers);
         }
 
         public Task<HttpResponseMessage> StartContainer(string containerId)

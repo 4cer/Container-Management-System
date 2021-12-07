@@ -2,35 +2,41 @@
 @inject NavigationManager Navigation
 @inject IHostService HostSrvc
 
-<h3>List of host machines</h3>
+<h2>List of host machines</h2>
 
-<table class="host-table table table-hover table-dark">
-    <thead>
-        <tr>
-            @foreach (string header in headers)
-            {
-                <th>@header</th>
-            }
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (HostModel hs in hosts)
-        {
-            <tr @onclick="() => showDetails(hs)">
-                <td>@hs.Id</td>
-                <td>@hs.DisplayName</td>
-                <td>@hs.IsWindows</td>
-                <td>@hs.IP</td>
-                <td>@hs.Port</td>
-                <td>@hs.URI</td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div>
+    <MudTable Items="hosts" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent" Hover="true" Dense="true"
+              RowClassFunc="@SelectedRowClassFunc" OnRowClick="e => RowClickEvent(e)" @ref="mudTable" T="HostModel">
+        <HeaderContent>
+            <MudTh>ID</MudTh>
+            <MudTh>DisplayName</MudTh>
+            <MudTh>IsWindows</MudTh>
+            <MudTh>IP</MudTh>
+            <MudTh>Port</MudTh>
+            <MudTh>URI</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Id</MudTd>
+            <MudTd>@context.DisplayName</MudTd>
+            <MudTd>@context.IsWindows</MudTd>
+            <MudTd>@context.IP</MudTd>
+            <MudTd>@context.Port</MudTd>
+            <MudTd>@context.URI</MudTd>
+            <MudTd Class="actions-cell">
+                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" />
+                <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Info" />
+                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteImage(context)" />
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</div>
+
 
 @code {
-    String[] headers = new[] { "ID", "Name", "Is Windows", "IP", "Port", "URI" };
     List<HostModel> hosts;
+    private int selectedRowNumber = -1;
+    private MudTable<HostModel> mudTable;
 
     public void showDetails(HostModel host)
     {
@@ -40,5 +46,38 @@
     protected override async Task OnInitializedAsync()
     {
         hosts = await HostSrvc.GetHosts();
+    }
+
+    public void SelectionChangedEvent(object row)
+    {
+        //Navigation.NavigateTo($"/images/details?id=" + (row as ImageModel).Id);
+    }
+
+    private void RowClickEvent(TableRowClickEventArgs<HostModel> tableRowClickEventArgs)
+    {
+        return;
+    }
+
+    private string SelectedRowClassFunc(HostModel host, int rowNumber)
+    {
+        if (selectedRowNumber == rowNumber)
+        {
+            selectedRowNumber = -1;
+            return string.Empty;
+        }
+        else if (mudTable.SelectedItem != null && mudTable.SelectedItem.Equals(host))
+        {
+            selectedRowNumber = rowNumber;
+            return "selected";
+        }
+        else
+        {
+            return string.Empty;
+        }
+    }
+
+    private void DeleteImage(HostModel host)
+    {
+        return;
     }
 }

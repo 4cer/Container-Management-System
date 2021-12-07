@@ -22,14 +22,13 @@ namespace ProITM.Client
             // Supply HttpClient instances that include access tokens when making requests to the server project
             builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("ProITM.ServerAPI"));
 
-            builder.Services.AddScoped<IAdministrationService, AdministrationService>();
-
             // Adding the service, such that it is globally available in client Blazor views:
             //     Note that interface and its implementing classes are passed, allowing for
             //     swapping the latter, simplifying the testing
             // builder.Services.AddScoped<IObsoleteExampleService, ObsoleteExampleService>();
 
             builder.Services.AddScoped<IAdminContainerService, AdminContainerService>();
+            builder.Services.AddScoped<IContainerService, ContainerService>();
             builder.Services.AddScoped<IHostService, HostService>();
             builder.Services.AddScoped<IImageService, ImageService>();
 
