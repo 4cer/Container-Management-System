@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ProITM.Server.Controllers.Admin
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class HostController : ControllerBase

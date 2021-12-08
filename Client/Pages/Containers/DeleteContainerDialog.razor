@@ -1,0 +1,31 @@
+﻿@inject IContainerService ContainerSrvc
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.DeleteForever" Class="mr-3 mb-n1" />
+            Do you want to delete container <b>@container.Name</b>?
+        </MudText>
+    </TitleContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Error" OnClick="DeleteContainer">Delete Container</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public ContainerModel container { get; set; } = new ContainerModel();
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private void DeleteContainer()
+    {
+        //In a real world scenario this bool would probably be a service to delete the item from api/database
+        ContainerSrvc.DeleteContainer(container.Id);
+        MudDialog.Close(DialogResult.Ok(container.Id));
+    }
+}

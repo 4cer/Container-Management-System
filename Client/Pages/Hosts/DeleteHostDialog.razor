@@ -1,0 +1,31 @@
+﻿@inject IHostService HostSrvc
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.DeleteForever" Class="mr-3 mb-n1" />
+            Do you want to delete host <b>@host.DisplayName</b>?
+        </MudText>
+    </TitleContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Error" OnClick="DeleteHost">Delete Host</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public HostModel host { get; set; } = new HostModel();
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private void DeleteHost()
+    {
+        //In a real world scenario this bool would probably be a service to delete the item from api/database
+        HostSrvc.DeleteHost(host.Id);
+        MudDialog.Close(DialogResult.Ok(host.Id));
+    }
+}

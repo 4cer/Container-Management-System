@@ -36,6 +36,7 @@ namespace ProITM.Client.Services
 
         public async Task<HttpResponseMessage> DeleteContainer(string containerId)
         {
+            Console.WriteLine("##################### Container ID: " + containerId + "#########################");
             return await _httpClient.DeleteAsync($"api/Container/{containerId}");
         }
 

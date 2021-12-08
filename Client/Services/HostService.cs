@@ -25,6 +25,7 @@ namespace ProITM.Client.Services
 
         public async Task<HttpResponseMessage> DeleteHost(string hostId)
         {
+            Console.WriteLine("##################### Host ID: " + hostId + "#########################");
             return await _httpClient.DeleteAsync($"api/Host/{hostId}");
         }
 

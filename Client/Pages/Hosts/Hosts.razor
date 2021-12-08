@@ -1,6 +1,7 @@
 ﻿@page "/hosts"
 @inject NavigationManager Navigation
 @inject IHostService HostSrvc
+@inject IDialogService DialogService
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 
@@ -37,11 +38,11 @@
             <MudTd>@context.Port</MudTd>
             <MudTd>@context.URI</MudTd>
             <MudTd Class="actions-cell">
-                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewHost(context)"/>
-                <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Info" OnClick="e => EditHost(context)"/>
+                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewHost(context)" />
+                <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Info" OnClick="e => EditHost(context)" />
                 <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteHost(context)" />
             </MudTd>
-</RowTemplate>
+        </RowTemplate>
     </MudTable>
     @if (hosts == null)
     {
@@ -89,9 +90,19 @@
         }
     }
 
-    private void DeleteHost(HostModel host)
+    async Task DeleteHost(HostModel host)
     {
-        return;
+        var parameters = new DialogParameters { ["host"] = host };
+
+        var dialog = DialogService.Show<DeleteHostDialog>("Delete Host", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            //In a real world scenario we would reload the data from the source here since we "removed" it in the dialog already.
+            var deletedServer = result.Data.ToString();
+            hosts.RemoveAll(item => item.Id.Equals(deletedServer));
+        }
     }
 
     private void CreateHost()

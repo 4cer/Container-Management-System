@@ -1,6 +1,7 @@
 ﻿@page "/containers"
 @inject NavigationManager Navigation
 @inject IContainerService ContSrvc
+@inject IDialogService DialogService 
 
 <h2>Lista kontenerów, do których masz dostęp</h2>
 <MudButton Style="margin: 10px 0;" StartIcon="@Icons.Filled.Add" Color="Color.Primary" Variant="Variant.Filled" OnClick="CreateContainer">Add</MudButton>
@@ -91,9 +92,19 @@
         Navigation.NavigateTo($"/containers/details?id=" + container.Id);
     }
 
-    private void DeleteContainer(ContainerModel container)
+    async Task DeleteContainer(ContainerModel container)
     {
-        return;
+        var parameters = new DialogParameters { ["container"] = container };
+
+        var dialog = DialogService.Show<DeleteContainerDialog>("Delete Container", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            //In a real world scenario we would reload the data from the source here since we "removed" it in the dialog already.
+            var deletedServer = result.Data.ToString();
+            containers.RemoveAll(item => item.Id.Equals(deletedServer));
+        }
     }
 
     private void CreateContainer()
