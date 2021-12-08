@@ -3,7 +3,7 @@
 @inject IContainerService ContSrvc
 
 <h2>Lista kontenerów, do których masz dostęp</h2>
-<MudButton StartIcon="@Icons.Filled.Add" Color="Color.Primary" Variant="Variant.Filled">Dodaj</MudButton>
+<MudButton Style="margin: 10px 0;" StartIcon="@Icons.Filled.Add" Color="Color.Primary" Variant="Variant.Filled" OnClick="CreateContainer">Add</MudButton>
 <div>
     <MudTable Items="containers" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent" Hover="true" Dense="true"
               RowClassFunc="@SelectedRowClassFunc" OnRowClick="e => RowClickEvent(e)" @ref="mudTable" T="ContainerModel">
@@ -28,9 +28,8 @@
             <MudTd>@context.State</MudTd>
             <MudTd>@context.IsRunning</MudTd>
             <MudTd Class="actions-cell">
-                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" />
-                <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Info" />
-                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteImage(context)" />
+                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewContainer(context)"/>
+                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteContainer(context)"/>
             </MudTd>
         </RowTemplate>
     </MudTable>
@@ -42,14 +41,8 @@
 
 @code {
     List<ContainerModel> containers;
-
     private int selectedRowNumber = -1;
     private MudTable<ContainerModel> mudTable;
-
-    public void showDetails(string[] container)
-    {
-        Navigation.NavigateTo($"/containers/details?id=" + container[0]);
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -63,6 +56,7 @@
 
     private void RowClickEvent(TableRowClickEventArgs<ContainerModel> tableRowClickEventArgs)
     {
+        //Navigation.NavigateTo($"containers/details?id={tableRowClickEventArgs.Item.Id}");
         return;
     }
 
@@ -84,8 +78,18 @@
         }
     }
 
-    private void DeleteImage(ContainerModel container)
+    public void ViewContainer(ContainerModel container)
+    {
+        Navigation.NavigateTo($"/containers/details?id=" + container.Id);
+    }
+
+    private void DeleteContainer(ContainerModel container)
     {
         return;
+    }
+
+    private void CreateContainer()
+    {
+        Navigation.NavigateTo($"/containers/add");
     }
 }
