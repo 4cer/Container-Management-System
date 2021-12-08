@@ -5,15 +5,31 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ProITM.Server.Data;
 using ProITM.Shared;
+using Docker.DotNet;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ProITM.Server.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ImageController : ControllerBase
     {
+        private List<ImageModel> Images = new()
+        {
+            new ImageModel() { Id = "0", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
+            new ImageModel() { Id = "1", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.1" },
+            new ImageModel() { Id = "2", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.2" },
+            new ImageModel() { Id = "3", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.3" },
+            new ImageModel() { Id = "4", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "2.0" },
+            new ImageModel() { Id = "5", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "2.1" },
+            new ImageModel() { Id = "6", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "2.2" },
+            new ImageModel() { Id = "7", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "2.3" },
+            new ImageModel() { Id = "8", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "2.1" },
+            new ImageModel() { Id = "9", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "3.7" }
+        };
+
         private readonly ApplicationDbContext dbContext;
 
         public ImageController(ApplicationDbContext dbContext)
@@ -28,7 +44,8 @@ namespace ProITM.Server.Controllers
         [HttpGet("images")]
         public async Task<IActionResult> GetImageList()
         {
-            return Ok(dbContext.Images.ToList());
+            //return Ok(dbContext.Images.ToList());
+            return Ok(Images);
             //throw new NotImplementedException("ImageController.GetImageList()");
         }
 
@@ -58,8 +75,7 @@ namespace ProITM.Server.Controllers
         }
 
 
-        // Extra-curricular functionality below
-
+        #region Extra-curricular functionality
         [HttpGet("images/users/{id}")]
         public async Task<IActionResult> GetUserImageList(string userId)
         {
@@ -89,5 +105,6 @@ namespace ProITM.Server.Controllers
         {
             throw new NotImplementedException("ImageController.ExportImage()");
         }
+        #endregion
     }
 }

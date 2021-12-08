@@ -19,33 +19,33 @@ namespace ProITM.Client.Services
 
         public async Task<List<UserModel>> GetUsers()
         {
-            return await _httpClient.GetFromJsonAsync<List<UserModel>>("Administration/users");
+            return await _httpClient.GetFromJsonAsync<List<UserModel>>("Administration/Users");
         }
 
         public async Task<UserModel> GetUser(string id)
         {
-            return await _httpClient.GetFromJsonAsync<UserModel>($"Administration/users/{id}");
+            return await _httpClient.GetFromJsonAsync<UserModel>($"Administration/Users/{id}");
         }
 
         public async Task<HttpResponseMessage> EditUser(UserModel user)
         {
-            return await _httpClient.PostAsJsonAsync<UserModel>($"Administration/users/Edit", user);
+            return await _httpClient.PostAsJsonAsync<UserModel>($"Administration/Users/Edit", user);
         }
 
         public async Task<HttpResponseMessage> DeleteUser(string id)
         {
-            return await _httpClient.DeleteAsync($"Administration/users/{id}");
+            return await _httpClient.DeleteAsync($"Administration/Users/{id}");
         }
 
         public async Task<HttpResponseMessage> PromoteUser(string id)
         {
-            return await _httpClient.PostAsJsonAsync<string>($"Administration/users/promote/{id}", null);
+            return await _httpClient.PostAsJsonAsync<string>($"Administration/Users/Promote/{id}", null);
         }
 
         public async Task<HttpResponseMessage> DemoteUser(string id)
         {
 
-            return await _httpClient.PostAsJsonAsync<string>($"Administration/users/demote/{id}", null);
+            return await _httpClient.PostAsJsonAsync<string>($"Administration/Users/Demote/{id}", null);
         }
 
         public async Task<Group> GetAdminRoleId()

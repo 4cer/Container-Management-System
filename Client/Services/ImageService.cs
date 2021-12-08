@@ -3,26 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace ProITM.Client.Services
 {
     public class ImageService : IImageService
     {
-        private List<ImageModel> Images = new()
-        {
-            new ImageModel() { Id = "0", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
-            new ImageModel() { Id = "1", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
-            new ImageModel() { Id = "2", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
-            new ImageModel() { Id = "3", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
-            new ImageModel() { Id = "4", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
-            new ImageModel() { Id = "5", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
-            new ImageModel() { Id = "6", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
-            new ImageModel() { Id = "7", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
-            new ImageModel() { Id = "8", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
-            new ImageModel() { Id = "9", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" }
-        };
-
+        
         private readonly HttpClient _httpClient;
 
         public ImageService(HttpClient httpClient)
@@ -32,24 +20,22 @@ namespace ProITM.Client.Services
 
         // TODO 134 Implement ImageService methods
 
-        public Task<List<ImageModel>> GetImageList()
+        public async Task<List<ImageModel>> GetImageList()
         {
-            return Task.FromResult(this.Images);
+            return await _httpClient.GetFromJsonAsync<List<ImageModel>>($"api/Image/images");
         }
 
-        public Task<ImageModel> GetImageDetails(string imageId)
+        public async Task<ImageModel> GetImageDetails(string imageId)
         {
-            return Task.FromResult(Images.Find(img => img.Id == imageId));
+            return await _httpClient.GetFromJsonAsync<ImageModel>($"api/Image/images/{imageId}");
         }
 
-        
-
-        public Task<HttpResponseMessage> GetImageFromDockerHub()
+        public async Task<HttpResponseMessage> GetImageFromDockerHub(string name, string version, string description)
         {
-            throw new NotImplementedException();
+            return await _httpClient.PostAsJsonAsync<string>($"api/Image/images/{name}/{version}", description);
         }
 
-        // Extra-curricular functionality below
+        # region Extra-curricular functionality
 
         public Task<List<ImageModel>> GetUserImageList(string userId)
         {
@@ -75,5 +61,6 @@ namespace ProITM.Client.Services
         {
             throw new NotImplementedException();
         }
+        #endregion
     }
 }

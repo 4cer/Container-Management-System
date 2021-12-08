@@ -27,6 +27,7 @@ namespace ProITM.Client
             //     swapping the latter, simplifying the testing
             // builder.Services.AddScoped<IObsoleteExampleService, ObsoleteExampleService>();
 
+            builder.Services.AddScoped<IAdministrationService, AdministrationService>();
             builder.Services.AddScoped<IAdminContainerService, AdminContainerService>();
             builder.Services.AddScoped<IContainerService, ContainerService>();
             builder.Services.AddScoped<IHostService, HostService>();

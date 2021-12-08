@@ -20,14 +20,14 @@ namespace ProITM.Server.Controllers.Admin
     // example GET:proitm.tk/ObsoleteExample/Adminroleid
     [Route("[controller]")]
     [ApiController]
-    public class ObsoleteExampleController : ControllerBase
+    public class ExampleController : ControllerBase
     {
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly UserManager<ApplicationUser> userManager;
 
         // Inject IdentityManager instances
         // Other controllers may instead use a data context
-        public ObsoleteExampleController(RoleManager<IdentityRole> roleManager,
+        public ExampleController(RoleManager<IdentityRole> roleManager,
             UserManager<Models.ApplicationUser> userManager)
         {
             this.roleManager = roleManager;

@@ -17,24 +17,29 @@ namespace ProITM.Client.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<ContainerModel>> GetUserContainers(string userId)
+        public async Task<List<ContainerModel>> GetUserContainers(string userId, int limit)
         {
-            return await _httpClient.GetFromJsonAsync<List<ContainerModel>>($"Container/{userId}");
+            return await _httpClient.GetFromJsonAsync<List<ContainerModel>>($"Container/manage/{userId}/{limit}");
+        }
+
+        public async Task<List<ContainerModel>> GetContainers(int limit)
+        {
+            return await _httpClient.GetFromJsonAsync<List<ContainerModel>>($"Container/manage/list/{limit}");
         }
 
         public async Task<HttpResponseMessage> StartUsersContainer(string containerId)
         {
-            return await _httpClient.PostAsJsonAsync<string>($"Container/start/{containerId}", null);
+            return await _httpClient.PostAsJsonAsync<string>($"Container/manage/start/{containerId}", null);
         }
 
         public async Task<HttpResponseMessage> StopUsersContainer(string containerId)
         {
-            return await _httpClient.PostAsJsonAsync<string>($"Container/stop/{containerId}", null);
+            return await _httpClient.PostAsJsonAsync<string>($"Container/manage/stop/{containerId}", null);
         }
 
         public async Task<HttpResponseMessage> DeleteUsersContainer(string containerId)
         {
-            return await _httpClient.DeleteAsync($"Container/{containerId}");
+            return await _httpClient.DeleteAsync($"Container/manage/{containerId}");
         }
     }
 }
