@@ -20,6 +20,12 @@
         <MudTextField @bind-Value="TargerPort" Label="Port docelowy" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
     </MudItem>
 </MudGrid>
+<MudForm>
+    <MudRadioGroup @bind-SelectedOption="@SelectedOption">
+        <MudRadio Option="@("Windows")" Color="Color.Primary">Windows</MudRadio>
+        <MudRadio Option="@("Linux")" Color="Color.Primary">Linux</MudRadio>
+    </MudRadioGroup>
+</MudForm>
 @*</MudTabPanel>
         <MudTabPanel Text="Zaawansowane">
             <MudItem style="width: 410px">
@@ -59,8 +65,8 @@
     </MudTabs>*@
 <br />
 
-<MudItem >
-    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Utwórz" Class="mud-theme-info py-4 px-6 rounded-lg"/>
+<MudItem>
+    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Utwórz" Class="mud-theme-info py-4 px-6 rounded-lg" />
 </MudItem>
 
 
@@ -72,6 +78,13 @@
     public string ContainerPort { get; set; }
     public string TargerPort { get; set; }
     public string Flags { get; set; }
+
+    public string SelectedOption { get; set; }
+
+    private void Reset()
+    {
+        SelectedOption = null;
+    }
 
 
     IList<IBrowserFile> files = new List<IBrowserFile>();
