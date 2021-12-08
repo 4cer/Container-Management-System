@@ -1,61 +1,58 @@
 ﻿using ProITM.Shared;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace ProITM.Client.Services
 {
     public class ContainerService : IContainerService
     {
-        private List<ContainerModel> Containers = new()
-        {
-            new ContainerModel() { Id = "0", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
-            new ContainerModel() { Id = "1", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
-            new ContainerModel() { Id = "2", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
-            new ContainerModel() { Id = "3", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
-            new ContainerModel() { Id = "4", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
-            new ContainerModel() { Id = "5", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
-            new ContainerModel() { Id = "6", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
-            new ContainerModel() { Id = "7", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
-            new ContainerModel() { Id = "8", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
-            new ContainerModel() { Id = "8", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true }
-        };
+        private readonly HttpClient _httpClient;
 
-        public Task<HttpResponseMessage> CreateContainer()
+        public ContainerService(HttpClient httpClient)
         {
-            throw new NotImplementedException("ContainerService.CreateContainer()");
+            _httpClient = httpClient;
         }
 
-        public Task<HttpResponseMessage> DeleteContainer(string containerId)
+        public async Task<List<ContainerModel>> ListContainers(string userId, long limit)
         {
-            throw new NotImplementedException("ContainerService.DeleteContainer(string containerId)");
+            List<ContainerModel> list = await _httpClient.GetFromJsonAsync<List<ContainerModel>>($"api/Container/containers/{userId}/{limit}");
+            return list;
         }
 
-        public Task<List<string>> GetContainerLogs(string containerId)
+        public async Task<HttpResponseMessage> StartContainer(string containerId)
         {
-            throw new NotImplementedException("ContainerService.GetContainerLogs(string containerId)");
+            return await _httpClient.PostAsJsonAsync<string>($"api/Container/start/{containerId}", null);
         }
 
-        public Task<ContainerModel> GetContainerStats(string containerId)
+        public async Task<HttpResponseMessage> StopContainer(string containerId)
         {
-            throw new NotImplementedException("ContainerService.GetContainerStats(string containerId)");
+            return await _httpClient.PostAsJsonAsync<string>($"api/Container/stop/{containerId}", null);
         }
 
-        public Task<List<ContainerModel>> ListContainers(string userId)
+        public async Task<HttpResponseMessage> DeleteContainer(string containerId)
         {
-            return Task.FromResult(this.Containers);
+            return await _httpClient.DeleteAsync($"api/Container/{containerId}");
         }
 
-        public Task<HttpResponseMessage> StartContainer(string containerId)
+        public async Task<Stream> GetContainerStats(string containerId)
         {
-            throw new NotImplementedException("ContainerService.StartContainer(string containerId)");
+            return await _httpClient.GetFromJsonAsync<Stream>($"api/Container/containers/stats/{containerId}");
         }
 
-        public Task<HttpResponseMessage> StopContainer(string containerId)
+        public async Task<HttpResponseMessage> CreateContainer(ContainerModel model)
         {
-            throw new NotImplementedException("ContainerService.StopContainer(string containerId)");
+            return await _httpClient.PostAsJsonAsync<ContainerModel>($"api/Container/containers/create", model);
+        }
+
+        //TODO format since i tail
+        public async Task<Stream> GetContainerLogs(string containerId, string since, string tail)
+        {
+            return await _httpClient.GetFromJsonAsync<Stream>($"api/Container/containers/logs/{containerId}/{since}/{tail}");
         }
     }
 }

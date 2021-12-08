@@ -3,7 +3,7 @@
 @inject IImageService ImgSrvc
 
 <h2>List of images</h2>
-
+<MudButton StartIcon="@Icons.Filled.Add" Color="Color.Primary" Variant="Variant.Filled">Dodaj</MudButton>
 <div>
     <MudTable Items="images" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent" Hover="true" Dense="true"
               RowClassFunc="@SelectedRowClassFunc" OnRowClick="e => RowClickEvent(e)" @ref="mudTable" T="ImageModel">
@@ -24,12 +24,15 @@
             <MudTd>@context.Created</MudTd>
             <MudTd>@context.Version</MudTd>
             <MudTd Class="actions-cell">
-                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary"/>
-                <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Info"/>
-                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteImage(context)"/>
+                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" />
+                <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Info" />
+                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteImage(context)" />
             </MudTd>
         </RowTemplate>
     </MudTable>
+    @if(images == null) {
+        <p><em>Loading...</em></p>
+    }
 </div>
 
 @code {

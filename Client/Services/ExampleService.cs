@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace ProITM.Client.Services
 {
-    public class ObsoleteExampleService : IObsoleteExampleService
+    public class ExampleService : IExampleService
     {
         private readonly HttpClient _httpClient;
 
         // Dependency insertion for an object handling http requests
-        public ObsoleteExampleService(HttpClient httpClient)
+        public ExampleService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
@@ -28,7 +28,7 @@ namespace ProITM.Client.Services
             // GET method return can be anything as long as it is usable
             // on client and consistent with expected type
             // If you expect no return value, don't use a GET mehod,
-            return await _httpClient.GetFromJsonAsync<List<Group>>("ObsoleteExample");
+            return await _httpClient.GetFromJsonAsync<List<Group>>("Example");
         }
 
         public async Task<Group> GetGroup(string id)
@@ -36,7 +36,7 @@ namespace ProITM.Client.Services
             // GET method return can be anything as long as it is usable
             // on client and consistent with expected type
             // If you expect no return value, don't use a GET mehod,
-            return await _httpClient.GetFromJsonAsync<Group>($"ObsoleteExample/{id}");
+            return await _httpClient.GetFromJsonAsync<Group>($"Example/{id}");
         }
 
         public async Task<HttpResponseMessage> CreateGroup(Group group)
@@ -46,7 +46,7 @@ namespace ProITM.Client.Services
             // if not important, just plug HttpResponseMessage
             // which can help in debugging
             //var result = await _httpClient.PostAsJsonAsync<Group>("Group", group);
-            return await _httpClient.PostAsJsonAsync<Group>("ObsoleteExample", group);
+            return await _httpClient.PostAsJsonAsync<Group>("Example", group);
         }
 
         public async Task<HttpResponseMessage> EditGroup(Group group)
@@ -56,7 +56,7 @@ namespace ProITM.Client.Services
             // doesn't really matter that much. Use if differentiation
             // on same route is necessary
             // like POST:/user - create, PUT:/user - update etc
-            return await _httpClient.PostAsJsonAsync<Group>("ObsoleteExample/Edit", group);
+            return await _httpClient.PostAsJsonAsync<Group>("Example/Edit", group);
         }
 
         public async Task<HttpResponseMessage> DeleteGroup(string id)
@@ -65,7 +65,7 @@ namespace ProITM.Client.Services
             // can be POST, but never GET, as it becomes a vulnerability
             // to malicious link attacks, like a mail with GET:.../delete/{id} route
             // using your browser, with whatever authentication state you possess
-            return await _httpClient.DeleteAsync($"ObsoleteExample/delete/{id}");
+            return await _httpClient.DeleteAsync($"Example/delete/{id}");
             //return await _httpClient.PostAsJsonAsync<Group>("Group/Delete", group);
         }
     }

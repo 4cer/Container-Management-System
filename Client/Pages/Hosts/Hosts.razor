@@ -3,7 +3,7 @@
 @inject IHostService HostSrvc
 
 <h2>List of host machines</h2>
-
+<MudButton StartIcon="@Icons.Filled.Add" Color="Color.Primary" Variant="Variant.Filled">Dodaj</MudButton>
 <div>
     <MudTable Items="hosts" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent" Hover="true" Dense="true"
               RowClassFunc="@SelectedRowClassFunc" OnRowClick="e => RowClickEvent(e)" @ref="mudTable" T="HostModel">
@@ -30,6 +30,10 @@
             </MudTd>
         </RowTemplate>
     </MudTable>
+    @if (hosts == null)
+    {
+        <p><em>Loading...</em></p>
+    }
 </div>
 
 

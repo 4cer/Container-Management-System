@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProITM.Client.Services
 {
-    interface IObsoleteExampleService
+    interface IExampleService
     {
         // ======================
         //        OBSOLETE
