@@ -37,9 +37,9 @@
             <MudTd>@context.Port</MudTd>
             <MudTd>@context.URI</MudTd>
             <MudTd Class="actions-cell">
-                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" />
-                <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Info" />
-                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteImage(context)" />
+                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewHost(context)"/>
+                <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Info" OnClick="e => EditHost(context)"/>
+                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteHost(context)" />
             </MudTd>
 </RowTemplate>
     </MudTable>
@@ -55,10 +55,6 @@
     private int selectedRowNumber = -1;
     private MudTable<HostModel> mudTable;
 
-    public void showDetails(HostModel host)
-    {
-        Navigation.NavigateTo($"/hosts/details?id=" + host.Id);
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -93,7 +89,7 @@
         }
     }
 
-    private void DeleteImage(HostModel host)
+    private void DeleteHost(HostModel host)
     {
         return;
     }
@@ -101,5 +97,15 @@
     private void CreateHost()
     {
         Navigation.NavigateTo($"/hosts/add");
+    }
+
+    private void EditHost(HostModel host)
+    {
+        return;
+    }
+
+    private void ViewHost(HostModel host)
+    {
+        Navigation.NavigateTo($"/hosts/details?id=" + host.Id);
     }
 }

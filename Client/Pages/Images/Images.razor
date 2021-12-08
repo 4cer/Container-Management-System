@@ -24,8 +24,8 @@
             <MudTd>@context.Created</MudTd>
             <MudTd>@context.Version</MudTd>
             <MudTd Class="actions-cell">
-                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" />
-                <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Info" />
+                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewImage(context)"/>
+                <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Info" OnClick="e => EditImage(context)"/>
                 <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteImage(context)" />
             </MudTd>
         </RowTemplate>
@@ -40,11 +40,6 @@
     List<ImageModel> images;
     private int selectedRowNumber = -1;
     private MudTable<ImageModel> mudTable;
-
-    public void showDetails(ImageModel image)
-    {
-        Navigation.NavigateTo($"/images/details?id=" + image.Id);
-    }
 
 
     public void SelectionChangedEvent(object row)
@@ -83,7 +78,17 @@
 
     private void DeleteImage(ImageModel image)
     {
+        return;
+    }
 
+    private void EditImage(ImageModel image)
+    {
+        return;
+    }
+
+    private void ViewImage(ImageModel image)
+    {
+        Navigation.NavigateTo($"/images/details?id=" + image.Id);
     }
 
     private void CreateImage()
