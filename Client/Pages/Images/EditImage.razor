@@ -1,0 +1,56 @@
+﻿@page "/images/edit"
+@inject NavigationManager Navigation
+
+    @inject IImageService ImgSrvc
+
+    <MudText Typo="Typo.h2">Edytuj obraz</MudText>
+
+    <MudItem style="width: 410px">
+        <MudTextField @bind-Value="NameValue" Label="Nazwa obrazu" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    </MudItem>
+
+    <MudItem style="width: 410px">
+        <MudTextField @bind-Value="ImageName" Label="Adres obrazu w repozytorium dockerhub" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    </MudItem>
+
+    <MudForm>
+        <MudRadioGroup @bind-SelectedOption="@SelectedOption">
+            <MudRadio Option="@("Windows")" Color="Color.Primary">Windows</MudRadio>
+            <MudRadio Option="@("Linux")" Color="Color.Primary">Linux</MudRadio>
+        </MudRadioGroup>
+    </MudForm>
+
+    <br />
+
+    <MudItem>
+        <MudFab Color="Color.Primary" Icon="@Icons.Filled.Save" Label="Zapisz" Class="py-4 px-6 rounded-lg" />
+    </MudItem>
+
+
+
+
+    @code {
+        public string NameValue { get; set; }
+        public string ImageName { get; set; }
+        public string ContainerPort { get; set; }
+        public string TargerPort { get; set; }
+        public string Flags { get; set; }
+
+        public string SelectedOption { get; set; }
+
+        private void Reset()
+        {
+            SelectedOption = null;
+        }
+
+
+        IList<IBrowserFile> files = new List<IBrowserFile>();
+        private void UploadFiles(InputFileChangeEventArgs e)
+        {
+            foreach (var file in e.GetMultipleFiles())
+            {
+                files.Add(file);
+            }
+            //TODO upload the files to the server
+        }
+    }
