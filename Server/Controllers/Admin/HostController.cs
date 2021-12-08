@@ -18,12 +18,12 @@ namespace ProITM.Server.Controllers.Admin
         {
             new HostModel() { Id = "0", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
             new HostModel() { Id = "1", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
-            new HostModel() { Id = "2", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
+            new HostModel() { Id = "2", DisplayName = "name", IsWindows = false, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
             new HostModel() { Id = "3", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
-            new HostModel() { Id = "4", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
+            new HostModel() { Id = "4", DisplayName = "name", IsWindows = false, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
             new HostModel() { Id = "5", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
             new HostModel() { Id = "6", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
-            new HostModel() { Id = "7", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
+            new HostModel() { Id = "7", DisplayName = "name", IsWindows = false, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
             new HostModel() { Id = "8", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
             new HostModel() { Id = "9", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" }
         };

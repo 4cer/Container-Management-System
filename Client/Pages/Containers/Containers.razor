@@ -26,10 +26,18 @@
             <MudTd>@context.Port</MudTd>
             <MudTd>@context.Machine</MudTd>
             <MudTd>@context.State</MudTd>
-            <MudTd>@context.IsRunning</MudTd>
+            @if (context.IsRunning)
+            {
+                <MudTd><MudIcon Icon="@Icons.Filled.Circle" Color="Color.Success"></MudIcon></MudTd>
+            }
+            else
+            {
+                <MudTd><MudIcon Icon="@Icons.Filled.Circle" Color="Color.Error"></MudIcon></MudTd>            
+            }
+
             <MudTd Class="actions-cell">
-                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewContainer(context)"/>
-                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteContainer(context)"/>
+                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewContainer(context)" />
+                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteContainer(context)" />
             </MudTd>
         </RowTemplate>
     </MudTable>

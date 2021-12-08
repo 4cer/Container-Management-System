@@ -2,6 +2,8 @@
 @inject NavigationManager Navigation
 @inject IHostService HostSrvc
 
+<link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
+
 <h2>List of host machines</h2>
 <MudButton Style="margin: 10px 0;" StartIcon="@Icons.Filled.Add" Color="Color.Primary" Variant="Variant.Filled" OnClick="CreateHost">Add</MudButton>
 <div>
@@ -19,7 +21,18 @@
         <RowTemplate>
             <MudTd>@context.Id</MudTd>
             <MudTd>@context.DisplayName</MudTd>
-            <MudTd>@context.IsWindows</MudTd>
+            @if (context.IsWindows)
+            {
+                <MudTd>
+                    <MudIcon Icon="@Icons.Custom.Brands.MicrosoftWindows" />
+                </MudTd>
+            }
+            else
+            {
+                <MudTd>
+                    <MudIcon Icon="fab fa-linux" />
+                </MudTd>
+            }
             <MudTd>@context.IP</MudTd>
             <MudTd>@context.Port</MudTd>
             <MudTd>@context.URI</MudTd>
@@ -28,7 +41,7 @@
                 <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Info" />
                 <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteImage(context)" />
             </MudTd>
-        </RowTemplate>
+</RowTemplate>
     </MudTable>
     @if (hosts == null)
     {
