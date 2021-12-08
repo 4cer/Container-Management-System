@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.WebUtilities
 @using ProITM.Shared
 @inject NavigationManager Navigation
+@inject IContainerService Srvc
 
 <style>
     .container-details-table{
@@ -16,60 +17,74 @@
 <h3>Szczegóły kontenera</h3>
 
 <div>
-    <table class="container-details-table table table-hover table-dark">
-        <tbody>
-            <tr>
-                <td>ID</td>
-                <td>@Container.ID</td>
-            </tr>
-            <tr>
-                <td>Nazwa</td>
-                <td>@Container.Name</td>
-            </tr>
-            <tr>
-                <td>Status</td>
-                <td>@Container.Status</td>
-            </tr>
-            <tr>
-                <td>Oryginalny obraz</td>
-                <td>*nazwa/id obrazu*</td>
-            </tr>
-            <tr>
-                <td>Host macierzysty</td>
-                <td>*nazwa/id maszyny*</td>
-            </tr>
-            <tr>
-                <td>Data utworzenia</td>
-                <td>@(DateTime.Now.ToString())</td>
-            </tr>
-        </tbody>
-    </table>
+    <MudTable Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info" T="ContainerModel">
+        <MudTr>
+            <MudTd>ID</MudTd>
+            <MudTd>@Container.Id</MudTd>
+        </MudTr>
+        <MudTr>
+            <MudTd>Name</MudTd>
+            <MudTd>@Container.Name</MudTd>
+        </MudTr>
+        <MudTr>
+            <MudTd>Description</MudTd>
+            <MudTd>@Container.Description</MudTd>
+        </MudTr>
+        <MudTr>
+            <MudTd>Port</MudTd>
+            <MudTd>@Container.Port</MudTd>
+        </MudTr>
+        <MudTr>
+            <MudTd>Status</MudTd>
+            <MudTd>@Container.State</MudTd>
+        </MudTr>
+        <MudTr>
+            <MudTd>Oryginalny obraz</MudTd>
+            <MudTd>@Container.Image</MudTd>
+        </MudTr>
+    </MudTable>
+<!--
+<table class="container-details-table table table-hover table-dark">
+    <tbody>
+    <tr>
+        <td>ID</td>
+        <td>@Container.Id</td>
+    </tr>
+    <tr>
+        <td>Nazwa</td>
+        <td>@Container.Name</td>
+    </tr>
+    <tr>
+        <td>Status</td>
+        <td>@Container.State</td>
+    </tr>
+    <tr>
+        <td>Oryginalny obraz</td>
+        <td>*nazwa/id obrazu*</td>
+    </tr>
+    <tr>
+        <td>Host macierzysty</td>
+        <td>*nazwa/id maszyny*</td>
+    </tr>
+    <tr>
+        <td>Data utworzenia</td>
+        <td>@(DateTime.Now.ToString())</td>
+    </tr>
+    </tbody>
+</table>
+-->
 </div>
 
 @code {
-    public ExampleContainer Container { get; set; }
-    protected override void OnInitialized()
+    public ContainerModel Container { get; set; }
+    protected override async void OnInitialized()
     {
         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _containerID))
         {
             var ID = _containerID;
-            Container = DummyMethodGetContainerFromBackend(ID);
+            var list = await Srvc.ListContainers("dupa", 100);
+            Container = list.Find(c => c.Id == ID);
         }
     }
-
-
-    private ExampleContainer DummyMethodGetContainerFromBackend(string ID)
-    {
-        return new ExampleContainer { ID = ID, Name = "jakaś nazwa", Status = "running :v" };
-    }
-
-    public class ExampleContainer
-    {
-        public string Name { get; set; }
-        public string ID { get; set; }
-        public string Status { get; set; }
-    }
-
-
 }

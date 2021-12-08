@@ -2,6 +2,7 @@
 @inject NavigationManager Navigation
 @inject IContainerService ContSrvc
 @inject IDialogService DialogService 
+@inject AuthenticationStateProvider provider
 
 <h2>Lista kontenerów, do których masz dostęp</h2>
 <MudButton Style="margin: 10px 0;" StartIcon="@Icons.Filled.Add" Color="Color.Primary" Variant="Variant.Filled" OnClick="CreateContainer">Add</MudButton>
@@ -55,7 +56,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        containers = await ContSrvc.ListContainers("DUPA", 100);
+        var authstate = await provider.GetAuthenticationStateAsync();
+        var id = authstate.User.Claims.First(c => c.Type == "sub")?.Value;
+        containers = await ContSrvc.ListContainers(id, 100);
     }
 
     public void SelectionChangedEvent(object row)
