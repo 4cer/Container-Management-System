@@ -3,19 +3,20 @@
 
 
 <div class="page">
-    <MudAppBar Fixed="false" Dense="true">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => MenuClicked())" />
-        ProITM - Docker manager
-        <MudSpacer />
-        <LoginDisplay />
-    </MudAppBar>
+    
 
     <MudDrawerContainer>
-        <MudDrawer @bind-Open="@Open"  Variant="@DrawerVariant.Persistent">
+        <MudDrawer @bind-Open="@Open"  Variant="@DrawerVariant.Persistent" Fixed="true" ClipMode="DrawerClipMode.Never">
             <NavMenu />
         </MudDrawer>
 
         <MudMainContent>
+            <MudAppBar Fixed="true" Dense="true">
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => MenuClicked())" />
+                ProITM - Docker manager
+                <MudSpacer />
+                <LoginDisplay />
+            </MudAppBar>
             <div class="main">
                 @Body
             </div>
