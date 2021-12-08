@@ -1,9 +1,10 @@
-﻿@page "/hosts/add"
+﻿@page "/hosts/edit"
 @inject NavigationManager Navigation
+@inject IHostService HostSrvc
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 
-<MudText Typo="Typo.h2">Dodaj host</MudText>
+<MudText Typo="Typo.h2">Edytuj host</MudText>
 
 <MudItem style="width: 410px">
     <MudTextField @bind-Value="NameValue" Label="Nazwa hosta" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
@@ -39,7 +40,7 @@
 <br />
 
 <MudItem>
-    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Utwórz" Class="py-4 px-6 rounded-lg" />
+    <MudFab Color="Color.Primary" Icon="@Icons.Filled.Save" Label="Zapisz" Class="py-4 px-6 rounded-lg" />
 </MudItem>
 
 
