@@ -1,0 +1,40 @@
+﻿@page "/image/add"
+@inject NavigationManager Navigation
+
+<MudText Typo="Typo.h2">Dodaj obraz</MudText>
+
+<MudItem style="width: 410px">
+    <MudTextField @bind-Value="NameValue" Label="Nazwa obrazu" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+</MudItem>
+
+<MudItem style="width: 410px">
+    <MudTextField @bind-Value="ImageName" Label="Adres obrazu w repozytorium dockerhub" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+</MudItem>
+
+<br />
+
+<MudItem>
+    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Utwórz" Class="mud-theme-info py-4 px-6 rounded-lg" />
+</MudItem>
+
+
+
+
+@code {
+    public string NameValue { get; set; }
+    public string ImageName { get; set; }
+    public string ContainerPort { get; set; }
+    public string TargerPort { get; set; }
+    public string Flags { get; set; }
+
+
+    IList<IBrowserFile> files = new List<IBrowserFile>();
+    private void UploadFiles(InputFileChangeEventArgs e)
+    {
+        foreach (var file in e.GetMultipleFiles())
+        {
+            files.Add(file);
+        }
+        //TODO upload the files to the server
+    }
+}

@@ -1,14 +1,8 @@
 ﻿@page "/container/add"
 @inject NavigationManager Navigation
 
-<style>
-    h3 {
-        font-size: 32px;
-        font-weight: normal;
-    }
-</style>
 
-<h3>Dodaj kontener</h3>
+<MudText Typo="Typo.h2">Dodaj kontener</MudText>
 
 <MudItem style="width: 410px">
     <MudTextField @bind-Value="NameValue" Label="Nazwa kontenera" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
