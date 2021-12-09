@@ -183,6 +183,7 @@ namespace ProITM.Server.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateContainer(ContainerModel model)
         {
+
             // TODO Get container host URI by selecting least busy host of given system
             //string URI = "GET ME AN URI";
             string URI = tmpUri;
@@ -201,7 +202,29 @@ namespace ProITM.Server.Controllers
 
             // TODO pass warnings as list for analysis
 
+            // Construct model
+            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+            var image = await dbContext.Images.SingleOrDefaultAsync(i => i.Id == "ngineex");
+            dbContext.Attach(image);
+            model.Image = image;
+
+            var host = new HostModel() { Id = "hosto" };
+            dbContext.Attach(host);
+            var port = new ContainerPortModel() { Id = Guid.NewGuid().ToString(), Port = 2137, Host = host };
+            model.Machine = host;
+            model.Port = port;
+            model.IsRunning = false;
+
             model.Id = result.ID;
+
+            dbContext.Containers.Add(model);
+
+            var user = dbContext.Users.Include(u => u.Containers).FirstOrDefault(u => u.Id == userId);
+            dbContext.Attach(user);
+            user.Containers.Add(model);
+
+            dbContext.SaveChanges();
+
 
             return Ok("Container created");
         }
