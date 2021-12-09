@@ -126,7 +126,14 @@ namespace ProITM.Server.Controllers.Admin
 
             await dockerClient.Containers
                 .RemoveContainerAsync(containerId, new ContainerRemoveParameters());
-            
+
+
+            ContainerModel model = new() { Id = containerId };
+            dbContext.Containers.Attach(model);
+            dbContext.Containers.Remove(model);
+            // TODO Remove container port
+            dbContext.SaveChanges();
+
             return Ok();
         }
 

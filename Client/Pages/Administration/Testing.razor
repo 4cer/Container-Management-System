@@ -23,7 +23,7 @@
     <tbody>
         @foreach(var con in containers)
         {
-            <tr>
+            <tr @onclick="(() => Delet(con.Id))">
                 <td>
                     @con.Id
                 </td>
@@ -36,11 +36,24 @@
     
 }
 
+<input type="button" @onclick="() => Creat())" value="Creat" />
+
 @code {
     List<ContainerModel> containers;
 
     protected override async Task OnInitializedAsync()
     {
         containers = await cs.ListContainers(50);
+    }
+
+    protected async Task Delet(string id)
+    {
+        _ = await cs.DeleteContainer(id);
+    }
+    
+    protected async Task Creat()
+    {
+        ContainerModel model = new();
+        _ = await cs.CreateContainer(model);
     }
 }

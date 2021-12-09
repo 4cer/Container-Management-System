@@ -13,6 +13,8 @@ using ProITM.Server.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using ProITM.Server.Utilities;
+using Microsoft.AspNetCore.Http;
 
 namespace ProITM.Server.Controllers
 {
@@ -24,6 +26,7 @@ namespace ProITM.Server.Controllers
         // TODO 156 Inject database ApplicationDbContext
         private readonly ApplicationDbContext dbContext;
         private readonly UserManager<ApplicationUser> userManager;
+        private static readonly string tmpUri = "http://wido.proitm.tk:52375";
 
         public ContainerController(ApplicationDbContext _db, UserManager<ApplicationUser> userManager)
         {
@@ -60,13 +63,12 @@ namespace ProITM.Server.Controllers
                 return Ok(containers);
             }
 
-            //// TODO Get container list DB, based on user ID
+            //// Get container list DB, based on user ID
             //string URI = "GET ME AN URI";
 
             //// Make new instance of DockerClient from URI
             //DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
 
-            ////throw new NotImplementedException("Incorrect implementation REDACTED");
             //IList<ContainerListResponse> containers = await dockerClient.Containers.ListContainersAsync(new ContainersListParameters() { Limit = limit });
             //return Ok(containers);
         }
@@ -74,55 +76,106 @@ namespace ProITM.Server.Controllers
         [HttpPost("start/{containerId}")]
         public async Task<IActionResult> StartContainer(string containerId)
         {
-            // TODO Get container host URI from DB, based on container ID
-            string URI = "GET ME AN URI";
+            var dockerClient = GetContainerById(containerId)
+                .Machine
+                .GetDockerClient();
 
-            // Make new instance of DockerClient from URI
-            DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+            var success = await dockerClient.Containers
+                .StartContainerAsync(containerId, new ContainerStartParameters());
 
-            //throw new NotImplementedException("Implement me");
-            var start = await dockerClient.Containers.StartContainerAsync(containerId, new ContainerStartParameters());
-            if (start == true)
+            if (success)
             {
-                return Ok("Container started");
+                var result = await dbContext.Containers.SingleOrDefaultAsync(c => c.Id == containerId);
+                if(result != null)
+                {
+                    result.IsRunning = true;
+                    dbContext.SaveChangesAsync().Wait();
+                }
+
+                return Ok();
             }
             else
             {
-                return Problem("Container start - error");
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
+            
+            //// Get container host URI from DB, based on container ID
+            //string URI = "GET ME AN URI";
+
+            //// Make new instance of DockerClient from URI
+            //DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+
+            ////throw new NotImplementedException("Implement me");
+            //var start = await dockerClient.Containers.StartContainerAsync(containerId, new ContainerStartParameters());
+            //if (start == true)
+            //{
+            //    return Ok("Container started");
+            //}
+            //else
+            //{
+            //    return Problem("Container start - error");
+            //}
         }
 
         [HttpPost("stop/{containerId}")]
         public async Task<IActionResult> StopContainer(string containerId)
         {
-            // TODO Get container host URI from DB, based on container ID
-            string URI = "GET ME AN URI";
+            var dockerClient = GetContainerById(containerId)
+                .Machine
+                .GetDockerClient();
 
-            // Make new instance of DockerClient from URI
-            DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+            var stopped = await dockerClient.Containers
+                .StopContainerAsync(containerId, new ContainerStopParameters()
+                {
+                    WaitBeforeKillSeconds = 30
+                });
 
-            //throw new NotImplementedException("Implement me");
-            var stopped = await dockerClient.Containers.StopContainerAsync(containerId, new ContainerStopParameters { WaitBeforeKillSeconds = 30 }, CancellationToken.None);
-            if (stopped == true)
+            if (stopped)
             {
-                return Ok("Container stopped");
+                var result = await dbContext.Containers.SingleOrDefaultAsync(c => c.Id == containerId);
+                if (result != null)
+                {
+                    result.IsRunning = false;
+                    dbContext.SaveChangesAsync().Wait();
+                }
+
+                return Ok();
             }
             else
             {
-                return Problem("Container stop - error");
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
+
+            //// TODO Get container host URI from DB, based on container ID
+            //string URI = "GET ME AN URI";
+
+            //// Make new instance of DockerClient from URI
+            //DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+
+            //var stopped = await dockerClient.Containers.StopContainerAsync(containerId, new ContainerStopParameters { WaitBeforeKillSeconds = 30 }, CancellationToken.None);
+            //if (stopped == true)
+            //{
+            //    return Ok("Container stopped");
+            //}
+            //else
+            //{
+            //    return Problem("Container stop - error");
+            //}
         }
 
         [HttpGet("stats/{containerId}")]
         public async Task<IActionResult> GetContainerStats(string containerId)
         {
-            // TODO Get container host URI from DB, based on container ID
-            string URI = "GET ME AN URI";
+            //// TODO Get container host URI from DB, based on container ID
+            //string URI = "GET ME AN URI";
 
-            // Make new instance of DockerClient from URI
-            DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+            //// Make new instance of DockerClient from URI
+            //DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+            
+            var dockerClient = GetContainerById(containerId)
+                .Machine
+                .GetDockerClient();
 
-            //throw new NotImplementedException("Implement me");
             var stats = await dockerClient.Containers.GetContainerStatsAsync(containerId, new ContainerStatsParameters { Stream = true }, CancellationToken.None);
             return Ok(stats);
         }
@@ -131,12 +184,13 @@ namespace ProITM.Server.Controllers
         public async Task<IActionResult> CreateContainer(ContainerModel model)
         {
             // TODO Get container host URI by selecting least busy host of given system
-            string URI = "GET ME AN URI";
+            //string URI = "GET ME AN URI";
+            string URI = tmpUri;
 
             // Make new instance of DockerClient from URI
             DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
 
-            await dockerClient.Containers.CreateContainerAsync(new CreateContainerParameters()
+            CreateContainerResponse result = await dockerClient.Containers.CreateContainerAsync(new CreateContainerParameters()
             {
                 Image = model.Image.Name,
                 HostConfig = new HostConfig()
@@ -144,36 +198,72 @@ namespace ProITM.Server.Controllers
                     DNS = new[] { "8.8.8.8", "8.8.4.4" }
                 }
             });
+
+            // TODO pass warnings as list for analysis
+
+            model.Id = result.ID;
+
             return Ok("Container created");
-            //throw new NotImplementedException("Implement me");
         }
 
         [HttpDelete("{containerId}")]
         public async Task<IActionResult> DeleteContainer(string containerId)
         {
-            // TODO Get container host URI from DB, based on container ID
-            string URI = "GET ME AN URI";
+            var dockerClient = GetContainerById(containerId)
+                .Machine
+                .GetDockerClient();
 
-            // Make new instance of DockerClient from URI
-            DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+            await dockerClient.Containers
+                .StopContainerAsync(containerId, new ContainerStopParameters()
+                {
+                    WaitBeforeKillSeconds = 30
+                });
 
-            await dockerClient.Containers.RemoveContainerAsync(containerId, new ContainerRemoveParameters { Force = true, RemoveLinks = true, RemoveVolumes = true }, CancellationToken.None);
-            return Ok("Container deleted");
-            //throw new NotImplementedException("Implement me");
+            await dockerClient.Containers
+                .RemoveContainerAsync(containerId, new ContainerRemoveParameters());
+
+
+            ContainerModel model = new() { Id = containerId };
+            dbContext.Containers.Attach(model);
+            dbContext.Containers.Remove(model);
+            // TODO Remove container port
+            dbContext.SaveChanges();
+
+            return Ok();
+
+            //// TODO Get container host URI from DB, based on container ID
+            //string URI = "GET ME AN URI";
+
+            //// Make new instance of DockerClient from URI
+            //DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+
+            //await dockerClient.Containers.RemoveContainerAsync(containerId, new ContainerRemoveParameters { Force = true, RemoveLinks = true, RemoveVolumes = true }, CancellationToken.None);
+            //return Ok("Container deleted");
         }
 
         [HttpGet("logs/{containerId}/{since}/{tail}")]
         public async Task<IActionResult> GetContainerLogs(string containerId, string since, string tail)
         {
-            // TODO Get container host URI from DB, based on container ID
-            string URI = "GET ME AN URI";
+            //// TODO Get container host URI from DB, based on container ID
+            //string URI = "GET ME AN URI";
 
-            // Make new instance of DockerClient from URI
-            DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+            //// Make new instance of DockerClient from URI
+            //DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+
+            var dockerClient = GetContainerById(containerId)
+                .Machine
+                .GetDockerClient();
 
             var logs = await dockerClient.Containers.GetContainerLogsAsync(containerId, true, new ContainerLogsParameters { ShowStdout = true, ShowStderr = true, Since = since, Timestamps = true, Follow = true, Tail = tail }, CancellationToken.None);
             return Ok(logs);
-            //throw new NotImplementedException("Implement me");
+        }
+
+        private ContainerModel GetContainerById(string containerId)
+        {
+            return dbContext.Containers
+                .AsNoTracking()
+                .Include(c => c.Machine)
+                .First(c => c.Id == containerId);
         }
 
         //private Docker.DotNet.DockerClient c;
