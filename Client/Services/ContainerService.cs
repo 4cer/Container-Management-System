@@ -18,9 +18,9 @@ namespace ProITM.Client.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<ContainerModel>> ListContainers(string userId, long limit)
+        public async Task<List<ContainerModel>> ListContainers(long limit)
         {
-            return await _httpClient.GetFromJsonAsync<List<ContainerModel>>($"Container/{limit}");
+            return await _httpClient.GetFromJsonAsync<List<ContainerModel>>($"Container/containers/{limit}");
         }
 
         public async Task<HttpResponseMessage> StartContainer(string containerId)
@@ -40,18 +40,18 @@ namespace ProITM.Client.Services
 
         public async Task<Stream> GetContainerStats(string containerId)
         {
-            return await _httpClient.GetFromJsonAsync<Stream>($"Container/containers/stats/{containerId}");
+            return await _httpClient.GetFromJsonAsync<Stream>($"Container/stats/{containerId}");
         }
 
         public async Task<HttpResponseMessage> CreateContainer(ContainerModel model)
         {
-            return await _httpClient.PostAsJsonAsync<ContainerModel>($"Container/containers/create", model);
+            return await _httpClient.PostAsJsonAsync<ContainerModel>($"Container/create", model);
         }
 
         //TODO format since i tail
         public async Task<Stream> GetContainerLogs(string containerId, string since, string tail)
         {
-            return await _httpClient.GetFromJsonAsync<Stream>($"Container/containers/logs/{containerId}/{since}/{tail}");
+            return await _httpClient.GetFromJsonAsync<Stream>($"Container/logs/{containerId}/{since}/{tail}");
         }
     }
 }

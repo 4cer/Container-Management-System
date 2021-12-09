@@ -113,7 +113,7 @@ namespace ProITM.Server.Controllers
             }
         }
 
-        [HttpGet("containers/stats/{containerId}")]
+        [HttpGet("stats/{containerId}")]
         public async Task<IActionResult> GetContainerStats(string containerId)
         {
             // TODO Get container host URI from DB, based on container ID
@@ -127,7 +127,7 @@ namespace ProITM.Server.Controllers
             return Ok(stats);
         }
 
-        [HttpPost("containers/create/{isWindows}/{imageId}")]
+        [HttpPost("create")]
         public async Task<IActionResult> CreateContainer(ContainerModel model)
         {
             // TODO Get container host URI by selecting least busy host of given system
@@ -148,7 +148,7 @@ namespace ProITM.Server.Controllers
             //throw new NotImplementedException("Implement me");
         }
 
-        [HttpDelete("containers/{containerId}")]
+        [HttpDelete("{containerId}")]
         public async Task<IActionResult> DeleteContainer(string containerId)
         {
             // TODO Get container host URI from DB, based on container ID
@@ -162,7 +162,7 @@ namespace ProITM.Server.Controllers
             //throw new NotImplementedException("Implement me");
         }
 
-        [HttpGet("containers/logs/{containerId}/{since}/{tail}")]
+        [HttpGet("logs/{containerId}/{since}/{tail}")]
         public async Task<IActionResult> GetContainerLogs(string containerId, string since, string tail)
         {
             // TODO Get container host URI from DB, based on container ID

@@ -1,29 +1,46 @@
 ﻿@page "/testing"
 @attribute [Authorize(Roles = "Admin")]
 
-@inject IAdminContainerService acs
+@inject IContainerService cs
 @inject NavigationManager navigationManager
 
 <h3>Testing</h3>
 
-@if(result != null)
+@if(containers != null)
 {
-    <p>
-        @result.StatusCode
-    </p>
-    <p>
-        @cnt
-    </p>
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    Name
+                </th>
+            </tr>
+        </thead>
+    </table>
+    <tbody>
+        @foreach(var con in containers)
+        {
+            <tr>
+                <td>
+                    @con.Id
+                </td>
+                <td>
+                    @con.Name
+                </td>
+            </tr>
+        }
+    </tbody>
+    
 }
 
 @code {
-    HttpResponseMessage result;
-    string cnt;
+    List<ContainerModel> containers;
 
     protected override async Task OnInitializedAsync()
     {
-        result = await acs.StopUsersContainer("contea");
-        cnt = await result.Content.ReadAsStringAsync();
-        //user = await administrationService.GetUser(Id);
+        containers = await cs.ListContainers(50);
     }
 }
