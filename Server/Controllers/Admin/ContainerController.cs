@@ -147,13 +147,23 @@ namespace ProITM.Server.Controllers.Admin
                 .GetDockerClient();
 
             await dockerClient.Containers
+                .StopContainerAsync(containerId, new ContainerStopParameters()
+                {
+                    WaitBeforeKillSeconds = 30
+                });
+
+            await dockerClient.Containers
                 .RemoveContainerAsync(containerId, new ContainerRemoveParameters());
 
 
-            ContainerModel model = new() { Id = containerId };
+            ContainerModel model = await dbContext.Containers
+                .Include(c => c.Port)
+                .SingleOrDefaultAsync(c => c.Id == containerId);
+            var port = model.Port;
             dbContext.Containers.Attach(model);
             dbContext.Containers.Remove(model);
-            // TODO Remove container port
+            dbContext.ContainerPorts.Attach(port);
+            dbContext.ContainerPorts.Remove(port);
             dbContext.SaveChanges();
 
             return Ok();

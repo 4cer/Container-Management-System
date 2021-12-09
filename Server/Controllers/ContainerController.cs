@@ -204,7 +204,6 @@ namespace ProITM.Server.Controllers
             dbContext.Containers.Remove(model);
             dbContext.ContainerPorts.Attach(port);
             dbContext.ContainerPorts.Remove(port);
-            // TODO Remove container port
             dbContext.SaveChanges();
 
             return Ok();
