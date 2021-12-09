@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProITM.Server.Data;
 using ProITM.Shared;
 using System;
@@ -47,6 +48,14 @@ namespace ProITM.Server.Controllers.Admin
             var host = dbContext.Hosts.ToList();
 
             return Ok(host);
+        }
+
+        [HttpGet("{hostId}")]
+        public async Task<IActionResult> HostDetails(string hostId)
+        {
+            return Ok(dbContext.Hosts
+                .AsNoTracking()
+                .SingleOrDefaultAsync(h => h.Id == hostId));
         }
 
         [HttpGet("logs/{hostId}")]

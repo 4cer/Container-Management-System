@@ -11,7 +11,8 @@ namespace ProITM.Client.Services
     {
         public Task<HttpResponseMessage> AddHost(HostModel host);
         public Task<HttpResponseMessage> DeleteHost(string hostId);
-        public Task<HttpResponseMessage> GetHosts();
+        public Task<List<HostModel>> GetHosts();
+        public Task<HostModel> HostDetails(string hostId);
         public Task<HttpResponseMessage> GetHostLogs(string hostId);
     }
 }

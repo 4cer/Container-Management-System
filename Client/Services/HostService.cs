@@ -27,9 +27,14 @@ namespace ProITM.Client.Services
             return await _httpClient.DeleteAsync($"Host/{hostId}");
         }
 
-        public async Task<HttpResponseMessage> GetHosts()
+        public async Task<List<HostModel>> GetHosts()
         {
-            return await _httpClient.GetAsync("Host/list");
+            return await _httpClient.GetFromJsonAsync<List<HostModel>>("Host/list");
+        }
+
+        public async Task<HostModel> HostDetails(string hostId)
+        {
+            return await _httpClient.GetFromJsonAsync<HostModel>($"Host/{hostId}");
         }
 
         public async Task<HttpResponseMessage> GetHostLogs(string hostId)
