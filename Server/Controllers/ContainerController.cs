@@ -37,7 +37,7 @@ namespace ProITM.Server.Controllers
 
         // TODO 144 Implement ContainerController endpoint methods
 
-        [HttpGet("containers/{userId}/{limit}")]
+        [HttpGet("containers/{limit}")]
         public async Task<IActionResult> ListContainers(long limit)
         {
             string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
