@@ -60,7 +60,7 @@ namespace ProITM.Server.Controllers.Admin
                 .ToListAsync();
         }
 
-        [HttpGet("{manage/containerId}")]
+        [HttpGet("manage/{containerId}")]
         public async Task<IActionResult> ContainerDetails(string containerId)
         {
             return Ok(GetContainerById(containerId));

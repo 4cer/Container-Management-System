@@ -38,5 +38,14 @@ namespace ProITM.Shared
         public bool IsRunning { get; set; }
 
         // TODO 148 Describe additional Container datum
+
+        [NotMapped] // For creation purposes
+        public bool IsWindows { get; set; }
+
+        [NotMapped]
+        public int PortNo { get; set; }
+
+        [NotMapped]
+        public string ImageIdC { get; set; }
     }
 }

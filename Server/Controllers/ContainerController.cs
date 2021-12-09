@@ -141,26 +141,25 @@ namespace ProITM.Server.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateContainer(ContainerModel model)
         {
-            string URI = await LeastBusyUri(true);
+            var host = await LeastBusyHost(model.IsWindows);
 
-            if (string.IsNullOrEmpty(URI))
+            if (string.IsNullOrEmpty(host.URI))
                 return NotFound();
 
             // Construct model
             string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
-            var image = await dbContext.Images.SingleOrDefaultAsync(i => i.Id == "ngineex");
+            var image = await dbContext.Images.SingleOrDefaultAsync(i => i.Id == model.ImageIdC);
             dbContext.Attach(image);
             model.Image = image;
 
-            var host = new HostModel() { Id = "hosto" };
             dbContext.Attach(host);
-            var port = new ContainerPortModel() { Id = Guid.NewGuid().ToString(), Port = 2137, Host = host };
+            var port = new ContainerPortModel() { Id = Guid.NewGuid().ToString(), Port = model.PortNo, Host = host };
             model.Machine = host;
             model.Port = port;
             model.IsRunning = false;
 
             // Make new instance of DockerClient from URI
-            DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+            DockerClient dockerClient = new DockerClientConfiguration(new Uri(host.URI)).CreateClient();
 
             CreateContainerResponse result = await dockerClient.Containers.CreateContainerAsync(new CreateContainerParameters()
             {
@@ -169,9 +168,8 @@ namespace ProITM.Server.Controllers
                 {
                     DNS = new[] { "8.8.8.8", "8.8.4.4" }
                 }
+                // TODO bind port
             });
-
-            // TODO bind port
 
             // TODO pass warnings as list for analysis
 
@@ -205,9 +203,14 @@ namespace ProITM.Server.Controllers
                 .RemoveContainerAsync(containerId, new ContainerRemoveParameters());
 
 
-            ContainerModel model = new() { Id = containerId };
+            ContainerModel model = await dbContext.Containers
+                .Include(c => c.Port)
+                .SingleOrDefaultAsync(c => c.Id == containerId);
+            var port = model.Port;
             dbContext.Containers.Attach(model);
             dbContext.Containers.Remove(model);
+            dbContext.ContainerPorts.Attach(port);
+            dbContext.ContainerPorts.Remove(port);
             // TODO Remove container port
             dbContext.SaveChanges();
 
@@ -239,7 +242,7 @@ namespace ProITM.Server.Controllers
                 .First(c => c.Id == containerId);
         }
 
-        private async Task<string> LeastBusyUri(bool windows)
+        private async Task<HostModel> LeastBusyHost(bool windows)
         {
             // TODO 190 Make it actually check CPU/RAM stats
             var hosts = await dbContext.Hosts
@@ -247,7 +250,7 @@ namespace ProITM.Server.Controllers
                 .Where(h => h.IsWindows == windows)
                 .ToListAsync();
 
-            string uri = hosts[0].URI;
+            HostModel minhost = hosts[0];
 
             int min = int.MaxValue;
             foreach(var host in hosts)
@@ -259,11 +262,11 @@ namespace ProITM.Server.Controllers
                 if (cmp < min)
                 {
                     min = cmp;
-                    uri = host.URI;
+                    minhost = host;
                 }
             }
 
-            return uri;
+            return minhost;
         }
     }
 }
