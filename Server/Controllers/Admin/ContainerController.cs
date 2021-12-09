@@ -15,7 +15,7 @@ using ProITM.Server.Utilities;
 
 namespace ProITM.Server.Controllers.Admin
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     [ApiController]
     [Route("[controller]")]
     public class ContainerController : ControllerBase
@@ -28,14 +28,26 @@ namespace ProITM.Server.Controllers.Admin
         }
 
         [HttpGet("manage/{userId}/{limit}")]
-        public async Task<List<ContainerModel>> GetUserContainers(string userId, int limit)
+        public async Task<IActionResult> GetUserContainers(string userId, int limit)
         {
-            return await dbContext.Containers
+            var userContainers = await dbContext.Users
                 .AsNoTracking()
-                .Include(c => c.Owner)
-                .Where(c => c.Owner.Id == userId)
-                .Take(limit)
-                .ToListAsync();
+                .Where(u => u.Id == userId)
+                .Select(u => u.Containers)
+                //.Include(u => u.Containers)
+                .FirstOrDefaultAsync();
+
+            var containers = userContainers.Take(limit);
+
+            System.Diagnostics.Debug.WriteLine(limit);
+
+            if(!containers.Any())
+            {
+                return NotFound();
+            } else
+            {
+                return Ok(containers);
+            }
         }
 
         [HttpGet("manage/list/{limit}")]
@@ -59,6 +71,13 @@ namespace ProITM.Server.Controllers.Admin
 
             if (success)
             {
+                var result = await dbContext.Containers.SingleOrDefaultAsync(c => c.Id == containerId);
+                if(result != null)
+                {
+                    result.IsRunning = true;
+                    dbContext.SaveChangesAsync().Wait();
+                }
+
                 return Ok();
             }
             else
@@ -82,6 +101,13 @@ namespace ProITM.Server.Controllers.Admin
 
             if (stopped)
             {
+                var result = await dbContext.Containers.SingleOrDefaultAsync(c => c.Id == containerId);
+                if (result != null)
+                {
+                    result.IsRunning = false;
+                    dbContext.SaveChangesAsync().Wait();
+                }
+
                 return Ok();
             }
             else

@@ -12,11 +12,15 @@ namespace ProITM.Shared
     {
         public string Id { get; set; }
 
+        #region Binding user not required
         // TODO Pull UserModel to get access to class:
-        [NotMapped]
-        public UserModel Owner { get; set; }
-        //public string UserId { get; set; }
-        // Moved to ApplicationUser as list
+        //[NotMapped]
+        //public UserModel Owner { get; set; }
+        ////public string UserId { get; set; }
+        //// Moved to ApplicationUser as list
+        //[Column("ApplicationUserId")]
+        //public string ApplicationUserId { get; set; }
+        #endregion
 
         public string Name { get; set; }
 

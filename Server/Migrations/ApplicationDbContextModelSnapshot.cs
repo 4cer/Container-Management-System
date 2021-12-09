@@ -151,8 +151,8 @@ namespace ProITM.Server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "d6aff19e-6f24-4b30-9b56-818af0b73d6c",
-                            ConcurrencyStamp = "b597a03e-cc18-47df-b987-b2338e41d729",
+                            Id = "528e9446-5f7b-4cb3-8168-7f071c086b09",
+                            ConcurrencyStamp = "1f505ca0-58cb-47d8-bd42-07147268ab86",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -337,7 +337,8 @@ namespace ProITM.Server.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("ApplicationUserId");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");

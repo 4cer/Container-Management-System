@@ -10,8 +10,8 @@ using ProITM.Server.Data;
 namespace ProITM.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211125233007_NewDataStruct")]
-    partial class NewDataStruct
+    [Migration("20211208220607_DataStruct")]
+    partial class DataStruct
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -149,6 +149,15 @@ namespace ProITM.Server.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "528e9446-5f7b-4cb3-8168-7f071c086b09",
+                            ConcurrencyStamp = "1f505ca0-58cb-47d8-bd42-07147268ab86",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -271,9 +280,6 @@ namespace ProITM.Server.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ContainersId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -316,8 +322,6 @@ namespace ProITM.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ContainersId");
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -333,6 +337,10 @@ namespace ProITM.Server.Migrations
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("ApplicationUserId");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -356,6 +364,8 @@ namespace ProITM.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("ImageId");
 
@@ -485,17 +495,12 @@ namespace ProITM.Server.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ProITM.Server.Models.ApplicationUser", b =>
-                {
-                    b.HasOne("ProITM.Shared.ContainerModel", "Containers")
-                        .WithMany()
-                        .HasForeignKey("ContainersId");
-
-                    b.Navigation("Containers");
-                });
-
             modelBuilder.Entity("ProITM.Shared.ContainerModel", b =>
                 {
+                    b.HasOne("ProITM.Server.Models.ApplicationUser", null)
+                        .WithMany("Containers")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("ProITM.Shared.ImageModel", "Image")
                         .WithMany()
                         .HasForeignKey("ImageId");
@@ -522,6 +527,11 @@ namespace ProITM.Server.Migrations
                         .HasForeignKey("HostId");
 
                     b.Navigation("Host");
+                });
+
+            modelBuilder.Entity("ProITM.Server.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Containers");
                 });
 #pragma warning restore 612, 618
         }
