@@ -21,24 +21,18 @@ namespace ProITM.Server.Controllers
         public ImageController(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
-            // Do not think below code necessary - Szymon Brawański
-            //this.dbContext.Database.EnsureCreated();
         }
-
-        // TODO 147 implement ImageController endpoint methods
 
         [HttpGet("images")]
         public async Task<IActionResult> GetImageList()
         {
             return Ok(dbContext.Images.ToList());
-            //throw new NotImplementedException("ImageController.GetImageList()");
         }
 
         [HttpGet("{imageId}")]
         public async Task<IActionResult> GetImageDetails(string imageId)
         {
             return Ok(dbContext.Images.Find(imageId));
-            //throw new NotImplementedException("ImageController.GetImageDetails()");
         }
 
 
@@ -56,7 +50,6 @@ namespace ProITM.Server.Controllers
             dbContext.Images.Add(model);
             await dbContext.SaveChangesAsync();
             return Ok();
-            //throw new NotImplementedException("ImageController.UploadImageFromUdl");
         }
 
         [HttpDelete("{imageId}")]
@@ -69,8 +62,8 @@ namespace ProITM.Server.Controllers
             return Ok();
         }
 
-
         #region Extra-curricular functionality
+        // TODO 186 Implement extracurricular methods
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetUserImageList(string userId)
         {

@@ -23,20 +23,15 @@ namespace ProITM.Server.Controllers
     [Route("[controller]")]
     public class ContainerController : ControllerBase
     {
-        // TODO 156 Inject database ApplicationDbContext
         private readonly ApplicationDbContext dbContext;
         private readonly UserManager<ApplicationUser> userManager;
         private static readonly string tmpUri = "http://wido.proitm.tk:52375";
 
         public ContainerController(ApplicationDbContext _db, UserManager<ApplicationUser> userManager)
         {
-            // Tu wstrzyknąć zależności
             dbContext = _db;
             this.userManager = userManager;
-            // dbContext.Database.EnsureCreated();
         }
-
-
 
         // TODO 144 Implement ContainerController endpoint methods
 
@@ -49,7 +44,6 @@ namespace ProITM.Server.Controllers
                 .AsNoTracking()
                 .Where(u => u.Id == userId)
                 .Select(u => u.Containers)
-                //.Include(u => u.Containers)
                 .FirstOrDefaultAsync();
 
             var containers = userContainers.Take((int)limit);
@@ -62,15 +56,12 @@ namespace ProITM.Server.Controllers
             {
                 return Ok(containers);
             }
+        }
 
-            //// Get container list DB, based on user ID
-            //string URI = "GET ME AN URI";
-
-            //// Make new instance of DockerClient from URI
-            //DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
-
-            //IList<ContainerListResponse> containers = await dockerClient.Containers.ListContainersAsync(new ContainersListParameters() { Limit = limit });
-            //return Ok(containers);
+        [HttpGet("{containerId}")]
+        public async Task<IActionResult> ContainerDetails(string containerId)
+        {
+            return Ok(GetContainerById(containerId));
         }
 
         [HttpPost("start/{containerId}")]
@@ -98,23 +89,6 @@ namespace ProITM.Server.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
-            
-            //// Get container host URI from DB, based on container ID
-            //string URI = "GET ME AN URI";
-
-            //// Make new instance of DockerClient from URI
-            //DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
-
-            ////throw new NotImplementedException("Implement me");
-            //var start = await dockerClient.Containers.StartContainerAsync(containerId, new ContainerStartParameters());
-            //if (start == true)
-            //{
-            //    return Ok("Container started");
-            //}
-            //else
-            //{
-            //    return Problem("Container start - error");
-            //}
         }
 
         [HttpPost("stop/{containerId}")]
@@ -145,22 +119,6 @@ namespace ProITM.Server.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
-
-            //// TODO Get container host URI from DB, based on container ID
-            //string URI = "GET ME AN URI";
-
-            //// Make new instance of DockerClient from URI
-            //DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
-
-            //var stopped = await dockerClient.Containers.StopContainerAsync(containerId, new ContainerStopParameters { WaitBeforeKillSeconds = 30 }, CancellationToken.None);
-            //if (stopped == true)
-            //{
-            //    return Ok("Container stopped");
-            //}
-            //else
-            //{
-            //    return Problem("Container stop - error");
-            //}
         }
 
         [HttpGet("stats/{containerId}")]
@@ -183,10 +141,6 @@ namespace ProITM.Server.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateContainer(ContainerModel model)
         {
-
-            // TODO Get container host URI by selecting least busy host of given system
-            //string URI = "GET ME AN URI";
-            //string URI = tmpUri;
             string URI = await LeastBusyUri(true);
 
             if (string.IsNullOrEmpty(URI))
@@ -216,6 +170,8 @@ namespace ProITM.Server.Controllers
                     DNS = new[] { "8.8.8.8", "8.8.4.4" }
                 }
             });
+
+            // TODO bind port
 
             // TODO pass warnings as list for analysis
 
@@ -256,15 +212,6 @@ namespace ProITM.Server.Controllers
             dbContext.SaveChanges();
 
             return Ok();
-
-            //// TODO Get container host URI from DB, based on container ID
-            //string URI = "GET ME AN URI";
-
-            //// Make new instance of DockerClient from URI
-            //DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
-
-            //await dockerClient.Containers.RemoveContainerAsync(containerId, new ContainerRemoveParameters { Force = true, RemoveLinks = true, RemoveVolumes = true }, CancellationToken.None);
-            //return Ok("Container deleted");
         }
 
         [HttpGet("logs/{containerId}/{since}/{tail}")]
@@ -294,6 +241,7 @@ namespace ProITM.Server.Controllers
 
         private async Task<string> LeastBusyUri(bool windows)
         {
+            // TODO 190 Make it actually check CPU/RAM stats
             var hosts = await dbContext.Hosts
                 .AsNoTracking()
                 .Where(h => h.IsWindows == windows)
@@ -317,60 +265,5 @@ namespace ProITM.Server.Controllers
 
             return uri;
         }
-
-        //private Docker.DotNet.DockerClient c;
-        //private readonly ApplicationDbContext dbContext;
-
-        //public ContainerController(ApplicationDbContext dbContext)
-        //{
-        //    this.dbContext = dbContext;
-        //}
-
-
-        //// TODO 143 Inject Docker.DotNet.DockerClient
-
-        //// TODO 144 Implement ContainerController endpoint methods
-
-        //[HttpGet("containers")]
-        //public async Task<IActionResult> ListContainers()
-        //{
-        //    throw new NotImplementedException("Implement me");
-        //}
-
-        //[HttpPost("start/{containerId}")]
-        //public async Task<IActionResult> StartContainer(string containerId)
-        //{
-        //    throw new NotImplementedException("Implement me");
-        //}
-
-        //[HttpPost("stop/{containerId}")]
-        //public async Task<IActionResult> StopContainer(string containerId)
-        //{
-        //    throw new NotImplementedException("Implement me");
-        //}
-
-        //[HttpGet("containers/stats/{containerId}")]
-        //public async Task<IActionResult> GetContainerStats(string containerId)
-        //{
-        //    throw new NotImplementedException("Implement me");
-        //}
-
-        //[HttpPost("containers/create")]
-        //public async Task<IActionResult> CreateContainer()
-        //{
-        //    throw new NotImplementedException("Implement me");
-        //}
-
-        //[HttpDelete("containers/{containerId}")]
-        //public async Task<IActionResult> DeleteContainer(string containerId)
-        //{
-        //    throw new NotImplementedException("Implement me");
-        //}
-
-        //[HttpGet("containers/logs/{containerId}")]
-        //public async Task<IActionResult> GetContainerLogs(string containerId)
-        //{
-        //    throw new NotImplementedException("Implement me");
-        //}
     }
 }

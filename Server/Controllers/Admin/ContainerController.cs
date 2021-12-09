@@ -60,6 +60,12 @@ namespace ProITM.Server.Controllers.Admin
                 .ToListAsync();
         }
 
+        [HttpGet("{manage/containerId}")]
+        public async Task<IActionResult> ContainerDetails(string containerId)
+        {
+            return Ok(GetContainerById(containerId));
+        }
+
         [HttpPost("manage/start/{containerId}")]
         public async Task<IActionResult> StartUsersContainer(string containerId)
         {

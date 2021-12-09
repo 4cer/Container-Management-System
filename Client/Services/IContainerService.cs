@@ -10,6 +10,7 @@ namespace ProITM.Client.Services
     interface IContainerService
     {
         public Task<List<ContainerModel>> ListContainers(long limit);
+        public Task<ContainerModel> ContainerDetails(string containerId);
         // TODO may be better to implement as just Task
         public Task<HttpResponseMessage> StartContainer(string containerid);
         public Task<HttpResponseMessage> StopContainer(string containerid);
