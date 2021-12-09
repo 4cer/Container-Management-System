@@ -141,7 +141,7 @@ namespace ProITM.Server.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateContainer(ContainerModel model)
         {
-            var host = await LeastBusyHost(model.IsWindows);
+            var host = await GetLeastBusyHost(model.IsWindows);
 
             if (string.IsNullOrEmpty(host.URI))
                 return NotFound();
@@ -242,7 +242,7 @@ namespace ProITM.Server.Controllers
                 .First(c => c.Id == containerId);
         }
 
-        private async Task<HostModel> LeastBusyHost(bool windows)
+        private async Task<HostModel> GetLeastBusyHost(bool windows)
         {
             // TODO 190 Make it actually check CPU/RAM stats
             var hosts = await dbContext.Hosts
