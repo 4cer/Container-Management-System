@@ -17,6 +17,8 @@ namespace ProITM.Client.Services
 
         public Task<HttpResponseMessage> GetImageFromDockerHub(string name, string version, string description);
 
+        public Task<HttpResponseMessage> DeleteImage(string imageId);
+
         public Task<HttpResponseMessage> UploadCompiledImage();
 
         public Task<HttpResponseMessage> UploadUncompiledImage();

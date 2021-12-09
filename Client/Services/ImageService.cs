@@ -34,6 +34,11 @@ namespace ProITM.Client.Services
             return await _httpClient.PostAsJsonAsync<string>($"Image/upload/{name}/{version}", description);
         }
 
+        public async Task<HttpResponseMessage> DeleteImage(string imageId)
+        {
+            return await _httpClient.DeleteAsync($"Image/{imageId}");
+        }
+
         # region Extra-curricular functionality
 
         public Task<List<ImageModel>> GetUserImageList(string userId)

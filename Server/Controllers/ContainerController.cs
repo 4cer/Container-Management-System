@@ -229,7 +229,6 @@ namespace ProITM.Server.Controllers
 
             dbContext.SaveChanges();
 
-
             return Ok("Container created");
         }
 

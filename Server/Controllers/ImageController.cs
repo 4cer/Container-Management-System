@@ -59,6 +59,16 @@ namespace ProITM.Server.Controllers
             //throw new NotImplementedException("ImageController.UploadImageFromUdl");
         }
 
+        [HttpDelete("{imageId}")]
+        public async Task<IActionResult> DeleteImage(string imageId)
+        {
+            ImageModel model = new() { Id = imageId };
+            dbContext.Attach(model);
+            dbContext.Remove(model);
+            dbContext.SaveChanges();
+            return Ok();
+        }
+
 
         #region Extra-curricular functionality
         [HttpGet("user/{id}")]
