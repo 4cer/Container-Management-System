@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace ProITM.Server.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class ImageController : ControllerBase
     {
@@ -34,15 +34,15 @@ namespace ProITM.Server.Controllers
             //throw new NotImplementedException("ImageController.GetImageList()");
         }
 
-        [HttpGet("images/{id}")]
-        public async Task<IActionResult> GetImageDetails(string id)
+        [HttpGet("{imageId}")]
+        public async Task<IActionResult> GetImageDetails(string imageId)
         {
-            return Ok(dbContext.Images.Find(id));
+            return Ok(dbContext.Images.Find(imageId));
             //throw new NotImplementedException("ImageController.GetImageDetails()");
         }
 
 
-        [HttpPost("images/upload/{name}/{version}")]
+        [HttpPost("upload/{name}/{version}")]
         public async Task<IActionResult> GetImageFromDockerHub(string name, string version, [FromBody] string description)
         {
             ImageModel model = new ImageModel();
@@ -61,7 +61,7 @@ namespace ProITM.Server.Controllers
 
 
         #region Extra-curricular functionality
-        [HttpGet("images/users/{id}")]
+        [HttpGet("user/{id}")]
         public async Task<IActionResult> GetUserImageList(string userId)
         {
             throw new NotImplementedException("ImageController.GetUserImageList()");

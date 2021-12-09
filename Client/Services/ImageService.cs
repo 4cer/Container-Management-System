@@ -26,12 +26,12 @@ namespace ProITM.Client.Services
 
         public async Task<ImageModel> GetImageDetails(string imageId)
         {
-            return await _httpClient.GetFromJsonAsync<ImageModel>($"Image/images/{imageId}");
+            return await _httpClient.GetFromJsonAsync<ImageModel>($"Image/{imageId}");
         }
 
         public async Task<HttpResponseMessage> GetImageFromDockerHub(string name, string version, string description)
         {
-            return await _httpClient.PostAsJsonAsync<string>($"Image/images/{name}/{version}", description);
+            return await _httpClient.PostAsJsonAsync<string>($"Image/upload/{name}/{version}", description);
         }
 
         # region Extra-curricular functionality
