@@ -11,8 +11,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ProITM.Server.Controllers
 {
-    //[Authorize]
-    [Route("[controller]")]
+    [Authorize]
+    [Route("api/[controller]")]
     [ApiController]
     public class ImageController : ControllerBase
     {
