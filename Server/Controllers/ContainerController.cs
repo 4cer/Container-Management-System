@@ -9,6 +9,10 @@ using ProITM.Server.Data;
 using System.Threading;
 using Docker.DotNet;
 using ProITM.Shared;
+using ProITM.Server.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace ProITM.Server.Controllers
 {
@@ -19,11 +23,13 @@ namespace ProITM.Server.Controllers
     {
         // TODO 156 Inject database ApplicationDbContext
         private readonly ApplicationDbContext dbContext;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public ContainerController(ApplicationDbContext _db)
+        public ContainerController(ApplicationDbContext _db, UserManager<ApplicationUser> userManager)
         {
             // Tu wstrzyknąć zależności
             dbContext = _db;
+            this.userManager = userManager;
             // dbContext.Database.EnsureCreated();
         }
 
@@ -32,17 +38,37 @@ namespace ProITM.Server.Controllers
         // TODO 144 Implement ContainerController endpoint methods
 
         [HttpGet("containers/{userId}/{limit}")]
-        public async Task<IActionResult> ListContainers(string userId, long limit)
+        public async Task<IActionResult> ListContainers(long limit)
         {
-            // TODO Get container list DB, based on user ID
-            string URI = "GET ME AN URI";
+            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
 
-            // Make new instance of DockerClient from URI
-            DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+            var userContainers = await dbContext.Users
+                .AsNoTracking()
+                .Where(u => u.Id == userId)
+                .Select(u => u.Containers)
+                //.Include(u => u.Containers)
+                .FirstOrDefaultAsync();
 
-            //throw new NotImplementedException("Incorrect implementation REDACTED");
-            IList<ContainerListResponse> containers = await dockerClient.Containers.ListContainersAsync(new ContainersListParameters() { Limit = limit });
-            return Ok(containers);
+            var containers = userContainers.Take((int)limit);
+
+            if (!containers.Any())
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(containers);
+            }
+
+            //// TODO Get container list DB, based on user ID
+            //string URI = "GET ME AN URI";
+
+            //// Make new instance of DockerClient from URI
+            //DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+
+            ////throw new NotImplementedException("Incorrect implementation REDACTED");
+            //IList<ContainerListResponse> containers = await dockerClient.Containers.ListContainersAsync(new ContainersListParameters() { Limit = limit });
+            //return Ok(containers);
         }
 
         [HttpPost("start/{containerId}")]

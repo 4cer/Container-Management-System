@@ -1,0 +1,29 @@
+﻿@page "/testing"
+@attribute [Authorize(Roles = "Admin")]
+
+@inject IAdminContainerService acs
+@inject NavigationManager navigationManager
+
+<h3>Testing</h3>
+
+@if(result != null)
+{
+    <p>
+        @result.StatusCode
+    </p>
+    <p>
+        @cnt
+    </p>
+}
+
+@code {
+    HttpResponseMessage result;
+    string cnt;
+
+    protected override async Task OnInitializedAsync()
+    {
+        result = await acs.StopUsersContainer("contea");
+        cnt = await result.Content.ReadAsStringAsync();
+        //user = await administrationService.GetUser(Id);
+    }
+}

@@ -24,25 +24,11 @@ namespace ProITM.Server.Controllers.Admin
     public class ContainerController : ControllerBase
     {
         private readonly ApplicationDbContext dbContext;
-        private readonly UserManager<ApplicationUser> userManager;
 
-        public ContainerController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager)
+        public ContainerController(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
-            this.userManager = userManager;
         }
-
-        //[HttpGet("aaazzz")]
-        //public async Task<IActionResult> GetMyId()
-        //{
-        //    string useruno = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
-        //    var user = await userManager.FindByIdAsync(useruno);
-        //    UserModel usrs = new()
-        //    {
-        //        Id = user.Id
-        //    };
-        //    return Ok(usrs);
-        //}
 
         [HttpGet("manage/{userId}/{limit}")]
         public async Task<IActionResult> GetUserContainers(string userId, int limit)
