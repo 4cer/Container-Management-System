@@ -1,5 +1,5 @@
-﻿@page "/testing"
-@attribute [Authorize(Roles = "Admin")]
+﻿@page "/testing/cont"
+@attribute [Authorize]
 
 @inject IContainerService cs
 @inject IImageService ims
@@ -29,36 +29,36 @@
                 </th>
             </tr>
         </thead>
+        <tbody>
+            @foreach (var con in containers)
+            {
+            <tr>
+                <td>
+                    @con.Name
+                </td>
+                <td>
+                    @con.Description
+                </td>
+                <td>
+                    @if (con.IsRunning)
+                    {
+                        <input class="btn btn-danger" type="button" @onclick="(() => Stop(con.Id))" value="Stop" />
+                    }
+                    else
+                    {
+                        <input class="btn btn-success" type="button" @onclick="(() => Start(con.Id))" value="Start" />
+                    }
+                </td>
+                <td>
+                    <input class="btn btn-danger" type="button" @onclick="(() => Delet(con.Id))" value="Delet" />
+                </td>
+                <td>
+                    @con.Id
+                </td>
+            </tr>
+            }
+        </tbody>
     </table>
-    <tbody>
-        @foreach (var con in containers)
-        {
-        <tr>
-            <td>
-                @con.Name
-            </td>
-            <td>
-                @con.Description
-            </td>
-            <td>
-                @if (con.IsRunning)
-                {
-                    <input class="btn btn-danger" type="button" @onclick="(() => Stop(con.Id))" value="Stop" />
-                }
-                else
-                {
-                    <input class="btn btn-success" type="button" @onclick="(() => Start(con.Id))" value="Start" />
-                }
-            </td>
-            <td>
-                <input class="btn btn-danger" type="button" @onclick="(() => Delet(con.Id))" value="Delet" />
-            </td>
-            <td>
-                @con.Id
-            </td>
-        </tr>
-        }
-    </tbody>
 
 }
 
@@ -110,9 +110,6 @@
         </div>
     </EditForm>
 }
-
-
-@*<input class="btn btn-primary" type="button" @onclick="(() => Creat(true))" value="Creat" />*@
 
 @code {
     List<ContainerModel> containers;

@@ -1,0 +1,94 @@
+﻿@page "/testing/admcont"
+@attribute [Authorize(Roles = "Admin")]
+
+@inject IAdminContainerService acs
+@inject IImageService ims
+@inject NavigationManager navMgr
+
+<h3>Testing AdminContContr</h3>
+
+@if (containers != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Description
+                </th>
+                <th>
+                    Runs?
+                </th>
+                <th>
+                    Delet?
+                </th>
+                <th>
+                    Id
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var con in containers)
+            {
+                <tr>
+                    <td>
+                        @con.Name
+                    </td>
+                    <td>
+                        @con.Description
+                    </td>
+                    <td>
+                        @if (con.IsRunning)
+                        {
+                            <input class="btn btn-danger" type="button" @onclick="(() => Stop(con.Id))" value="Stop" />
+                        }
+                        else
+                        {
+                            <input class="btn btn-success" type="button" @onclick="(() => Start(con.Id))" value="Start" />
+                        }
+                    </td>
+                    <td>
+                        <input class="btn btn-danger" type="button" @onclick="(() => Delet(con.Id))" value="Delet" />
+                    </td>
+                    <td>
+                        @con.Id
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}
+
+@code {
+    List<ContainerModel> containers;
+
+    List<ImageModel> images;
+
+    ContainerModel container;
+
+    protected override async Task OnInitializedAsync()
+    {
+        containers = await acs.GetContainers(50);
+    }
+
+    protected async Task Delet(string id)
+    {
+        _ = await acs.DeleteUsersContainer(id);
+        containers = await acs.GetContainers(50);
+    }
+
+    protected async Task Start(string id)
+    {
+        _ = await acs.StartUsersContainer(id);
+        containers = await acs.GetContainers(50);
+    }
+
+    protected async Task Stop(string id)
+    {
+        _ = await acs.StopUsersContainer(id);
+        containers = await acs.GetContainers(50);
+    }
+}
