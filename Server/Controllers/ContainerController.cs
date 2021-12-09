@@ -48,14 +48,7 @@ namespace ProITM.Server.Controllers
 
             var containers = userContainers.Take((int)limit);
 
-            if (!containers.Any())
-            {
-                return NotFound();
-            }
-            else
-            {
-                return Ok(containers);
-            }
+            return Ok(containers);
         }
 
         [HttpGet("{containerId}")]

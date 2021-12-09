@@ -1,4 +1,4 @@
-﻿@page "/testing/cont"
+﻿@page "/testing/cont/userViewAddOwn"
 @attribute [Authorize]
 
 @inject IContainerService cs
@@ -57,10 +57,15 @@
                 </td>
             </tr>
             }
+            @if (!containers.Any())
+            {
+                <tr><th colspan="5">There are no containers owned by this user...</th></tr>
+            }
         </tbody>
     </table>
-
 }
+
+<hr />
 
 @if (container != null && images != null)
 {
@@ -86,7 +91,7 @@
             <tbody>
                 <InputRadioGroup @bind-Value="@container.ImageIdC">
                     @foreach (var img in images)
-                        {
+                    {
                         <tr>
                             <td>
                                 <InputRadio Value="img.Id" />
@@ -101,7 +106,11 @@
                                 @img.Description
                             </td>
                         </tr>
-                        }
+                    }
+                    @if(!images.Any())
+                    {
+                        <tr><td colspan="4">No images registered in the system.</td></tr>
+                    }
                 </InputRadioGroup>
             </tbody>
         </table>

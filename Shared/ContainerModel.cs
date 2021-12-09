@@ -47,5 +47,8 @@ namespace ProITM.Shared
 
         [NotMapped]
         public string ImageIdC { get; set; }
+
+        [NotMapped]
+        public string OwnerName { get; set; }
     }
 }

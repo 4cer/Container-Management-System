@@ -36,28 +36,44 @@ namespace ProITM.Server.Controllers.Admin
             var userContainers = await dbContext.Users
                 .AsNoTracking()
                 .Where(u => u.Id == userId)
+                .Include(u => u.Containers)
+                .ThenInclude(c => c.Port)
                 .Select(u => u.Containers)
                 //.Include(u => u.Containers)
                 .FirstOrDefaultAsync();
 
             var containers = userContainers.Take(limit);
 
-            if(!containers.Any())
-            {
-                return NotFound();
-            } else
-            {
-                return Ok(containers);
-            }
+            return Ok(containers);
         }
 
         [HttpGet("manage/list/{limit}")]
-        public async Task<List<ContainerModel>> GetContainers(int limit)
+        public async Task<IActionResult> GetContainers(int limit)
         {
-            return await dbContext.Containers
+            var users = await dbContext.Users
                 .AsNoTracking()
-                .Take(limit)
+                .Include(u => u.Containers)
+                .ThenInclude(c => c.Port)
+                .Where(u => u.Containers.Any())
                 .ToListAsync();
+
+            List<ContainerModel> containers = new();
+
+            foreach (var user in users)
+            {
+                foreach (var container in user.Containers)
+                {
+                    container.OwnerName = user.UserName;
+                    containers.Add(container);
+                }
+            }
+
+            return Ok(containers);
+
+            //return await dbContext.Containers
+            //    .AsNoTracking()
+            //    .Take(limit)
+            //    .ToListAsync();
         }
 
         [HttpGet("manage/{containerId}")]

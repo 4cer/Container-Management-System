@@ -1,4 +1,4 @@
-﻿@page "/testing/admcont"
+﻿@page "/testing/cont/adminViewAll"
 @attribute [Authorize(Roles = "Admin")]
 
 @inject IAdminContainerService acs
@@ -19,10 +19,16 @@
                     Description
                 </th>
                 <th>
+                    Owner
+                </th>
+                <th>
                     Runs?
                 </th>
                 <th>
                     Delet?
+                </th>
+                <th>
+                    Port
                 </th>
                 <th>
                     Id
@@ -40,6 +46,9 @@
                         @con.Description
                     </td>
                     <td>
+                        @con.OwnerName
+                    </td>
+                    <td>
                         @if (con.IsRunning)
                         {
                             <input class="btn btn-danger" type="button" @onclick="(() => Stop(con.Id))" value="Stop" />
@@ -53,9 +62,16 @@
                         <input class="btn btn-danger" type="button" @onclick="(() => Delet(con.Id))" value="Delet" />
                     </td>
                     <td>
+                        @con.Port.Port
+                    </td>
+                    <td>
                         @con.Id
                     </td>
                 </tr>
+            }
+            @if (!containers.Any())
+            {
+                <tr><th colspan="6">There are no containers owned by this user...</th></tr>
             }
         </tbody>
     </table>

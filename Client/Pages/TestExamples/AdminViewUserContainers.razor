@@ -1,0 +1,158 @@
+﻿@page "/testing/cont/adminViewUser"
+@attribute [Authorize(Roles = "Admin")]
+
+@inject IAdminContainerService acs
+@inject IAdministrationService ase
+@inject NavigationManager navMgr
+
+<h3>Testing AdminViewUserContainers</h3>
+<td>Click user row to preview list of containers</td>
+
+@if (users != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <td>
+                    Name
+                </td>
+                <td>
+                    Container count
+                </td>
+                <td>
+                    Id
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+            <tr @onclick="(() => ReadContainersForUser(user.Id))">
+                <td>
+                    @user.UserName
+                </td>
+                <td>
+                    TBA
+                </td>
+                <td>
+                    @user.Id
+                </td>
+            </tr>
+            }
+            @if (!users.Any())
+            {
+                <tr>
+                    <td colspan="100">
+                        No users? Looks like you done fucked up.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<hr />
+
+@if (containers != null)
+{
+    <h3>Containers for @Id</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <td>
+            <tr>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Description
+                </th>
+                <th>
+                    Runs?
+                </th>
+                <th>
+                    Delet?
+                </th>
+                <th>
+                    Port
+                </th>
+                <th>
+                    Id
+                </th>
+            </tr>
+            </td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var con in containers)
+            {
+                <tr>
+                    <td>
+                        @con.Name
+                    </td>
+                    <td>
+                        @con.Description
+                    </td>
+                    <td>
+                        @if (con.IsRunning)
+                        {
+                            <input class="btn btn-danger" type="button" @onclick="(() => Stop(con.Id))" value="Stop" />
+                        }
+                        else
+                        {
+                            <input class="btn btn-success" type="button" @onclick="(() => Start(con.Id))" value="Start" />
+                        }
+                    </td>
+                    <td>
+                        <input class="btn btn-danger" type="button" @onclick="(() => Delet(con.Id))" value="Delet" />
+                    </td>
+                    <td>
+                        @con.Port.Port
+                    </td>
+                    <td>
+                        @con.Id
+                    </td>
+                </tr>
+            }
+            @if (!containers.Any())
+            {
+                <tr><th colspan="6">There are no containers owned by this user...</th></tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    public string Id;
+    List<ContainerModel> containers;
+    List<UserModel> users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await ase.GetUsers();
+    }
+
+    private async Task ReadContainersForUser(string uId)
+    {
+        Id = uId;
+        containers = await acs.GetUserContainers(uId, 50);
+    }
+
+    protected async Task Delet(string id)
+    {
+        _ = await acs.DeleteUsersContainer(id);
+        containers = await acs.GetContainers(50);
+    }
+
+    protected async Task Start(string id)
+    {
+        _ = await acs.StartUsersContainer(id);
+        containers = await acs.GetContainers(50);
+    }
+
+    protected async Task Stop(string id)
+    {
+        _ = await acs.StopUsersContainer(id);
+        containers = await acs.GetContainers(50);
+    }
+}
