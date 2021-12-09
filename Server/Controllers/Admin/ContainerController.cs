@@ -1,6 +1,7 @@
 ﻿using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,20 +13,36 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using ProITM.Server.Utilities;
+using ProITM.Server.Models;
+using System.Security.Claims;
 
 namespace ProITM.Server.Controllers.Admin
 {
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("[controller]")]
     public class ContainerController : ControllerBase
     {
         private readonly ApplicationDbContext dbContext;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public ContainerController(ApplicationDbContext dbContext)
+        public ContainerController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager)
         {
             this.dbContext = dbContext;
+            this.userManager = userManager;
         }
+
+        //[HttpGet("aaazzz")]
+        //public async Task<IActionResult> GetMyId()
+        //{
+        //    string useruno = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+        //    var user = await userManager.FindByIdAsync(useruno);
+        //    UserModel usrs = new()
+        //    {
+        //        Id = user.Id
+        //    };
+        //    return Ok(usrs);
+        //}
 
         [HttpGet("manage/{userId}/{limit}")]
         public async Task<IActionResult> GetUserContainers(string userId, int limit)
@@ -38,8 +55,6 @@ namespace ProITM.Server.Controllers.Admin
                 .FirstOrDefaultAsync();
 
             var containers = userContainers.Take(limit);
-
-            System.Diagnostics.Debug.WriteLine(limit);
 
             if(!containers.Any())
             {
@@ -125,7 +140,7 @@ namespace ProITM.Server.Controllers.Admin
 
             await dockerClient.Containers
                 .RemoveContainerAsync(containerId, new ContainerRemoveParameters());
-
+            
             return Ok();
         }
 
