@@ -186,7 +186,24 @@ namespace ProITM.Server.Controllers
 
             // TODO Get container host URI by selecting least busy host of given system
             //string URI = "GET ME AN URI";
-            string URI = tmpUri;
+            //string URI = tmpUri;
+            string URI = await LeastBusyUri(true);
+
+            if (string.IsNullOrEmpty(URI))
+                return NotFound();
+
+            // Construct model
+            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+            var image = await dbContext.Images.SingleOrDefaultAsync(i => i.Id == "ngineex");
+            dbContext.Attach(image);
+            model.Image = image;
+
+            var host = new HostModel() { Id = "hosto" };
+            dbContext.Attach(host);
+            var port = new ContainerPortModel() { Id = Guid.NewGuid().ToString(), Port = 2137, Host = host };
+            model.Machine = host;
+            model.Port = port;
+            model.IsRunning = false;
 
             // Make new instance of DockerClient from URI
             DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
@@ -201,19 +218,6 @@ namespace ProITM.Server.Controllers
             });
 
             // TODO pass warnings as list for analysis
-
-            // Construct model
-            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
-            var image = await dbContext.Images.SingleOrDefaultAsync(i => i.Id == "ngineex");
-            dbContext.Attach(image);
-            model.Image = image;
-
-            var host = new HostModel() { Id = "hosto" };
-            dbContext.Attach(host);
-            var port = new ContainerPortModel() { Id = Guid.NewGuid().ToString(), Port = 2137, Host = host };
-            model.Machine = host;
-            model.Port = port;
-            model.IsRunning = false;
 
             model.Id = result.ID;
 
@@ -287,6 +291,32 @@ namespace ProITM.Server.Controllers
                 .AsNoTracking()
                 .Include(c => c.Machine)
                 .First(c => c.Id == containerId);
+        }
+
+        private async Task<string> LeastBusyUri(bool windows)
+        {
+            var hosts = await dbContext.Hosts
+                .AsNoTracking()
+                .Where(h => h.IsWindows == windows)
+                .ToListAsync();
+
+            string uri = hosts[0].URI;
+
+            int min = int.MaxValue;
+            foreach(var host in hosts)
+            {
+                var cmp = dbContext.Containers
+                    .AsNoTracking()
+                    .Where(c => c.Machine.Id == host.Id)
+                    .Count();
+                if (cmp < min)
+                {
+                    min = cmp;
+                    uri = host.URI;
+                }
+            }
+
+            return uri;
         }
 
         //private Docker.DotNet.DockerClient c;
