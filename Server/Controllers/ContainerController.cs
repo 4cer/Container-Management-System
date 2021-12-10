@@ -26,7 +26,6 @@ namespace ProITM.Server.Controllers
     {
         private readonly ApplicationDbContext dbContext;
         private readonly UserManager<ApplicationUser> userManager;
-        //private static readonly string tmpUri = "http://wido.proitm.tk:52375";
 
         public ContainerController(ApplicationDbContext _db, UserManager<ApplicationUser> userManager)
         {
@@ -118,6 +117,8 @@ namespace ProITM.Server.Controllers
         [HttpGet("stats/{containerId}")]
         public async Task<IActionResult> GetContainerStats(string containerId)
         {
+            // TODO 216 Implement method
+
             //// TODO Get container host URI from DB, based on container ID
             //string URI = "GET ME AN URI";
 
@@ -128,7 +129,7 @@ namespace ProITM.Server.Controllers
                 .Machine
                 .GetDockerClient();
 
-            var stats = await dockerClient.Containers.GetContainerStatsAsync(containerId, new ContainerStatsParameters { Stream = true }, CancellationToken.None);
+            var stats = await dockerClient.Containers.GetContainerStatsAsync(containerId, new ContainerStatsParameters { Stream = false }, CancellationToken.None);
             return Ok(stats);
         }
 
@@ -162,11 +163,8 @@ namespace ProITM.Server.Controllers
                 {
                     DNS = new[] { "8.8.8.8", "8.8.4.4" }
                 }
-                // TODO bind port
+                // TODO 195 bind port
             });
-
-            // TODO pass warnings as list for analysis
-
 
             model.Id = result.ID;
 
@@ -221,18 +219,14 @@ namespace ProITM.Server.Controllers
             var log_stream = await dockerClient.Containers.GetContainerLogsAsync(containerId, true, new ContainerLogsParameters { ShowStdout = true, ShowStderr = true, Timestamps = true, Tail = "50"}, default);
             var log_tuple = (await log_stream.ReadOutputToEndAsync(default)).ToTuple();
 
-
-            // 2021-12-09T19:07:55.978890900Z
             var stdout_sp = 
                 Regex
-                .Replace(log_tuple.Item1, "^(?:.{1,})([0-9]{4}.{1,})(?:T)([0-9]{2}.{1,})(?:[.]{1}.{1,})(?:Z)", "<B>$1 $2\t</B> ",RegexOptions.Multiline)
+                .Replace(log_tuple.Item1, "^(?:.{1,})([0-9]{4}.{1,})(?:T)([0-9]{2}.{1,})(?:[.]{1}.{1,})(?:Z)", "<B>[$1 $2]\t</B> ",RegexOptions.Multiline)
                 .Replace("\n", "<BR />");
             var stderr_sp = 
                 Regex
-                .Replace(log_tuple.Item2, "^(?:.{1,})([0-9]{4}.{1,})(?:T)([0-9]{2}.{1,})(?:[.]{1}.{1,})(?:Z)", "<B>$1 $2\t</B> ", RegexOptions.Multiline)
+                .Replace(log_tuple.Item2, "^(?:.{1,})([0-9]{4}.{1,})(?:T)([0-9]{2}.{1,})(?:[.]{1}.{1,})(?:Z)", "<B>[$1 $2]\t</B> ", RegexOptions.Multiline)
                 .Replace("\n", "<BR />");
-
-            // TODO splice HTML format markup into logs
 
             return Ok(new Tuple<string, string>(stdout_sp, stderr_sp));
         }
