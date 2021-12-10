@@ -5,8 +5,8 @@
 @inject NavigationManager navMgr
 
 
-<h3>UserGetContainerLogs</h3>
-@if (IsStderr)
+<h3>Get Logs for @id</h3>
+@if (!IsStderr)
 {
     <input class="btn btn-secondary" type="button" @onclick="(() => ToggleStream())" value="Show errors" />
 }
@@ -57,9 +57,13 @@ else
     protected override async Task OnInitializedAsync()
     {
         IsRefreshing = true;
-        container = await cs.ContainerDetails(id);
-        logs = await cs.GetContainerLogs(id, "0", "0");
-        IsRefreshing = false;
+        try {
+            logs = await cs.GetContainerLogs(id, "0", "0");
+            IsRefreshing = false;
+        }
+        catch (Exception) {
+            logs = new Tuple<string, string>("CONTAINER NOT FOUND", "CONTAINER NOT FOUND");
+        }
     }
 
     protected async Task ToggleStream()
@@ -73,35 +77,4 @@ else
         logs = await cs.GetContainerLogs(id, "0", "0");
         IsRefreshing = false;
     }
-
-    //protected async Task OnCreat()
-    //{
-    //    _ = await cs.CreateContainer(container);
-    //    containers = await cs.ListContainers(50);
-    //}
-
-    //protected async Task Delet(string id)
-    //{
-    //    _ = await cs.DeleteContainer(id);
-    //    containers = await cs.ListContainers(50);
-    //}
-
-    //protected async Task Creat(bool windows)
-    //{
-    //    ContainerModel model = new();
-    //    _ = await cs.CreateContainer(model);
-    //    containers = await cs.ListContainers(50);
-    //}
-
-    //protected async Task Start(string id)
-    //{
-    //    _ = await cs.StartContainer(id);
-    //    containers = await cs.ListContainers(50);
-    //}
-
-    //protected async Task Stop(string id)
-    //{
-    //    _ = await cs.StopContainer(id);
-    //    containers = await cs.ListContainers(50);
-    //}
 }

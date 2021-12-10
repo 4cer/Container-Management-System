@@ -25,6 +25,11 @@
                 <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
             </NavLink>
         </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="#">
+                ADMINISTRACJA
+            </NavLink>
+        </li>
         <AuthorizeView Roles="Admin">
             <Authorized>
                 <li class="nav-item px-3">
@@ -39,7 +44,42 @@
                 </li>
             </Authorized>
         </AuthorizeView>
-        
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="#">
+                TESTY - Administrator
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="testing/hosts">
+                <span class="oi oi-circle-check" aria-hidden="true"></span> Zarządzaj hostami
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="testing/cont/adminViewAll">
+                <span class="oi oi-circle-check" aria-hidden="true"></span> Zarządzaj kontenerami
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="testing/cont/adminViewUser">
+                <span class="oi oi-circle-check" aria-hidden="true"></span> Kontenery operatorów
+            </NavLink>
+        </li>
+
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="#">
+                TESTY - Operator
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="testing/cont/userViewAddOwn">
+                <span class="oi oi-circle-check" aria-hidden="true"></span> Moje kontenery
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="testing/cont/userViewDetes/NONE_SPECIFIED">
+                <span class="oi oi-circle-check" aria-hidden="true"></span> Logi kontenera
+            </NavLink>
+        </li>
     </ul>
 </div>
 

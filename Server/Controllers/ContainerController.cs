@@ -216,6 +216,9 @@ namespace ProITM.Server.Controllers
                 .Machine
                 .GetDockerClient();
 
+            if (dockerClient == null)
+                return Ok(new Tuple<string, string>("Container not found", "Container not found"));
+
             var log_stream = await dockerClient.Containers.GetContainerLogsAsync(containerId, true, new ContainerLogsParameters { ShowStdout = true, ShowStderr = true, Timestamps = true, Tail = "50"}, default);
             var log_tuple = (await log_stream.ReadOutputToEndAsync(default)).ToTuple();
 
