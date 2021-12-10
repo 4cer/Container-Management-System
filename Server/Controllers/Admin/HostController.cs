@@ -32,10 +32,34 @@ namespace ProITM.Server.Controllers.Admin
             return Ok("Added host to databse");
         }
 
+        [HttpPut("edit")]
+        public async Task<IActionResult> EditHost(HostModel host)
+        {
+            var foundHost = await dbContext.Hosts
+                .FirstAsync(h => h.Id == host.Id);
+
+            if (foundHost == null) return BadRequest();
+
+            foundHost.DisplayName = host.DisplayName;
+            foundHost.IsWindows = host.IsWindows;
+            foundHost.IP = host.IP;
+            foundHost.Port = host.Port;
+            foundHost.URI = host.URI;
+
+            if (await dbContext.SaveChangesAsync() == 1)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
         [HttpDelete("{hostId}")]
         public async Task<IActionResult> DeleteHost(string hostId)
         {
-            var host = dbContext.Hosts.First(h => h.Id == hostId );
+            var host = dbContext.Hosts.First(h => h.Id == hostId);
 
             dbContext.Hosts.Remove(host);
 
