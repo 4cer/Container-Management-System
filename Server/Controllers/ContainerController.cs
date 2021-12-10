@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using ProITM.Server.Utilities;
 using Microsoft.AspNetCore.Http;
+using System.Text.RegularExpressions;
 
 namespace ProITM.Server.Controllers
 {
@@ -219,9 +220,20 @@ namespace ProITM.Server.Controllers
             var log_stream = await dockerClient.Containers.GetContainerLogsAsync(containerId, true, new ContainerLogsParameters { ShowStdout = true, ShowStderr = true, Timestamps = true, Tail = "50"}, default);
             var log_tuple = (await log_stream.ReadOutputToEndAsync(default)).ToTuple();
 
+
+            // 2021-12-09T19:07:55.978890900Z
+            var stdout_sp = 
+                Regex
+                .Replace(log_tuple.Item1, "^(?:.{1,})([0-9]{4}.{1,})(?:T)([0-9]{2}.{1,})(?:[.]{1}.{1,})(?:Z)", "<B>$1 $2\t</B> ",RegexOptions.Multiline)
+                .Replace("\n", "<BR />");
+            var stderr_sp = 
+                Regex
+                .Replace(log_tuple.Item2, "^(?:.{1,})([0-9]{4}.{1,})(?:T)([0-9]{2}.{1,})(?:[.]{1}.{1,})(?:Z)", "<B>$1 $2\t</B> ", RegexOptions.Multiline)
+                .Replace("\n", "<BR />");
+
             // TODO splice HTML format markup into logs
 
-            return Ok(log_tuple);
+            return Ok(new Tuple<string, string>(stdout_sp, stderr_sp));
         }
 
         private ContainerModel GetContainerById(string containerId)

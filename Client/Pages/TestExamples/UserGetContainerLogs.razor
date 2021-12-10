@@ -28,14 +28,14 @@ else
 
 @if (logs != null)
 {
-    <div class="blockquote">
+    <div class="blockquote font-weight-light">
         @if (!IsStderr)
         {
-            @logs.Item1
+            @((MarkupString)logs.Item1)
         }
         else
         {
-            @logs.Item2
+            @((MarkupString)logs.Item2)
         }
         <hr />
 
