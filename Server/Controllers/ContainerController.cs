@@ -166,6 +166,7 @@ namespace ProITM.Server.Controllers
 
             // TODO pass warnings as list for analysis
 
+
             model.Id = result.ID;
 
             dbContext.Containers.Add(model);
@@ -176,7 +177,7 @@ namespace ProITM.Server.Controllers
 
             dbContext.SaveChanges();
 
-            return Ok("Container created");
+            return Ok(result.Warnings);
         }
 
         [HttpDelete("{containerId}")]
