@@ -1,0 +1,107 @@
+﻿@page "/testing/cont/userViewDetes/{id}"
+@attribute [Authorize]
+
+@inject IContainerService cs
+@inject NavigationManager navMgr
+
+
+<h3>UserGetContainerLogs</h3>
+@if (IsStderr)
+{
+    <input class="btn btn-secondary" type="button" @onclick="(() => ToggleStream())" value="Show errors" />
+}
+else
+{
+    <input class="btn btn-secondary" type="button" @onclick="(() => ToggleStream())" value="Show logs" />
+}
+
+@if (IsRefreshing)
+{
+    <input id="refresh-btn" class="btn btn-secondary" type="button" disabled="true" value="Refresh" />
+}
+else
+{
+    <input id="refresh-btn" class="btn btn-secondary" type="button" @onclick="(() => RefreshStream())" value="Refresh" />
+}
+
+<h4>Output:</h4>
+
+@if (logs != null)
+{
+    <div class="blockquote">
+        @if (!IsStderr)
+        {
+            @logs.Item1
+        }
+        else
+        {
+            @logs.Item2
+        }
+        <hr />
+
+    </div>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+    bool IsStderr = false;
+    bool IsRefreshing = true;
+    ContainerModel container;
+    Tuple<string, string> logs;
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsRefreshing = true;
+        container = await cs.ContainerDetails(id);
+        logs = await cs.GetContainerLogs(id, "0", "0");
+        IsRefreshing = false;
+    }
+
+    protected async Task ToggleStream()
+    {
+        IsStderr = !IsStderr;
+    }
+
+    protected async Task RefreshStream()
+    {
+        IsRefreshing = true;
+        logs = await cs.GetContainerLogs(id, "0", "0");
+        IsRefreshing = false;
+    }
+
+    //protected async Task OnCreat()
+    //{
+    //    _ = await cs.CreateContainer(container);
+    //    containers = await cs.ListContainers(50);
+    //}
+
+    //protected async Task Delet(string id)
+    //{
+    //    _ = await cs.DeleteContainer(id);
+    //    containers = await cs.ListContainers(50);
+    //}
+
+    //protected async Task Creat(bool windows)
+    //{
+    //    ContainerModel model = new();
+    //    _ = await cs.CreateContainer(model);
+    //    containers = await cs.ListContainers(50);
+    //}
+
+    //protected async Task Start(string id)
+    //{
+    //    _ = await cs.StartContainer(id);
+    //    containers = await cs.ListContainers(50);
+    //}
+
+    //protected async Task Stop(string id)
+    //{
+    //    _ = await cs.StopContainer(id);
+    //    containers = await cs.ListContainers(50);
+    //}
+}

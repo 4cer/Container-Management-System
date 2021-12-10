@@ -54,9 +54,9 @@ namespace ProITM.Client.Services
         }
 
         //TODO format since i tail
-        public async Task<Stream> GetContainerLogs(string containerId, string since, string tail)
+        public async Task<Tuple<string, string>> GetContainerLogs(string containerId, string since, string tail)
         {
-            return await _httpClient.GetFromJsonAsync<Stream>($"Container/logs/{containerId}/{since}/{tail}");
+            return await _httpClient.GetFromJsonAsync<Tuple<string, string>>($"Container/logs/{containerId}/{since}/{tail}");
         }
     }
 }

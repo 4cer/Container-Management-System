@@ -19,10 +19,7 @@
                     Description
                 </th>
                 <th>
-                    Runs?
-                </th>
-                <th>
-                    Delet?
+                    Actions
                 </th>
                 <th>
                     Id
@@ -48,9 +45,8 @@
                     {
                         <input class="btn btn-success" type="button" @onclick="(() => Start(con.Id))" value="Start" />
                     }
-                </td>
-                <td>
                     <input class="btn btn-danger" type="button" @onclick="(() => Delet(con.Id))" value="Delet" />
+                    <input class="btn btn-secondary" type="button" @onclick="(() => Detes(con.Id))" value="Detes" />
                 </td>
                 <td>
                     @con.Id
@@ -162,6 +158,12 @@
     protected async Task Stop(string id)
     {
         _ = await cs.StopContainer(id);
+        containers = await cs.ListContainers(50);
+    }
+
+    protected async Task Detes(string id)
+    {
+        navMgr.NavigateTo($"/testing/cont/userViewDetes/{id}");
         containers = await cs.ListContainers(50);
     }
 }

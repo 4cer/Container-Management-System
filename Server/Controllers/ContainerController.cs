@@ -25,7 +25,7 @@ namespace ProITM.Server.Controllers
     {
         private readonly ApplicationDbContext dbContext;
         private readonly UserManager<ApplicationUser> userManager;
-        private static readonly string tmpUri = "http://wido.proitm.tk:52375";
+        //private static readonly string tmpUri = "http://wido.proitm.tk:52375";
 
         public ContainerController(ApplicationDbContext _db, UserManager<ApplicationUser> userManager)
         {
@@ -212,18 +212,16 @@ namespace ProITM.Server.Controllers
         [HttpGet("logs/{containerId}/{since}/{tail}")]
         public async Task<IActionResult> GetContainerLogs(string containerId, string since, string tail)
         {
-            //// TODO Get container host URI from DB, based on container ID
-            //string URI = "GET ME AN URI";
-
-            //// Make new instance of DockerClient from URI
-            //DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
-
             var dockerClient = GetContainerById(containerId)
                 .Machine
                 .GetDockerClient();
 
-            var logs = await dockerClient.Containers.GetContainerLogsAsync(containerId, true, new ContainerLogsParameters { ShowStdout = true, ShowStderr = true, Since = since, Timestamps = true, Follow = true, Tail = tail }, CancellationToken.None);
-            return Ok(logs);
+            var log_stream = await dockerClient.Containers.GetContainerLogsAsync(containerId, true, new ContainerLogsParameters { ShowStdout = true, ShowStderr = true, Timestamps = true, Tail = "50"}, default);
+            var log_tuple = (await log_stream.ReadOutputToEndAsync(default)).ToTuple();
+
+            // TODO splice HTML format markup into logs
+
+            return Ok(log_tuple);
         }
 
         private ContainerModel GetContainerById(string containerId)
