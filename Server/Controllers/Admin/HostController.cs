@@ -28,7 +28,7 @@ namespace ProITM.Server.Controllers.Admin
         public async Task<IActionResult> AddHost(HostModel host)
         {
             dbContext.Hosts.Add(host);
-
+            dbContext.SaveChanges();
             return Ok("Added host to databse");
         }
 
@@ -62,6 +62,8 @@ namespace ProITM.Server.Controllers.Admin
             var host = dbContext.Hosts.First(h => h.Id == hostId);
 
             dbContext.Hosts.Remove(host);
+
+            dbContext.SaveChanges();
 
             return Ok("Deleted successfully");
         }

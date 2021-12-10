@@ -19,7 +19,11 @@ namespace ProITM.Client.Services
 
         public async Task<HttpResponseMessage> AddHost(HostModel host)
         {
-            return await _httpClient.PostAsJsonAsync<HostModel>($"Host/create", host);
+            return await _httpClient.PostAsJsonAsync($"Host/create", host);
+        }
+        public async Task<HttpResponseMessage> EditHost(HostModel host)
+        {
+            return await _httpClient.PutAsJsonAsync($"Host/edit", host);
         }
 
         public async Task<HttpResponseMessage> DeleteHost(string hostId)
