@@ -37,6 +37,26 @@ else
         {
             @((MarkupString)logs.Item2)
         }
+    </div>
+
+    <hr />
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@if (logs != null)
+{
+    <div class="blockquote" font-face="Courier new">
+        @if (!IsStderr)
+        {
+            @((MarkupString)logs.Item1)
+        }
+        else
+        {
+            @((MarkupString)logs.Item2)
+        }
         <hr />
 
     </div>
@@ -45,6 +65,10 @@ else
 {
     <p>Loading...</p>
 }
+
+<hr />
+
+<h4>Stats:</h4>
 
 @code {
     [Parameter]
@@ -57,11 +81,13 @@ else
     protected override async Task OnInitializedAsync()
     {
         IsRefreshing = true;
-        try {
+        try
+        {
             logs = await cs.GetContainerLogs(id, "0", "0");
             IsRefreshing = false;
         }
-        catch (Exception) {
+        catch (Exception)
+        {
             logs = new Tuple<string, string>("CONTAINER NOT FOUND", "CONTAINER NOT FOUND");
         }
     }

@@ -129,19 +129,11 @@ namespace ProITM.Server.Controllers
         [HttpGet("stats/{containerId}")]
         public async Task<IActionResult> GetContainerStats(string containerId)
         {
-            // TODO 216 Implement method
-
-            //// TODO Get container host URI from DB, based on container ID
-            //string URI = "GET ME AN URI";
-
-            //// Make new instance of DockerClient from URI
-            //DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
-            
             var dockerClient = GetContainerById(containerId)
                 .Machine
                 .GetDockerClient();
 
-            var stats = await dockerClient.Containers.GetContainerStatsAsync(containerId, new ContainerStatsParameters { Stream = false }, CancellationToken.None);
+            var stats = await dockerClient.Containers.GetContainerStatsAsync(containerId, new ContainerStatsParameters { Stream = false }, default);
             return Ok(stats);
         }
 
