@@ -60,9 +60,15 @@ namespace ProITM.Server.Controllers
         [HttpPost("start/{containerId}")]
         public async Task<IActionResult> StartContainer(string containerId)
         {
-            var dockerClient = GetContainerById(containerId)
-                .Machine
-                .GetDockerClient();
+            // Get instance of appropriate host client and handle any fail to get one
+            DockerClient dockerClient;
+            try
+            {
+                dockerClient = GetContainerById(containerId)
+                    .Machine
+                    .GetDockerClient();
+            }
+            catch (Exception) { return NotFound(); }
 
             var success = await dockerClient.Containers
                 .StartContainerAsync(containerId, new ContainerStartParameters());
@@ -87,9 +93,15 @@ namespace ProITM.Server.Controllers
         [HttpPost("stop/{containerId}")]
         public async Task<IActionResult> StopContainer(string containerId)
         {
-            var dockerClient = GetContainerById(containerId)
-                .Machine
-                .GetDockerClient();
+            // Get instance of appropriate host client and handle any fail to get one
+            DockerClient dockerClient;
+            try
+            {
+                dockerClient = GetContainerById(containerId)
+                    .Machine
+                    .GetDockerClient();
+            }
+            catch (Exception) { return NotFound(); }
 
             var stopped = await dockerClient.Containers
                 .StopContainerAsync(containerId, new ContainerStopParameters()
@@ -136,9 +148,10 @@ namespace ProITM.Server.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateContainer(ContainerModel model)
         {
+            // Get instance of appropriate host client and handle any fail to get one
             var host = await GetLeastBusyHost(model.IsWindows);
 
-            if (string.IsNullOrEmpty(host.URI))
+            if (host == null || string.IsNullOrEmpty(host.URI))
                 return NotFound();
 
             // Construct model
@@ -182,9 +195,15 @@ namespace ProITM.Server.Controllers
         [HttpDelete("{containerId}")]
         public async Task<IActionResult> DeleteContainer(string containerId)
         {
-            var dockerClient = GetContainerById(containerId)
-                .Machine
-                .GetDockerClient();
+            // Get instance of appropriate host client and handle any fail to get one
+            DockerClient dockerClient;
+            try
+            {
+                dockerClient = GetContainerById(containerId)
+                    .Machine
+                    .GetDockerClient();
+            }
+            catch (Exception) {  return NotFound(); }
 
             await dockerClient.Containers
                 .StopContainerAsync(containerId, new ContainerStopParameters()
@@ -212,9 +231,15 @@ namespace ProITM.Server.Controllers
         [HttpGet("logs/{containerId}/{since}/{tail}")]
         public async Task<IActionResult> GetContainerLogs(string containerId, string since, string tail)
         {
-            var dockerClient = GetContainerById(containerId)
-                .Machine
-                .GetDockerClient();
+            // Get instance of appropriate host client and handle any fail to get one
+            DockerClient dockerClient;
+            try
+            {
+                dockerClient = GetContainerById(containerId)
+                    .Machine
+                    .GetDockerClient();
+            }
+            catch (Exception) { return NotFound(); }
 
             if (dockerClient == null)
                 return Ok(new Tuple<string, string>("Container not found", "Container not found"));
