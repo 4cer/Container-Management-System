@@ -1,0 +1,114 @@
+﻿@page "/testing/hosts"
+@attribute [Authorize(Roles = "Admin")]
+
+@inject IHostService hostService
+@inject NavigationManager navMgr
+
+<h3>AdminHostContainers</h3>
+
+@if (hosts != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    DisplayName
+                </th>
+                <th>
+                    IsWindows
+                </th>
+                <th>
+                    IP
+                </th>
+                <th>
+                    Port
+                </th>
+                <th>
+                    URI
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var host in hosts)
+            {
+                <tr>
+                    <td>
+                        @host.Id
+                    </td>
+                    <td>
+                        @host.DisplayName
+                    </td>
+                    <td>
+                        @host.IsWindows
+                    </td>
+                    <td>
+                        @host.IP
+                    </td>
+                    <td>
+                        @host.Port
+                    </td>
+                    <td>
+                        @host.URI
+                    </td>
+                </tr>
+            }
+            @if (!hosts.Any())
+            {
+                <tr><th colspan="6">There are no hosts owned by this user...</th></tr>
+            }
+        </tbody>
+    </table>
+}
+
+<input class="btn btn-success" type="button" @onclick="(() => AddHost())" value="Add host" />
+<input class="btn btn-danger" type="button" @onclick="(() => DeleteHost())" value="Delete host" />
+<input class="btn btn-warning" type="button" @onclick="(() => EditHost())" value="Edit host" />
+
+@code {
+    List<HostModel> hosts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        HostModel hostModel = new HostModel();
+        Random r = new Random();
+
+        _ = await hostService.AddHost(hostModel);
+
+        hosts = await hostService.GetHosts();
+    }
+
+
+    protected async Task AddHost()
+    {
+        HostModel hostModel = new HostModel();
+        Random r = new Random();
+        var random = r.Next(10000);
+        hostModel.Id = random.ToString();
+        hostModel.IP = "111.222.333." + random.ToString();
+        hostModel.Port = 2137;
+        hostModel.IsWindows = true;
+        hostModel.DisplayName = "karakan";
+        hostModel.URI = "nie_wiem";
+
+        _ = await hostService.AddHost(hostModel);
+        hosts = await hostService.GetHosts();
+    }
+
+    protected async Task DeleteHost()
+    {
+        _ = await hostService.DeleteHost(hosts.First().Id);
+        hosts = await hostService.GetHosts();
+    }
+
+    protected async Task EditHost()
+    {
+        HostModel hostToUpdate = hosts.First();
+        hostToUpdate.Port = 1337;
+        _ = await hostService.EditHost(hostToUpdate);
+        hosts = await hostService.GetHosts();
+    }
+
+}

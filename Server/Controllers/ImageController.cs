@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProITM.Server.Data;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,27 @@ namespace ProITM.Server.Controllers
         public ImageController(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
+        }
+
+        [HttpPut("edit")]
+        public async Task<IActionResult> EditImage(ImageModel image)
+        {
+            var foundImage = await dbContext.Images
+                .FirstAsync(i => i.Id == image.Id);
+
+            if (foundImage == null) return BadRequest();
+
+            foundImage.ImageId = image.ImageId;
+            foundImage.Description = image.Description;
+
+            if (await dbContext.SaveChangesAsync() == 1)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         [HttpGet("images")]
