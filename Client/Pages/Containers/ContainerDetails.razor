@@ -83,7 +83,7 @@
         if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _containerID))
         {
             var ID = _containerID;
-            var list = await Srvc.ListContainers("dupa", 100);
+            var list = await Srvc.ListContainers(100);
             Container = list.Find(c => c.Id == ID);
         }
     }

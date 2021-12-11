@@ -12,22 +12,18 @@ namespace ProITM.Server.Controllers.Admin
 {
     //[Authorize(Roles = "Admin")]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class HostController : ControllerBase
     {
-        private List<HostModel> Hosts = new()
+        /*
+        private static List<HostModel> Hosts = new()
         {
             new HostModel() { Id = "0", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
             new HostModel() { Id = "1", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
             new HostModel() { Id = "2", DisplayName = "name", IsWindows = false, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
-            new HostModel() { Id = "3", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
-            new HostModel() { Id = "4", DisplayName = "name", IsWindows = false, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
-            new HostModel() { Id = "5", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
-            new HostModel() { Id = "6", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
-            new HostModel() { Id = "7", DisplayName = "name", IsWindows = false, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
-            new HostModel() { Id = "8", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" },
-            new HostModel() { Id = "9", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" }
+            new HostModel() { Id = "3", DisplayName = "name", IsWindows = true, IP = "1.1.1.1", Port = 6969, URI = "www.dupa.com" }
         };
+         */
 
         private readonly ApplicationDbContext dbContext;
 
@@ -42,7 +38,7 @@ namespace ProITM.Server.Controllers.Admin
         public async Task<IActionResult> AddHost(HostModel host)
         {
             dbContext.Hosts.Add(host);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
             return Ok("Added host to databse");
         }
 
@@ -74,10 +70,8 @@ namespace ProITM.Server.Controllers.Admin
         public async Task<IActionResult> DeleteHost(string hostId)
         {
             var host = dbContext.Hosts.First(h => h.Id == hostId);
-
             dbContext.Hosts.Remove(host);
-
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             return Ok("Deleted successfully");
         }
@@ -86,8 +80,7 @@ namespace ProITM.Server.Controllers.Admin
         public async Task<IActionResult> GetHosts()
         {
             var hosts = dbContext.Hosts.ToList();
-
-            return Ok(Hosts);
+            return Ok(hosts);
         }
 
         [HttpGet("{hostId}")]

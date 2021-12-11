@@ -12,8 +12,8 @@
               RowClassFunc="@SelectedRowClassFunc" OnRowClick="e => RowClickEvent(e)" @ref="mudTable" T="HostModel">
         <HeaderContent>
             <MudTh>ID</MudTh>
-            <MudTh>DisplayName</MudTh>
-            <MudTh>IsWindows</MudTh>
+            <MudTh>Name</MudTh>
+            <MudTh>OS</MudTh>
             <MudTh>IP</MudTh>
             <MudTh>Port</MudTh>
             <MudTh>URI</MudTh>
@@ -99,9 +99,8 @@
 
         if (!result.Cancelled)
         {
-            //In a real world scenario we would reload the data from the source here since we "removed" it in the dialog already.
-            var deletedServer = result.Data.ToString();
-            hosts.RemoveAll(item => item.Id.Equals(deletedServer));
+            //var Id = result.Data.ToString();
+            hosts.Remove(host);
         }
     }
 
@@ -112,7 +111,7 @@
 
     private void EditHost(HostModel host)
     {
-        return;
+        Navigation.NavigateTo("/hosts/edit/" + host.Id);
     }
 
     private void ViewHost(HostModel host)

@@ -10,6 +10,8 @@ namespace ProITM.Shared
 {
     public class HostModel
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         public string Id { get; set; }
 
         public string DisplayName { get; set; }

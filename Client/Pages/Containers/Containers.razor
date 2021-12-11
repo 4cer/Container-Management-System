@@ -58,7 +58,7 @@
     {
         var authstate = await provider.GetAuthenticationStateAsync();
         var id = authstate.User.Claims.First(c => c.Type == "sub")?.Value;
-        containers = await ContSrvc.ListContainers(id, 100);
+        containers = await ContSrvc.ListContainers(100);
     }
 
     public void SelectionChangedEvent(object row)

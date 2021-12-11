@@ -1,33 +1,34 @@
 ﻿@page "/hosts/add"
 @inject NavigationManager Navigation
+@inject IHostService service
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 
 <MudText Typo="Typo.h2">Dodaj host</MudText>
 
 <MudItem style="width: 410px">
-    <MudTextField @bind-Value="NameValue" Label="Nazwa hosta" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    <MudTextField @bind-Value="NewHost.DisplayName" Label="Nazwa hosta" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
 </MudItem>
 
 
 <MudForm>
-    <MudRadioGroup @bind-SelectedOption="@SelectedOption">
-        <MudRadio Option="@("Windows")" Color="Color.Primary">Windows</MudRadio>
-        <MudRadio Option="@("Linux")" Color="Color.Primary">Linux</MudRadio>
+    <MudRadioGroup @bind-SelectedOption="@NewHost.IsWindows">
+        <MudRadio Option="true" Color="Color.Primary">Windows</MudRadio>
+        <MudRadio Option="false" Color="Color.Primary">Linux</MudRadio>
     </MudRadioGroup>
 </MudForm>
 
 <div class="d-flex align-center">
     <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
-    <MudText Class="ml-4">(Do testów)Selected Option: @SelectedOption</MudText>
+    <MudText Class="ml-4">(Do testów)Selected Option (IsWindows?): @(NewHost.IsWindows ? "Windows" : "Linux")</MudText>
 </div>
 
 <MudItem style="width: 410px">
-    <MudTextField @bind-Value="ImageName" Label="Adres hosta" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    <MudTextField @bind-Value="NewHost.URI" Label="Adres hosta" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
 </MudItem>
 
 <MudItem style="width: 410px">
-    <MudTextField @bind-Value="ContainerPort" Label="Hasło" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    <MudTextField @bind-Value="NewHost.Port" Label="Port" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
 </MudItem>
 
 <br />
@@ -39,18 +40,14 @@
 <br />
 
 <MudItem>
-    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Utwórz" Class="py-4 px-6 rounded-lg" />
+    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Utwórz" Class="py-4 px-6 rounded-lg" OnClick="CreateHost"/>
 </MudItem>
 
 
 
 
 @code {
-    public string NameValue { get; set; }
-    public string ImageName { get; set; }
-    public string ContainerPort { get; set; }
-    public string TargerPort { get; set; }
-    public string Flags { get; set; }
+    public HostModel NewHost { get; set; } = new();
 
     public string SelectedOption { get; set; }
 
@@ -69,4 +66,11 @@
         }
         //TODO upload the files to the server
     }
+
+    private async void CreateHost()
+    {
+        await service.AddHost(NewHost);
+        Navigation.NavigateTo($"/hosts");
+    }
+
 }
