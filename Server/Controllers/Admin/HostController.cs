@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProITM.Server.Data;
 using ProITM.Shared;
 using System;
@@ -41,16 +42,42 @@ namespace ProITM.Server.Controllers.Admin
         public async Task<IActionResult> AddHost(HostModel host)
         {
             dbContext.Hosts.Add(host);
-
+            dbContext.SaveChanges();
             return Ok("Added host to databse");
+        }
+
+        [HttpPut("edit")]
+        public async Task<IActionResult> EditHost(HostModel host)
+        {
+            var foundHost = await dbContext.Hosts
+                .FirstAsync(h => h.Id == host.Id);
+
+            if (foundHost == null) return BadRequest();
+
+            foundHost.DisplayName = host.DisplayName;
+            foundHost.IsWindows = host.IsWindows;
+            foundHost.IP = host.IP;
+            foundHost.Port = host.Port;
+            foundHost.URI = host.URI;
+
+            if (await dbContext.SaveChangesAsync() == 1)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
 
         [HttpDelete("{hostId}")]
         public async Task<IActionResult> DeleteHost(string hostId)
         {
-            var host = dbContext.Hosts.First(h => h.Id == hostId );
+            var host = dbContext.Hosts.First(h => h.Id == hostId);
 
             dbContext.Hosts.Remove(host);
+
+            dbContext.SaveChanges();
 
             return Ok("Deleted successfully");
         }
@@ -61,6 +88,14 @@ namespace ProITM.Server.Controllers.Admin
             var hosts = dbContext.Hosts.ToList();
 
             return Ok(Hosts);
+        }
+
+        [HttpGet("{hostId}")]
+        public async Task<IActionResult> HostDetails(string hostId)
+        {
+            return Ok(dbContext.Hosts
+                .AsNoTracking()
+                .SingleOrDefaultAsync(h => h.Id == hostId));
         }
 
         [HttpGet("logs/{hostId}")]

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace ProITM.Client.Services
 {
@@ -18,42 +19,52 @@ namespace ProITM.Client.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<ContainerModel>> ListContainers(string userId, long limit)
+        public async Task<List<ContainerModel>> ListContainers(long limit)
         {
-            List<ContainerModel> list = await _httpClient.GetFromJsonAsync<List<ContainerModel>>($"api/Container/containers/{userId}/{limit}");
-            return list;
+            return await _httpClient.GetFromJsonAsync<List<ContainerModel>>($"Container/containers/{limit}");
+        }
+
+        public async Task<ContainerModel> ContainerDetails(string containerId)
+        {
+            return await _httpClient.GetFromJsonAsync<ContainerModel>($"Container/{containerId}");
         }
 
         public async Task<HttpResponseMessage> StartContainer(string containerId)
         {
-            return await _httpClient.PostAsJsonAsync<string>($"api/Container/start/{containerId}", null);
+            return await _httpClient.PostAsJsonAsync<string>($"Container/start/{containerId}", null);
         }
 
         public async Task<HttpResponseMessage> StopContainer(string containerId)
         {
-            return await _httpClient.PostAsJsonAsync<string>($"api/Container/stop/{containerId}", null);
+            return await _httpClient.PostAsJsonAsync<string>($"Container/stop/{containerId}", null);
         }
 
         public async Task<HttpResponseMessage> DeleteContainer(string containerId)
         {
-            Console.WriteLine("##################### Container ID: " + containerId + "#########################");
-            return await _httpClient.DeleteAsync($"api/Container/{containerId}");
+            return await _httpClient.DeleteAsync($"Container/{containerId}");
         }
 
         public async Task<Stream> GetContainerStats(string containerId)
         {
-            return await _httpClient.GetFromJsonAsync<Stream>($"api/Container/containers/stats/{containerId}");
+            return await _httpClient.GetFromJsonAsync<Stream>($"Container/stats/{containerId}");
         }
 
-        public async Task<HttpResponseMessage> CreateContainer(ContainerModel model)
+        public async Task<List<string>> CreateContainer(ContainerModel model)
         {
-            return await _httpClient.PostAsJsonAsync<ContainerModel>($"api/Container/containers/create", model);
+            var result = await _httpClient.PostAsJsonAsync($"Container/create", model);
+            string serializedXml = result.Content.ReadAsStringAsync().Result;
+            List<string> listOfWarnings = new List<string>();
+            var mySerializer = new XmlSerializer(listOfWarnings.GetType());
+            var reader = new StringReader(serializedXml);
+            listOfWarnings = (List<String>)mySerializer.Deserialize(reader);
+            return listOfWarnings;
+
         }
 
         //TODO format since i tail
-        public async Task<Stream> GetContainerLogs(string containerId, string since, string tail)
+        public async Task<Tuple<string, string>> GetContainerLogs(string containerId, string since, string tail)
         {
-            return await _httpClient.GetFromJsonAsync<Stream>($"api/Container/containers/logs/{containerId}/{since}/{tail}");
+            return await _httpClient.GetFromJsonAsync<Tuple<string, string>>($"Container/logs/{containerId}/{since}/{tail}");
         }
     }
 }

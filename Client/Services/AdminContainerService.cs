@@ -27,6 +27,11 @@ namespace ProITM.Client.Services
             return await _httpClient.GetFromJsonAsync<List<ContainerModel>>($"Container/manage/list/{limit}");
         }
 
+        public async Task<ContainerModel> ContainerDetails(string containerId)
+        {
+            return await _httpClient.GetFromJsonAsync<ContainerModel>($"Container/manage/{containerId}");
+        }
+
         public async Task<HttpResponseMessage> StartUsersContainer(string containerId)
         {
             return await _httpClient.PostAsJsonAsync<string>($"Container/manage/start/{containerId}", null);

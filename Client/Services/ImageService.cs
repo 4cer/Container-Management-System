@@ -10,7 +10,6 @@ namespace ProITM.Client.Services
 {
     public class ImageService : IImageService
     {
-        
         private readonly HttpClient _httpClient;
 
         public ImageService(HttpClient httpClient)
@@ -22,17 +21,22 @@ namespace ProITM.Client.Services
 
         public async Task<List<ImageModel>> GetImageList()
         {
-            return await _httpClient.GetFromJsonAsync<List<ImageModel>>($"api/Image/images");
+            return await _httpClient.GetFromJsonAsync<List<ImageModel>>($"Image/images");
         }
 
         public async Task<ImageModel> GetImageDetails(string imageId)
         {
-            return await _httpClient.GetFromJsonAsync<ImageModel>($"api/Image/images/{imageId}");
+            return await _httpClient.GetFromJsonAsync<ImageModel>($"Image/{imageId}");
         }
 
         public async Task<HttpResponseMessage> GetImageFromDockerHub(string name, string version, string description)
         {
-            return await _httpClient.PostAsJsonAsync<string>($"api/Image/images/{name}/{version}", description);
+            return await _httpClient.PostAsJsonAsync<string>($"Image/upload/{name}/{version}", description);
+        }
+
+        public async Task<HttpResponseMessage> DeleteImage(string imageId)
+        {
+            return await _httpClient.DeleteAsync($"Image/{imageId}");
         }
 
         # region Extra-curricular functionality

@@ -1,0 +1,169 @@
+﻿@page "/testing/cont/userViewAddOwn"
+@attribute [Authorize]
+
+@inject IContainerService cs
+@inject IImageService ims
+@inject NavigationManager navMgr
+
+<h3>Testing</h3>
+
+@if (containers != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Description
+                </th>
+                <th>
+                    Actions
+                </th>
+                <th>
+                    Id
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var con in containers)
+            {
+            <tr>
+                <td>
+                    @con.Name
+                </td>
+                <td>
+                    @con.Description
+                </td>
+                <td>
+                    @if (con.IsRunning)
+                    {
+                        <input class="btn btn-danger" type="button" @onclick="(() => Stop(con.Id))" value="Stop" />
+                    }
+                    else
+                    {
+                        <input class="btn btn-success" type="button" @onclick="(() => Start(con.Id))" value="Start" />
+                    }
+                    <input class="btn btn-danger" type="button" @onclick="(() => Delet(con.Id))" value="Delet" />
+                    <input class="btn btn-secondary" type="button" @onclick="(() => Detes(con.Id))" value="Detes" />
+                </td>
+                <td>
+                    @con.Id
+                </td>
+            </tr>
+            }
+            @if (!containers.Any())
+            {
+                <tr><th colspan="5">There are no containers owned by this user...</th></tr>
+            }
+        </tbody>
+    </table>
+}
+
+<hr />
+
+@if (container != null && images != null)
+{
+    <h3>Creating containers</h3>
+    <EditForm Model="container" OnSubmit="OnCreat">
+        <div class="form-group">
+            <label for="" cont-name">Nazwa</label>
+            <InputText id="cont-name" @bind-Value="@container.Name" class="form-control"></InputText>
+        </div>
+        <div class="form-group">
+            <label for="cont-desc">Opis</label>
+            <InputText id="cont-desc" @bind-Value="@container.Description" class="form-control"></InputText>
+        </div>
+        <div class="form-group">
+            <label for="cont-port">Port</label>
+            <InputNumber id="cont-port" @bind-Value="@container.PortNo" class="form-control"></InputNumber>
+        </div>
+        <div class="form-group">
+            <InputCheckbox id="cont-win" @bind-Value="@container.IsWindows" class="form-check-input" />
+            <label for="cont-win">Windows system</label>
+        </div>
+        <table class="table">
+            <tbody>
+                <InputRadioGroup @bind-Value="@container.ImageIdC">
+                    @foreach (var img in images)
+                    {
+                        <tr>
+                            <td>
+                                <InputRadio Value="img.Id" />
+                            </td>
+                            <td>
+                                @img.Id
+                            </td>
+                            <td>
+                                @img.Name
+                            </td>
+                            <td>
+                                @img.Description
+                            </td>
+                        </tr>
+                    }
+                    @if(!images.Any())
+                    {
+                        <tr><td colspan="4">No images registered in the system.</td></tr>
+                    }
+                </InputRadioGroup>
+            </tbody>
+        </table>
+        <div class="form-check">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </EditForm>
+}
+
+@code {
+    List<ContainerModel> containers;
+
+    List<ImageModel> images;
+
+    ContainerModel container;
+
+    protected override async Task OnInitializedAsync()
+    {
+        containers = await cs.ListContainers(20);
+        images = await ims.GetImageList();
+        container = new ContainerModel();
+    }
+
+    protected async Task OnCreat()
+    {
+        _ = await cs.CreateContainer(container);
+        containers = await cs.ListContainers(50);
+    }
+
+    protected async Task Delet(string id)
+    {
+        _ = await cs.DeleteContainer(id);
+        containers = await cs.ListContainers(50);
+    }
+
+    protected async Task Creat(bool windows)
+    {
+        ContainerModel model = new();
+        _ = await cs.CreateContainer(model);
+        containers = await cs.ListContainers(50);
+    }
+
+    protected async Task Start(string id)
+    {
+        _ = await cs.StartContainer(id);
+        containers = await cs.ListContainers(50);
+    }
+
+    protected async Task Stop(string id)
+    {
+        _ = await cs.StopContainer(id);
+        containers = await cs.ListContainers(50);
+    }
+
+    protected async Task Detes(string id)
+    {
+        navMgr.NavigateTo($"/testing/cont/userViewDetes/{id}");
+        containers = await cs.ListContainers(50);
+    }
+}

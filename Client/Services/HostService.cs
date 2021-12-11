@@ -10,7 +10,6 @@ namespace ProITM.Client.Services
 {
     public class HostService : IHostService
     {
-        
         private readonly HttpClient _httpClient;
 
         public HostService(HttpClient httpClient)
@@ -20,23 +19,31 @@ namespace ProITM.Client.Services
 
         public async Task<HttpResponseMessage> AddHost(HostModel host)
         {
-            return await _httpClient.PostAsJsonAsync<HostModel>($"api/Host/create", host);
+            return await _httpClient.PostAsJsonAsync($"Host/create", host);
+        }
+        public async Task<HttpResponseMessage> EditHost(HostModel host)
+        {
+            return await _httpClient.PutAsJsonAsync($"Host/edit", host);
         }
 
         public async Task<HttpResponseMessage> DeleteHost(string hostId)
         {
-            Console.WriteLine("##################### Host ID: " + hostId + "#########################");
-            return await _httpClient.DeleteAsync($"api/Host/{hostId}");
+            return await _httpClient.DeleteAsync($"Host/{hostId}");
         }
 
         public async Task<List<HostModel>> GetHosts()
         {
-            return await _httpClient.GetFromJsonAsync<List<HostModel>>($"api/Host/list");
+            return await _httpClient.GetFromJsonAsync<List<HostModel>>("Host/list");
+        }
+
+        public async Task<HostModel> HostDetails(string hostId)
+        {
+            return await _httpClient.GetFromJsonAsync<HostModel>($"Host/{hostId}");
         }
 
         public async Task<HttpResponseMessage> GetHostLogs(string hostId)
         {
-            return await _httpClient.GetAsync($"api/Host/logs/{hostId}");
+            return await _httpClient.GetAsync($"Host/logs/{hostId}");
         }
     }
 }

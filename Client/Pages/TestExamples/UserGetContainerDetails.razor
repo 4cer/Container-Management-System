@@ -1,0 +1,105 @@
+﻿@page "/testing/cont/userViewDetes/{id}"
+@attribute [Authorize]
+
+@inject IContainerService cs
+@inject NavigationManager navMgr
+
+
+<h3>Get Logs for @id</h3>
+@if (!IsStderr)
+{
+    <input class="btn btn-secondary" type="button" @onclick="(() => ToggleStream())" value="Show errors" />
+}
+else
+{
+    <input class="btn btn-secondary" type="button" @onclick="(() => ToggleStream())" value="Show logs" />
+}
+
+@if (IsRefreshing)
+{
+    <input id="refresh-btn" class="btn btn-secondary" type="button" disabled="true" value="Refresh" />
+}
+else
+{
+    <input id="refresh-btn" class="btn btn-secondary" type="button" @onclick="(() => RefreshStream())" value="Refresh" />
+}
+
+<h4>Output:</h4>
+
+@if (logs != null)
+{
+    <div class="blockquote" font-face="Courier new">
+        @if (!IsStderr)
+        {
+            @((MarkupString)logs.Item1)
+        }
+        else
+        {
+            @((MarkupString)logs.Item2)
+        }
+    </div>
+
+    <hr />
+}
+else
+{
+    <p>Loading...</p>
+}
+
+<h4>Stats:</h4>
+
+@if (logs != null)
+{
+    <div class="blockquote" font-face="Courier new">
+        
+
+
+    </div>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+    bool IsStderr = false;
+    bool IsRefreshing = true;
+    ContainerModel container;
+    Tuple<string, string> logs;
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsRefreshing = true;
+        try
+        {
+            logs = await cs.GetContainerLogs(id, "0", "0");
+            IsRefreshing = false;
+        }
+        catch (Exception)
+        {
+            logs = new Tuple<string, string>("CONTAINER NOT FOUND", "CONTAINER NOT FOUND");
+        }
+
+        try
+        {
+            _ = await cs.GetContainerStats(id);
+        }catch (Exception)
+        {
+            _ = "Not found";
+        }
+    }
+
+    protected async Task ToggleStream()
+    {
+        IsStderr = !IsStderr;
+    }
+
+    protected async Task RefreshStream()
+    {
+        IsRefreshing = true;
+        logs = await cs.GetContainerLogs(id, "0", "0");
+        IsRefreshing = false;
+    }
+}

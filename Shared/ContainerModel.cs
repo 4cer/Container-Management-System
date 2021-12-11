@@ -12,11 +12,15 @@ namespace ProITM.Shared
     {
         public string Id { get; set; }
 
+        #region Binding user not required
         // TODO Pull UserModel to get access to class:
-        [NotMapped]
-        public UserModel Owner { get; set; }
-        //public string UserId { get; set; }
-        // Moved to ApplicationUser as list
+        //[NotMapped]
+        //public UserModel Owner { get; set; }
+        ////public string UserId { get; set; }
+        //// Moved to ApplicationUser as list
+        //[Column("ApplicationUserId")]
+        //public string ApplicationUserId { get; set; }
+        #endregion
 
         public string Name { get; set; }
 
@@ -34,5 +38,17 @@ namespace ProITM.Shared
         public bool IsRunning { get; set; }
 
         // TODO 148 Describe additional Container datum
+
+        [NotMapped] // For creation purposes
+        public bool IsWindows { get; set; }
+
+        [NotMapped]
+        public int PortNo { get; set; }
+
+        [NotMapped]
+        public string ImageIdC { get; set; }
+
+        [NotMapped]
+        public string OwnerName { get; set; }
     }
 }

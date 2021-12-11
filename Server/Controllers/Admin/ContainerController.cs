@@ -1,6 +1,7 @@
 ﻿using Docker.DotNet;
 using Docker.DotNet.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using ProITM.Server.Utilities;
+using ProITM.Server.Models;
+using System.Security.Claims;
 
 namespace ProITM.Server.Controllers.Admin
 {
@@ -28,23 +31,55 @@ namespace ProITM.Server.Controllers.Admin
         }
 
         [HttpGet("manage/{userId}/{limit}")]
-        public async Task<List<ContainerModel>> GetUserContainers(string userId, int limit)
+        public async Task<IActionResult> GetUserContainers(string userId, int limit)
         {
-            return await dbContext.Containers
+            var userContainers = await dbContext.Users
                 .AsNoTracking()
-                .Include(c => c.Owner)
-                .Where(c => c.Owner.Id == userId)
-                .Take(limit)
-                .ToListAsync();
+                .Where(u => u.Id == userId)
+                .Include(u => u.Containers)
+                .ThenInclude(c => c.Port)
+                .Select(u => u.Containers)
+                //.Include(u => u.Containers)
+                .FirstOrDefaultAsync();
+
+            var containers = userContainers.Take(limit);
+
+            return Ok(containers);
         }
 
         [HttpGet("manage/list/{limit}")]
-        public async Task<List<ContainerModel>> GetContainers(int limit)
+        public async Task<IActionResult> GetContainers(int limit)
         {
-            return await dbContext.Containers
+            var users = await dbContext.Users
                 .AsNoTracking()
-                .Take(limit)
+                .Include(u => u.Containers)
+                .ThenInclude(c => c.Port)
+                .Where(u => u.Containers.Any())
                 .ToListAsync();
+
+            List<ContainerModel> containers = new();
+
+            foreach (var user in users)
+            {
+                foreach (var container in user.Containers)
+                {
+                    container.OwnerName = user.UserName;
+                    containers.Add(container);
+                }
+            }
+
+            return Ok(containers);
+
+            //return await dbContext.Containers
+            //    .AsNoTracking()
+            //    .Take(limit)
+            //    .ToListAsync();
+        }
+
+        [HttpGet("manage/{containerId}")]
+        public async Task<IActionResult> ContainerDetails(string containerId)
+        {
+            return Ok(GetContainerById(containerId));
         }
 
         [HttpPost("manage/start/{containerId}")]
@@ -59,6 +94,13 @@ namespace ProITM.Server.Controllers.Admin
 
             if (success)
             {
+                var result = await dbContext.Containers.SingleOrDefaultAsync(c => c.Id == containerId);
+                if(result != null)
+                {
+                    result.IsRunning = true;
+                    dbContext.SaveChangesAsync().Wait();
+                }
+
                 return Ok();
             }
             else
@@ -82,6 +124,13 @@ namespace ProITM.Server.Controllers.Admin
 
             if (stopped)
             {
+                var result = await dbContext.Containers.SingleOrDefaultAsync(c => c.Id == containerId);
+                if (result != null)
+                {
+                    result.IsRunning = false;
+                    dbContext.SaveChangesAsync().Wait();
+                }
+
                 return Ok();
             }
             else
@@ -98,7 +147,24 @@ namespace ProITM.Server.Controllers.Admin
                 .GetDockerClient();
 
             await dockerClient.Containers
+                .StopContainerAsync(containerId, new ContainerStopParameters()
+                {
+                    WaitBeforeKillSeconds = 30
+                });
+
+            await dockerClient.Containers
                 .RemoveContainerAsync(containerId, new ContainerRemoveParameters());
+
+
+            ContainerModel model = await dbContext.Containers
+                .Include(c => c.Port)
+                .SingleOrDefaultAsync(c => c.Id == containerId);
+            var port = model.Port;
+            dbContext.Containers.Attach(model);
+            dbContext.Containers.Remove(model);
+            dbContext.ContainerPorts.Attach(port);
+            dbContext.ContainerPorts.Remove(port);
+            dbContext.SaveChanges();
 
             return Ok();
         }

@@ -7,6 +7,7 @@ using ProITM.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ProITM.Server.Controllers.Admin
@@ -32,6 +33,18 @@ namespace ProITM.Server.Controllers.Admin
         {
             this.roleManager = roleManager;
             this.userManager = userManager;
+        }
+
+        [HttpGet("myUserId")]
+        public async Task<IActionResult> GetMyId()
+        {
+            string useruno = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+            var user = await userManager.FindByIdAsync(useruno);
+            UserModel usrs = new()
+            {
+                Id = user.Id
+            };
+            return Ok(usrs);
         }
 
         [HttpGet("Adminroleid")]

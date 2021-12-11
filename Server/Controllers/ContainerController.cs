@@ -9,218 +9,303 @@ using ProITM.Server.Data;
 using System.Threading;
 using Docker.DotNet;
 using ProITM.Shared;
+using ProITM.Server.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using ProITM.Server.Utilities;
+using Microsoft.AspNetCore.Http;
+using System.Text.RegularExpressions;
+using System.Xml.Serialization;
+using System.IO;
 
 namespace ProITM.Server.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class ContainerController : ControllerBase
     {
-
-        private List<ContainerModel> Containers = new()
-        {
-            new ContainerModel() { Id = "0", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
-            new ContainerModel() { Id = "1", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
-            new ContainerModel() { Id = "2", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = false },
-            new ContainerModel() { Id = "3", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
-            new ContainerModel() { Id = "4", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
-            new ContainerModel() { Id = "5", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = false },
-            new ContainerModel() { Id = "6", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
-            new ContainerModel() { Id = "7", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
-            new ContainerModel() { Id = "8", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = true },
-            new ContainerModel() { Id = "8", Name = "name", Image = null, Description = "dupa", Port = null, Machine = null, State = "state1", IsRunning = false }
-
-
-        };
-
-
-        // TODO 156 Inject database ApplicationDbContext
         private readonly ApplicationDbContext dbContext;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public ContainerController(ApplicationDbContext _db)
+        public ContainerController(ApplicationDbContext _db, UserManager<ApplicationUser> userManager)
         {
-            // Tu wstrzyknąć zależności
             dbContext = _db;
-            // dbContext.Database.EnsureCreated();
+            this.userManager = userManager;
         }
-
-
 
         // TODO 144 Implement ContainerController endpoint methods
 
-        [HttpGet("containers/{userId}/{limit}")]
-        public async Task<IActionResult> ListContainers(string userId, long limit)
+        [HttpGet("containers/{limit}")]
+        public async Task<IActionResult> ListContainers(long limit)
         {
-            // TODO Get container list DB, based on user ID
-            string URI = "GET ME AN URI";
+            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
 
-            // Make new instance of DockerClient from URI
-            //DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+            var userContainers = await dbContext.Users
+                .AsNoTracking()
+                .Where(u => u.Id == userId)
+                .Select(u => u.Containers)
+                .FirstOrDefaultAsync();
 
-            //throw new NotImplementedException("Incorrect implementation REDACTED");
-            //IList<ContainerListResponse> containers = await dockerClient.Containers.ListContainersAsync(new ContainersListParameters() { Limit = limit });
-            return Ok(Containers);
+            var containers = userContainers.Take((int)limit);
+
+            return Ok(containers);
+        }
+
+        [HttpGet("{containerId}")]
+        public async Task<IActionResult> ContainerDetails(string containerId)
+        {
+            return Ok(GetContainerById(containerId));
         }
 
         [HttpPost("start/{containerId}")]
         public async Task<IActionResult> StartContainer(string containerId)
         {
-            // TODO Get container host URI from DB, based on container ID
-            string URI = "GET ME AN URI";
-
-            // Make new instance of DockerClient from URI
-            DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
-
-            //throw new NotImplementedException("Implement me");
-            var start = await dockerClient.Containers.StartContainerAsync(containerId, new ContainerStartParameters());
-            if (start == true)
+            // Get instance of appropriate host client and handle any fail to get one
+            DockerClient dockerClient;
+            try
             {
-                return Ok("Container started");
+                dockerClient = GetContainerById(containerId)
+                    .Machine
+                    .GetDockerClient();
+            }
+            catch (Exception) { return NotFound(); }
+
+            var success = await dockerClient.Containers
+                .StartContainerAsync(containerId, new ContainerStartParameters());
+
+            if (success)
+            {
+                var result = await dbContext.Containers.SingleOrDefaultAsync(c => c.Id == containerId);
+                if(result != null)
+                {
+                    result.IsRunning = true;
+                    dbContext.SaveChangesAsync().Wait();
+                }
+
+                return Ok();
             }
             else
             {
-                return Problem("Container start - error");
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
         [HttpPost("stop/{containerId}")]
         public async Task<IActionResult> StopContainer(string containerId)
         {
-            // TODO Get container host URI from DB, based on container ID
-            string URI = "GET ME AN URI";
-
-            // Make new instance of DockerClient from URI
-            DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
-
-            //throw new NotImplementedException("Implement me");
-            var stopped = await dockerClient.Containers.StopContainerAsync(containerId, new ContainerStopParameters { WaitBeforeKillSeconds = 30 }, CancellationToken.None);
-            if (stopped == true)
+            // Get instance of appropriate host client and handle any fail to get one
+            DockerClient dockerClient;
+            try
             {
-                return Ok("Container stopped");
+                dockerClient = GetContainerById(containerId)
+                    .Machine
+                    .GetDockerClient();
+            }
+            catch (Exception) { return NotFound(); }
+
+            var stopped = await dockerClient.Containers
+                .StopContainerAsync(containerId, new ContainerStopParameters()
+                {
+                    WaitBeforeKillSeconds = 30
+                });
+
+            if (stopped)
+            {
+                var result = await dbContext.Containers.SingleOrDefaultAsync(c => c.Id == containerId);
+                if (result != null)
+                {
+                    result.IsRunning = false;
+                    dbContext.SaveChangesAsync().Wait();
+                }
+
+                return Ok();
             }
             else
             {
-                return Problem("Container stop - error");
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
-        [HttpGet("containers/stats/{containerId}")]
+        [HttpGet("stats/{containerId}")]
         public async Task<IActionResult> GetContainerStats(string containerId)
         {
-            // TODO Get container host URI from DB, based on container ID
-            string URI = "GET ME AN URI";
+            var dockerClient = GetContainerById(containerId)
+                .Machine
+                .GetDockerClient();
 
-            // Make new instance of DockerClient from URI
-            DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+            var stats = await dockerClient.Containers.GetContainerStatsAsync(containerId, new ContainerStatsParameters { Stream = false }, default);
 
-            //throw new NotImplementedException("Implement me");
-            var stats = await dockerClient.Containers.GetContainerStatsAsync(containerId, new ContainerStatsParameters { Stream = true }, CancellationToken.None);
-            return Ok(stats);
+            string allstats;
+
+            using (System.IO.StreamReader sw = new System.IO.StreamReader(stats))
+            {
+                allstats = sw.ReadToEnd();
+            }
+
+            // TODO 216 Desarialize allstats JSON into custom model.
+            // ContainerStatsModel?
+
+            return Ok(allstats);
         }
 
-        [HttpPost("containers/create/{isWindows}/{imageId}")]
+        [HttpPost("create")]
         public async Task<IActionResult> CreateContainer(ContainerModel model)
         {
-            // TODO Get container host URI by selecting least busy host of given system
-            string URI = "GET ME AN URI";
+            // Get instance of appropriate host client and handle any fail to get one
+            var host = await GetLeastBusyHost(model.IsWindows);
+
+            if (host == null || string.IsNullOrEmpty(host.URI))
+                return NotFound();
+
+            // Construct model
+            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+            var image = await dbContext.Images.SingleOrDefaultAsync(i => i.Id == model.ImageIdC);
+            dbContext.Attach(image);
+            model.Image = image;
+
+            // TODO 222 Check if machine has selected image, if not: pull by name
+
+            dbContext.Attach(host);
+            var port = new ContainerPortModel() { Id = Guid.NewGuid().ToString(), Port = model.PortNo, Host = host };
+            model.Machine = host;
+            model.Port = port;
+            model.IsRunning = false;
 
             // Make new instance of DockerClient from URI
-            DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+            DockerClient dockerClient = new DockerClientConfiguration(new Uri(host.URI)).CreateClient();
 
-            await dockerClient.Containers.CreateContainerAsync(new CreateContainerParameters()
+            CreateContainerResponse result = await dockerClient.Containers.CreateContainerAsync(new CreateContainerParameters()
             {
                 Image = model.Image.Name,
                 HostConfig = new HostConfig()
                 {
                     DNS = new[] { "8.8.8.8", "8.8.4.4" }
                 }
+                // TODO 195 bind port
             });
-            return Ok("Container created");
-            //throw new NotImplementedException("Implement me");
+
+            model.Id = result.ID;
+
+            dbContext.Containers.Add(model);
+
+            var user = dbContext.Users.Include(u => u.Containers).FirstOrDefault(u => u.Id == userId);
+            dbContext.Attach(user);
+            user.Containers.Add(model);
+
+            dbContext.SaveChanges();
+
+            //Voodo conversion magic
+            IList<string> warnings = result.Warnings;
+            List<string> listOfWarnings = (List<string>)warnings;
+            var serializer = new XmlSerializer(listOfWarnings.GetType());
+            var sw = new StringWriter();
+            serializer.Serialize(sw, listOfWarnings);
+            string res = sw.ToString();
+            return Ok(res);
         }
 
-        [HttpDelete("containers/{containerId}")]
+        [HttpDelete("{containerId}")]
         public async Task<IActionResult> DeleteContainer(string containerId)
         {
-            // TODO Get container host URI from DB, based on container ID
-            string URI = "GET ME AN URI";
+            // Get instance of appropriate host client and handle any fail to get one
+            DockerClient dockerClient;
+            try
+            {
+                dockerClient = GetContainerById(containerId)
+                    .Machine
+                    .GetDockerClient();
+            }
+            catch (Exception) {  return NotFound(); }
 
-            // Make new instance of DockerClient from URI
-            DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+            await dockerClient.Containers
+                .StopContainerAsync(containerId, new ContainerStopParameters()
+                {
+                    WaitBeforeKillSeconds = 30
+                });
 
-            await dockerClient.Containers.RemoveContainerAsync(containerId, new ContainerRemoveParameters { Force = true, RemoveLinks = true, RemoveVolumes = true }, CancellationToken.None);
-            return Ok("Container deleted");
-            //throw new NotImplementedException("Implement me");
+            await dockerClient.Containers
+                .RemoveContainerAsync(containerId, new ContainerRemoveParameters());
+
+
+            ContainerModel model = await dbContext.Containers
+                .Include(c => c.Port)
+                .SingleOrDefaultAsync(c => c.Id == containerId);
+            var port = model.Port;
+            dbContext.Containers.Attach(model);
+            dbContext.Containers.Remove(model);
+            dbContext.ContainerPorts.Attach(port);
+            dbContext.ContainerPorts.Remove(port);
+            dbContext.SaveChanges();
+
+            return Ok();
         }
 
-        [HttpGet("containers/logs/{containerId}/{since}/{tail}")]
+        [HttpGet("logs/{containerId}/{since}/{tail}")]
         public async Task<IActionResult> GetContainerLogs(string containerId, string since, string tail)
         {
-            // TODO Get container host URI from DB, based on container ID
-            string URI = "GET ME AN URI";
+            // Get instance of appropriate host client and handle any fail to get one
+            DockerClient dockerClient;
+            try
+            {
+                dockerClient = GetContainerById(containerId)
+                    .Machine
+                    .GetDockerClient();
+            }
+            catch (Exception) { return NotFound(); }
 
-            // Make new instance of DockerClient from URI
-            DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
+            if (dockerClient == null)
+                return Ok(new Tuple<string, string>("Container not found", "Container not found"));
 
-            var logs = await dockerClient.Containers.GetContainerLogsAsync(containerId, true, new ContainerLogsParameters { ShowStdout = true, ShowStderr = true, Since = since, Timestamps = true, Follow = true, Tail = tail }, CancellationToken.None);
-            return Ok(logs);
-            //throw new NotImplementedException("Implement me");
+            var log_stream = await dockerClient.Containers.GetContainerLogsAsync(containerId, true, new ContainerLogsParameters { ShowStdout = true, ShowStderr = true, Timestamps = true, Tail = "50"}, default);
+            var log_tuple = (await log_stream.ReadOutputToEndAsync(default)).ToTuple();
+
+            var stdout_sp = 
+                Regex
+                .Replace(log_tuple.Item1, "^(?:.{1,})([0-9]{4}.{1,})(?:T)([0-9]{2}.{1,})(?:[.]{1}.{1,})(?:Z)", "<B>[$1 $2]\t</B> ",RegexOptions.Multiline)
+                .Replace("\n", "<BR />");
+            var stderr_sp = 
+                Regex
+                .Replace(log_tuple.Item2, "^(?:.{1,})([0-9]{4}.{1,})(?:T)([0-9]{2}.{1,})(?:[.]{1}.{1,})(?:Z)", "<B>[$1 $2]\t</B> ", RegexOptions.Multiline)
+                .Replace("\n", "<BR />");
+
+            return Ok(new Tuple<string, string>(stdout_sp, stderr_sp));
         }
 
-        //private Docker.DotNet.DockerClient c;
-        //private readonly ApplicationDbContext dbContext;
+        private ContainerModel GetContainerById(string containerId)
+        {
+            return dbContext.Containers
+                .AsNoTracking()
+                .Include(c => c.Machine)
+                .First(c => c.Id == containerId);
+        }
 
-        //public ContainerController(ApplicationDbContext dbContext)
-        //{
-        //    this.dbContext = dbContext;
-        //}
+        private async Task<HostModel> GetLeastBusyHost(bool windows)
+        {
+            // TODO 190 Make it actually check CPU/RAM stats
+            var hosts = await dbContext.Hosts
+                .AsNoTracking()
+                .Where(h => h.IsWindows == windows)
+                .ToListAsync();
 
+            HostModel minhost = hosts[0];
 
-        //// TODO 143 Inject Docker.DotNet.DockerClient
+            int min = int.MaxValue;
+            foreach(var host in hosts)
+            {
+                var cmp = dbContext.Containers
+                    .AsNoTracking()
+                    .Where(c => c.Machine.Id == host.Id)
+                    .Count();
+                if (cmp < min)
+                {
+                    min = cmp;
+                    minhost = host;
+                }
+            }
 
-        //// TODO 144 Implement ContainerController endpoint methods
-
-        //[HttpGet("containers")]
-        //public async Task<IActionResult> ListContainers()
-        //{
-        //    throw new NotImplementedException("Implement me");
-        //}
-
-        //[HttpPost("start/{containerId}")]
-        //public async Task<IActionResult> StartContainer(string containerId)
-        //{
-        //    throw new NotImplementedException("Implement me");
-        //}
-
-        //[HttpPost("stop/{containerId}")]
-        //public async Task<IActionResult> StopContainer(string containerId)
-        //{
-        //    throw new NotImplementedException("Implement me");
-        //}
-
-        //[HttpGet("containers/stats/{containerId}")]
-        //public async Task<IActionResult> GetContainerStats(string containerId)
-        //{
-        //    throw new NotImplementedException("Implement me");
-        //}
-
-        //[HttpPost("containers/create")]
-        //public async Task<IActionResult> CreateContainer()
-        //{
-        //    throw new NotImplementedException("Implement me");
-        //}
-
-        //[HttpDelete("containers/{containerId}")]
-        //public async Task<IActionResult> DeleteContainer(string containerId)
-        //{
-        //    throw new NotImplementedException("Implement me");
-        //}
-
-        //[HttpGet("containers/logs/{containerId}")]
-        //public async Task<IActionResult> GetContainerLogs(string containerId)
-        //{
-        //    throw new NotImplementedException("Implement me");
-        //}
+            return minhost;
+        }
     }
 }

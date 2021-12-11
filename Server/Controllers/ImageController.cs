@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProITM.Server.Data;
 using System;
 using System.Collections.Generic;
@@ -12,52 +13,52 @@ using Microsoft.AspNetCore.Authorization;
 namespace ProITM.Server.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class ImageController : ControllerBase
     {
-        private List<ImageModel> Images = new()
-        {
-            new ImageModel() { Id = "0", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.0" },
-            new ImageModel() { Id = "1", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.1" },
-            new ImageModel() { Id = "2", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.2" },
-            new ImageModel() { Id = "3", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "1.3" },
-            new ImageModel() { Id = "4", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "2.0" },
-            new ImageModel() { Id = "5", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "2.1" },
-            new ImageModel() { Id = "6", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "2.2" },
-            new ImageModel() { Id = "7", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "2.3" },
-            new ImageModel() { Id = "8", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "2.1" },
-            new ImageModel() { Id = "9", ImageId = "name", Created = DateTime.Now, Name = "Name", Description = "Dupa", Version = "3.7" }
-        };
-
         private readonly ApplicationDbContext dbContext;
 
         public ImageController(ApplicationDbContext dbContext)
         {
             this.dbContext = dbContext;
-            // Do not think below code necessary - Szymon Brawański
-            //this.dbContext.Database.EnsureCreated();
         }
 
-        // TODO 147 implement ImageController endpoint methods
+        [HttpPut("edit")]
+        public async Task<IActionResult> EditImage(ImageModel image)
+        {
+            var foundImage = await dbContext.Images
+                .FirstAsync(i => i.Id == image.Id);
+
+            if (foundImage == null) return BadRequest();
+
+            foundImage.ImageId = image.ImageId;
+            foundImage.Description = image.Description;
+
+            if (await dbContext.SaveChangesAsync() == 1)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
 
         [HttpGet("images")]
         public async Task<IActionResult> GetImageList()
         {
-            //return Ok(dbContext.Images.ToList());
-            return Ok(Images);
-            //throw new NotImplementedException("ImageController.GetImageList()");
+            return Ok(dbContext.Images.ToList());
         }
 
-        [HttpGet("images/{id}")]
-        public async Task<IActionResult> GetImageDetails(string id)
+        [HttpGet("{imageId}")]
+        public async Task<IActionResult> GetImageDetails(string imageId)
         {
-            return Ok(dbContext.Images.Find(id));
-            //throw new NotImplementedException("ImageController.GetImageDetails()");
+            return Ok(dbContext.Images.Find(imageId));
         }
 
 
-        [HttpPost("images/upload/{name}/{version}")]
+        [HttpPost("upload/{name}/{version}")]
         public async Task<IActionResult> GetImageFromDockerHub(string name, string version, [FromBody] string description)
         {
             ImageModel model = new ImageModel();
@@ -71,12 +72,21 @@ namespace ProITM.Server.Controllers
             dbContext.Images.Add(model);
             await dbContext.SaveChangesAsync();
             return Ok();
-            //throw new NotImplementedException("ImageController.UploadImageFromUdl");
         }
 
+        [HttpDelete("{imageId}")]
+        public async Task<IActionResult> DeleteImage(string imageId)
+        {
+            ImageModel model = new() { Id = imageId };
+            dbContext.Attach(model);
+            dbContext.Remove(model);
+            dbContext.SaveChanges();
+            return Ok();
+        }
 
         #region Extra-curricular functionality
-        [HttpGet("images/users/{id}")]
+        // TODO 186 Implement extracurricular methods
+        [HttpGet("user/{id}")]
         public async Task<IActionResult> GetUserImageList(string userId)
         {
             throw new NotImplementedException("ImageController.GetUserImageList()");

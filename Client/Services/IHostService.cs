@@ -10,8 +10,10 @@ namespace ProITM.Client.Services
     interface IHostService
     {
         public Task<HttpResponseMessage> AddHost(HostModel host);
+        public Task<HttpResponseMessage> EditHost(HostModel host);
         public Task<HttpResponseMessage> DeleteHost(string hostId);
         public Task<List<HostModel>> GetHosts();
+        public Task<HostModel> HostDetails(string hostId);
         public Task<HttpResponseMessage> GetHostLogs(string hostId);
     }
 }
