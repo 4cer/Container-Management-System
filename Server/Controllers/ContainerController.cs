@@ -16,6 +16,8 @@ using System.Security.Claims;
 using ProITM.Server.Utilities;
 using Microsoft.AspNetCore.Http;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
+using System.IO;
 
 namespace ProITM.Server.Controllers
 {
@@ -189,7 +191,14 @@ namespace ProITM.Server.Controllers
 
             dbContext.SaveChanges();
 
-            return Ok(result.Warnings);
+            //Voodo conversion magic
+            IList<string> warnings = result.Warnings;
+            List<string> listOfWarnings = (List<string>)warnings;
+            var serializer = new XmlSerializer(listOfWarnings.GetType());
+            var sw = new StringWriter();
+            serializer.Serialize(sw, listOfWarnings);
+            string res = sw.ToString();
+            return Ok(res);
         }
 
         [HttpDelete("{containerId}")]

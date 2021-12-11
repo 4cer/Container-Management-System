@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace ProITM.Client.Services
 {
@@ -48,9 +49,16 @@ namespace ProITM.Client.Services
             return await _httpClient.GetFromJsonAsync<Stream>($"Container/stats/{containerId}");
         }
 
-        public async Task<HttpResponseMessage> CreateContainer(ContainerModel model)
+        public async Task<List<string>> CreateContainer(ContainerModel model)
         {
-            return await _httpClient.PostAsJsonAsync<ContainerModel>($"Container/create", model);
+            var result = await _httpClient.PostAsJsonAsync($"Container/create", model);
+            string serializedXml = result.Content.ReadAsStringAsync().Result;
+            List<string> listOfWarnings = new List<string>();
+            var mySerializer = new XmlSerializer(listOfWarnings.GetType());
+            var reader = new StringReader(serializedXml);
+            listOfWarnings = (List<String>)mySerializer.Deserialize(reader);
+            return listOfWarnings;
+
         }
 
         //TODO format since i tail
