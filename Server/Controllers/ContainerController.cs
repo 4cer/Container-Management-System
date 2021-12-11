@@ -152,6 +152,8 @@ namespace ProITM.Server.Controllers
             dbContext.Attach(image);
             model.Image = image;
 
+            // TODO 222 Check if machine has selected image, if not: pull by name
+
             dbContext.Attach(host);
             var port = new ContainerPortModel() { Id = Guid.NewGuid().ToString(), Port = model.PortNo, Host = host };
             model.Machine = host;
