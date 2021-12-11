@@ -134,7 +134,18 @@ namespace ProITM.Server.Controllers
                 .GetDockerClient();
 
             var stats = await dockerClient.Containers.GetContainerStatsAsync(containerId, new ContainerStatsParameters { Stream = false }, default);
-            return Ok(stats);
+
+            string allstats;
+
+            using (System.IO.StreamReader sw = new System.IO.StreamReader(stats))
+            {
+                allstats = sw.ReadToEnd();
+            }
+
+            // TODO 216 Desarialize allstats JSON into custom model.
+            // ContainerStatsModel?
+
+            return Ok(allstats);
         }
 
         [HttpPost("create")]

@@ -46,18 +46,13 @@ else
     <p>Loading...</p>
 }
 
+<h4>Stats:</h4>
+
 @if (logs != null)
 {
     <div class="blockquote" font-face="Courier new">
-        @if (!IsStderr)
-        {
-            @((MarkupString)logs.Item1)
-        }
-        else
-        {
-            @((MarkupString)logs.Item2)
-        }
-        <hr />
+        
+
 
     </div>
 }
@@ -65,10 +60,6 @@ else
 {
     <p>Loading...</p>
 }
-
-<hr />
-
-<h4>Stats:</h4>
 
 @code {
     [Parameter]
@@ -89,6 +80,14 @@ else
         catch (Exception)
         {
             logs = new Tuple<string, string>("CONTAINER NOT FOUND", "CONTAINER NOT FOUND");
+        }
+
+        try
+        {
+            _ = await cs.GetContainerStats(id);
+        }catch (Exception)
+        {
+            _ = "Not found";
         }
     }
 
