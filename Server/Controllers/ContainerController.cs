@@ -131,19 +131,11 @@ namespace ProITM.Server.Controllers
         [HttpGet("stats/{containerId}")]
         public async Task<IActionResult> GetContainerStats(string containerId)
         {
-            // TODO 216 Implement method
-
-            //// TODO Get container host URI from DB, based on container ID
-            //string URI = "GET ME AN URI";
-
-            //// Make new instance of DockerClient from URI
-            //DockerClient dockerClient = new DockerClientConfiguration(new Uri(URI)).CreateClient();
-            
             var dockerClient = GetContainerById(containerId)
                 .Machine
                 .GetDockerClient();
 
-            var stats = await dockerClient.Containers.GetContainerStatsAsync(containerId, new ContainerStatsParameters { Stream = false }, CancellationToken.None);
+            var stats = await dockerClient.Containers.GetContainerStatsAsync(containerId, new ContainerStatsParameters { Stream = false }, default);
             return Ok(stats);
         }
 
@@ -161,6 +153,8 @@ namespace ProITM.Server.Controllers
             var image = await dbContext.Images.SingleOrDefaultAsync(i => i.Id == model.ImageIdC);
             dbContext.Attach(image);
             model.Image = image;
+
+            // TODO 222 Check if machine has selected image, if not: pull by name
 
             dbContext.Attach(host);
             var port = new ContainerPortModel() { Id = Guid.NewGuid().ToString(), Port = model.PortNo, Host = host };
