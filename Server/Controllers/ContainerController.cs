@@ -178,7 +178,7 @@ namespace ProITM.Server.Controllers
 
             CreateContainerResponse result = await dockerClient.Containers.CreateContainerAsync(new CreateContainerParameters()
             {
-                Image = model.Image.Name,
+                Image = model.Image.DockerImageName,
                 HostConfig = new HostConfig()
                 {
                     DNS = new[] { "8.8.8.8", "8.8.4.4" }

@@ -11,15 +11,17 @@ namespace ProITM.Shared
     // Receptacle model for Docker REST Api
     public class ImageModel
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
 
-        public string ImageId { get; set; }
+        // Maps to REPOSITORY in output of "docker images"
+        public string DockerImageName { get; set; }
 
         // Generated server-side, on creation
         public DateTime Created { get; set; }
 
-        // Maps to REPOSITORY in output of "docker images"
-        public string Name { get; set; }
+        // User-friendly name
+        public string DisplayName { get; set; }
 
         public string Description { get; set; }
 

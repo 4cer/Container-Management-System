@@ -32,7 +32,7 @@ namespace ProITM.Server.Controllers
 
             if (foundImage == null) return BadRequest();
 
-            foundImage.ImageId = image.ImageId;
+            foundImage.DockerImageName = image.DockerImageName;
             foundImage.Description = image.Description;
 
             if (await dbContext.SaveChangesAsync() == 1)
@@ -62,10 +62,10 @@ namespace ProITM.Server.Controllers
         public async Task<IActionResult> GetImageFromDockerHub(string name, string version, [FromBody] string description)
         {
             ImageModel model = new ImageModel();
-            model.ImageId = null;//A to Id nie powinno byc w bazie, bo na kazdej maszynce bedzie inne
+            //model.DockerImageName = null;//A to Id nie powinno byc w bazie, bo na kazdej maszynce bedzie inne
             //I dopierow przy klikaniu "uzyj obrazu X" powinno byc sciagane na danego dockera, bo tak bedzie prosciej.
             model.Created = DateTime.Now;
-            model.Name = name;
+            model.DisplayName = name;
             model.Description = description;
             model.Version = version;
             
