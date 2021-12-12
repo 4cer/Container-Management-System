@@ -1,4 +1,4 @@
-﻿@page "/containers/details"
+﻿@page "/containers/details/{ContainerId}"
 
 @using Microsoft.AspNetCore.WebUtilities
 @using ProITM.Shared
@@ -17,74 +17,37 @@
 <h3>Szczegóły kontenera</h3>
 
 <div>
-    <MudTable Hover="true" Breakpoint="Breakpoint.Sm" LoadingProgressColor="Color.Info" T="ContainerModel">
-        <MudTr>
-            <MudTd>ID</MudTd>
-            <MudTd>@Container.Id</MudTd>
-        </MudTr>
-        <MudTr>
-            <MudTd>Name</MudTd>
-            <MudTd>@Container.Name</MudTd>
-        </MudTr>
-        <MudTr>
-            <MudTd>Description</MudTd>
-            <MudTd>@Container.Description</MudTd>
-        </MudTr>
-        <MudTr>
-            <MudTd>Port</MudTd>
-            <MudTd>@Container.Port</MudTd>
-        </MudTr>
-        <MudTr>
-            <MudTd>Status</MudTd>
-            <MudTd>@Container.State</MudTd>
-        </MudTr>
-        <MudTr>
-            <MudTd>Oryginalny obraz</MudTd>
-            <MudTd>@Container.Image</MudTd>
-        </MudTr>
-    </MudTable>
-<!--
-<table class="container-details-table table table-hover table-dark">
-    <tbody>
-    <tr>
-        <td>ID</td>
-        <td>@Container.Id</td>
-    </tr>
-    <tr>
-        <td>Nazwa</td>
-        <td>@Container.Name</td>
-    </tr>
-    <tr>
-        <td>Status</td>
-        <td>@Container.State</td>
-    </tr>
-    <tr>
-        <td>Oryginalny obraz</td>
-        <td>*nazwa/id obrazu*</td>
-    </tr>
-    <tr>
-        <td>Host macierzysty</td>
-        <td>*nazwa/id maszyny*</td>
-    </tr>
-    <tr>
-        <td>Data utworzenia</td>
-        <td>@(DateTime.Now.ToString())</td>
-    </tr>
-    </tbody>
-</table>
--->
+    @if (Container != null)
+    { 
+        <MudTable Items="new List<ContainerModel>(){Container}" T="ContainerModel" Breakpoint="Breakpoint.Xl" style="width: 30%;" Bordered="true">
+            <HeaderContent>
+                <MudTh><b>ID</b></MudTh>
+                <MudTh><b>Name</b></MudTh>
+                <MudTh><b>Description</b></MudTh>
+                <MudTh><b>Port</b></MudTh>
+                <MudTh><b>Status</b></MudTh>
+                <MudTh><b>Original Image</b></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="ID">@context.Id</MudTd>
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Description">@context.Description</MudTd>
+                <MudTd DataLabel="Port">@context.Port</MudTd>
+                <MudTd DataLabel="Status">@context.State</MudTd>
+                <MudTd DataLabel="Original Image">@context.Image</MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
 </div>
 
 @code {
     public ContainerModel Container { get; set; }
+    [Parameter]
+    public string ContainerId { get; set; }
+
     protected override async void OnInitialized()
     {
-        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
-        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _containerID))
-        {
-            var ID = _containerID;
-            var list = await Srvc.ListContainers(100);
-            Container = list.Find(c => c.Id == ID);
-        }
+        var list = await Srvc.ListContainers(100);
+        Container = list.Find(c => c.Id == ContainerId);
     }
 }
