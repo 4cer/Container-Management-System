@@ -15,7 +15,7 @@ namespace ProITM.Client.Services
 
         public Task<List<ImageModel>> GetUserImageList(string userId);
 
-        public Task<HttpResponseMessage> GetImageFromDockerHub(string name, string version, string description);
+        public Task<HttpResponseMessage> GetImageFromDockerHub(ImageModel image);
 
         public Task<HttpResponseMessage> DeleteImage(string imageId);
 

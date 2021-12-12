@@ -58,18 +58,11 @@ namespace ProITM.Server.Controllers
         }
 
 
-        [HttpPost("upload/{name}/{version}")]
-        public async Task<IActionResult> GetImageFromDockerHub(string name, string version, [FromBody] string description)
+        [HttpPost("upload")]
+        public async Task<IActionResult> GetImageFromDockerHub(ImageModel image)
         {
-            ImageModel model = new ImageModel();
-            model.ImageId = null;//A to Id nie powinno byc w bazie, bo na kazdej maszynce bedzie inne
-            //I dopierow przy klikaniu "uzyj obrazu X" powinno byc sciagane na danego dockera, bo tak bedzie prosciej.
-            model.Created = DateTime.Now;
-            model.Name = name;
-            model.Description = description;
-            model.Version = version;
-            
-            dbContext.Images.Add(model);
+            image.Created = DateTime.Now;
+            dbContext.Images.Add(image);
             await dbContext.SaveChangesAsync();
             return Ok();
         }
