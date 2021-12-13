@@ -4,7 +4,11 @@
 @inject IAdministrationService administrationService
 @inject NavigationManager navigationManager
 
-<h3>Manage Users</h3>
+
+<link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
+
+<h2>Manage Users</h2>
+<br />
 
 @if (message != null)
 {
@@ -26,42 +30,57 @@ else
               RowClassFunc="@SelectedRowClassFunc" OnRowClick="e => RowClickEvent(e)" @ref="mudTable" T="UserModel">
 
         <HeaderContent>
-            <MudTh>Nr.</MudTh>
             <MudTh>Name</MudTh>
             <MudTh>Email</MudTh>
             <MudTh>Confirmed</MudTh>
-            <MudTh>Active containers</MudTh>
+            @*<MudTh>Active containers</MudTh>*@
             <MudTh>Auth level</MudTh>
             <MudTh>Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
-        
-            
-                <MudTd>@context.UserName</MudTd>
-                <MudTd>@context.Email</MudTd>
-                <MudTd>@context.EmailConfirmed</MudTd>
-                <MudTd>---</MudTd>
-                <MudTd>
-                    @if (context.IsAdmin)
-                    {<p>Administrator</p> }
-                    else
-                    { <p>User</p>}
-                </MudTd>
-                <MudTd>
-                    <MudButton @onclick="(() => ClickEditUser(context.Id))">Edit</MudButton>
-                    @if (context.IsAdmin)
-                    {
-                        <MudButton  @onclick="(() => ClickDemoteUser(context.Id))">Demote</MudButton>
-                    }
-                    else
-                    {
-                        <MudButton  @onclick="(() => ClickPromoteUser(context.Id))">Promote</MudButton>
-                    }
-                    <MudButton  @onclick="(() => ClickDeleteUser(context.Id))">Delete</MudButton>
-                </MudTd>
+            <MudTd>@context.UserName</MudTd>
+            <MudTd>@context.Email</MudTd>
+            @if (context.EmailConfirmed)
+            {
+                <MudTd><MudIcon Icon="fas fa-check" Color="Color.Success"></MudIcon></MudTd>
+            }
+            else
+            {
+                <MudTd><MudIcon Icon="fas fa-times" Color="Color.Error"></MudIcon></MudTd>
+            }
 
-                
-          
+            @*TODO show number of containers for each user*@
+            @*<MudTd>---</MudTd>*@
+
+            <MudTd>
+                @if (context.IsAdmin)
+                {<p>Administrator</p> }
+                else
+                { <p>User</p>}
+            </MudTd>
+            <MudTd>
+                <MudTooltip Text="Edit profile">
+                    <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Info" @onclick="(() => ClickEditUser(context.Id))"></MudIconButton>
+                </MudTooltip>
+                @if (context.IsAdmin)
+                {
+                    <MudTooltip Text="Demote to User">
+                        <MudIconButton Icon="fas fa-angle-double-down" Color="Color.Error" @onclick="(() => ClickDemoteUser(context.Id))"></MudIconButton>
+                    </MudTooltip>
+                }
+                else
+                {
+                    <MudTooltip Text="Promote to Administrator">
+                        <MudIconButton Icon="fas fa-angle-double-up" Color="Color.Success" @onclick="(() => ClickPromoteUser(context.Id))"></MudIconButton>
+                    </MudTooltip>
+                }
+            <MudTooltip Text="Delete profile">
+                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" @onclick="(() => ClickDeleteUser(context.Id))"></MudIconButton>
+            </MudTooltip>
+            </MudTd>
+
+
+
         </RowTemplate>
 
     </MudTable>

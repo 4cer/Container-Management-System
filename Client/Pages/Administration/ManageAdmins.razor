@@ -8,7 +8,7 @@
 
 @if (admins == null)
 {
-    <p><em>Loading...asd</em></p>
+    <p><em>Loading...</em></p>
 
 }
 else
@@ -52,10 +52,10 @@ else
     private int selectedRowNumber = -1;
     private MudTable<UserModel> mudTable;
 
-    //protected override async Task OnInitializedAsync()
-    //{
-    //    admins = await administrationService.GetAdmins();
-    //}
+    protected override async Task OnInitializedAsync()
+    {
+        admins = await administrationService.GetAdmins();
+    }
 
     protected void EditUsersInGroup()
     {
