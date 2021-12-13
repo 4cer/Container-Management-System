@@ -37,7 +37,7 @@ namespace ProITM.Server.Controllers.Admin
                 .AsNoTracking()
                 .Where(u => u.Id == userId)
                 .Include(u => u.Containers)
-                .ThenInclude(c => c.Port)
+                .ThenInclude(c => c.PortBindings)
                 .Select(u => u.Containers)
                 //.Include(u => u.Containers)
                 .FirstOrDefaultAsync();
@@ -53,7 +53,7 @@ namespace ProITM.Server.Controllers.Admin
             var users = await dbContext.Users
                 .AsNoTracking()
                 .Include(u => u.Containers)
-                .ThenInclude(c => c.Port)
+                .ThenInclude(c => c.PortBindings)
                 .Where(u => u.Containers.Any())
                 .ToListAsync();
 
