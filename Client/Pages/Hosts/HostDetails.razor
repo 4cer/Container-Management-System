@@ -1,7 +1,8 @@
-﻿@page "/hosts/details/{HostId}" 
+﻿@page "/manage/hosts/details/{HostId}" 
 @using System.Collections
 @inject NavigationManager Navigation
 @inject IHostService service
+@attribute [Authorize(Roles = "Admin")]
 
 <style>
     .host-details-table{
