@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using ProITM.Shared;
 using Docker.DotNet;
 using Microsoft.AspNetCore.Authorization;
+using ProITM.Server.Utilities;
+using Docker.DotNet.Models;
+using System.Threading;
 
 namespace ProITM.Server.Controllers
 {
@@ -32,7 +35,7 @@ namespace ProITM.Server.Controllers
 
             if (foundImage == null) return BadRequest();
 
-            foundImage.ImageId = image.ImageId;
+            foundImage.DockerImageName = image.DockerImageName;
             foundImage.Description = image.Description;
 
             if (await dbContext.SaveChangesAsync() == 1)
@@ -58,11 +61,18 @@ namespace ProITM.Server.Controllers
         }
 
 
-        [HttpPost("upload")]
-        public async Task<IActionResult> GetImageFromDockerHub(ImageModel image)
+        [HttpPost("upload/{name}/{version}")]
+        public async Task<IActionResult> GetImageFromDockerHub(string name, string version, [FromBody] string description)
         {
-            image.Created = DateTime.Now;
-            dbContext.Images.Add(image);
+            ImageModel model = new ImageModel();
+            //model.DockerImageName = null;//A to Id nie powinno byc w bazie, bo na kazdej maszynce bedzie inne
+            //I dopierow przy klikaniu "uzyj obrazu X" powinno byc sciagane na danego dockera, bo tak bedzie prosciej.
+            model.Created = DateTime.Now;
+            model.DisplayName = name;
+            model.Description = description;
+            model.Version = version;
+            
+            dbContext.Images.Add(model);
             await dbContext.SaveChangesAsync();
             return Ok();
         }
@@ -74,6 +84,64 @@ namespace ProITM.Server.Controllers
             dbContext.Attach(model);
             dbContext.Remove(model);
             dbContext.SaveChanges();
+            return Ok();
+        }
+
+        [HttpGet("search/{term}/{official}/{automated}")]
+        public async Task<IActionResult> SearchImages(string term, bool official, bool automated)
+        {
+            DockerClient client;
+            try
+            {
+                client = dbContext.Hosts.First().GetDockerClient();
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+
+            var filters = new Dictionary<string, IDictionary<string, bool>>
+            {
+                //{ "is-official", new Dictionary<string, bool> { { "true", true } } },
+                //{ "is-automated", new Dictionary<string, bool> { { "true", true } } }
+            };
+
+            if (official)
+                filters.Add( "is-official", new Dictionary<string, bool> { { "true", true } } );
+            if (automated)
+                filters.Add( "is-automated", new Dictionary<string, bool> { { "true", true } } );
+
+            ImagesSearchParameters parameters = new()
+            {
+                Limit = 10,
+                Term = term,
+                Filters = filters
+            };
+
+            var images = await client.Images.SearchImagesAsync(parameters, default);
+            var outImages = new List<ImageHubModel>();
+
+            // Client has no concept of ImageSearchResponse, so gotta translate
+            foreach (var image in images)
+            {
+                outImages.Add(new ImageHubModel()
+                {
+                    Name = image.Name,
+                    Description = image.Description,
+                    Is_automated = image.IsAutomated,
+                    Is_official = image.IsOfficial,
+                    Star_count = image.StarCount
+                });
+            }
+
+            return Ok(outImages);
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateImage(ImageModel model)
+        {
+            await dbContext.Images.AddAsync(model);
+            await dbContext.SaveChangesAsync();
             return Ok();
         }
 

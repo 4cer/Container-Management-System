@@ -1,4 +1,4 @@
-﻿@page "/images/details"
+﻿@page "/images/details/{ImageId}"
 @using Microsoft.AspNetCore.WebUtilities
 @inject NavigationManager Navigation
 @inject IImageService ImgSrvc
@@ -7,45 +7,38 @@
 <h3>Image details</h3>
 
 <div>
-    <table class="image-details-table table table-hover table-dark">
-        <tbody>
-            <tr>
-                <td>Id</td>
-                <td>@Image.Id</td>
-            </tr>
-            <tr>
-                <td>ImageId</td>
-                <td>@Image.ImageId</td>
-            </tr>
-            <tr>
-                <td>Name</td>
-                <td>@Image.Name</td>
-            </tr>
-            <tr>
-                <td>Description</td>
-                <td>@Image.Description</td>
-            </tr>
-            <tr>
-                <td>Created</td>
-                <td>@Image.Created</td>
-            </tr>
-            <tr>
-                <td>Version</td>
-                <td>@Image.Version</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+
+    @if (Image != null)
+    {
+
+        <MudTable Items="new List<ImageModel>() { Image }" T="ImageModel" Breakpoint="Breakpoint.Xl" style="width: 30%;" Bordered="true">
+            <HeaderContent>
+                <MudTh><b>ID</b></MudTh>
+                <MudTh><b>Image Id</b></MudTh>
+                <MudTh><b>Name</b></MudTh>
+                <MudTh><b>Description</b></MudTh>
+                <MudTh><b>Created</b></MudTh>
+                <MudTh><b>Version</b></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="ID">@context.Id</MudTd>
+                <MudTd DataLabel="Image Id">@context.DockerImageName</MudTd>
+                <MudTd DataLabel="Name">@context.DisplayName</MudTd>
+                <MudTd DataLabel="Description">@context.Description</MudTd>
+                <MudTd DataLabel="Created">@context.Created</MudTd>
+                <MudTd DataLabel="Version">@context.Version</MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+    </div>
 
 @code {
     public ImageModel Image { get; set; }
+    [Parameter]
+    public string ImageId { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
-        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("id", out var _imageID))
-        {
-            var ID = _imageID;
-            Image = await ImgSrvc.GetImageDetails(ID);
-        }
+        Image = await ImgSrvc.GetImageDetails(ImageId);
     }
 }

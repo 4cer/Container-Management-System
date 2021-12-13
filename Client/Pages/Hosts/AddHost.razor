@@ -1,6 +1,7 @@
-﻿@page "/hosts/add"
+﻿@page "/manage/hosts/add"
 @inject NavigationManager Navigation
 @inject IHostService service
+@attribute [Authorize(Roles = "Admin")]
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 

@@ -18,8 +18,8 @@
         </HeaderContent>
         <RowTemplate>
             <MudTd>@context.Id</MudTd>
-            <MudTd>@context.ImageId</MudTd>
-            <MudTd>@context.Name</MudTd>
+            <MudTd>@context.DockerImageName</MudTd>
+            <MudTd>@context.DisplayName</MudTd>
             <MudTd>@context.Description</MudTd>
             <MudTd>@context.Created</MudTd>
             <MudTd>@context.Version</MudTd>
@@ -88,7 +88,7 @@
 
     private void ViewImage(ImageModel image)
     {
-        Navigation.NavigateTo($"/images/details?id=" + image.Id);
+        Navigation.NavigateTo($"/images/details/" + image.Id);
     }
 
     private void CreateImage()

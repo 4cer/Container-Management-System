@@ -1,29 +1,38 @@
 ﻿@page "/containers/add"
 @inject NavigationManager Navigation
+@inject IContainerService service
+@inject IImageService imageService
 
 
-<MudText Typo="Typo.h2">Dodaj kontener</MudText>
+<MudText Typo="Typo.h2">Create container</MudText>
 
 <MudItem style="width: 410px">
-    <MudTextField @bind-Value="NameValue" Label="Nazwa kontenera" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    <MudTextField @bind-Value="@newContainer.Name" Label="Container name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
 </MudItem>
 @*<MudTabs>
     <MudTabPanel Text="Podstawowe">*@
 <MudItem style="width: 410px">
-    <MudTextField @bind-Value="ImageName" Label="Obraz źródłowy" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-</MudItem>
+    <MudSelect Label="Source image" @bind-Value="newContainer.ImageIdC" AnchorOrigin="Origin.BottomCenter">
+        @if(MyImages != null){
+            @foreach (var image in MyImages)
+            {
+                <MudSelectItem T="string" Value="@image.Id">@image.DisplayName  <span style="color: #888; font-style: italic;">[@image.DockerImageName]</span></MudSelectItem>
+            }
+        }
+    </MudSelect>
+    </MudItem>
 <MudGrid>
     <MudItem>
-        <MudTextField @bind-Value="ContainerPort" Label="Port kontenera" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+        <MudTextField @bind-Value="@newContainer.PortNo" Label="Container port" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
     </MudItem>
-    <MudItem>
-        <MudTextField @bind-Value="TargerPort" Label="Port docelowy" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-    </MudItem>
+    <!--MudItem>
+        <MudTextField @bind-Value="" Label="Target port" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    </MudItem-->
 </MudGrid>
 <MudForm>
-    <MudRadioGroup @bind-SelectedOption="@SelectedOption">
-        <MudRadio Option="@("Windows")" Color="Color.Primary">Windows</MudRadio>
-        <MudRadio Option="@("Linux")" Color="Color.Primary">Linux</MudRadio>
+    <MudRadioGroup @bind-SelectedOption="@newContainer.IsWindows">
+        <MudRadio Option="true" Color="Color.Primary">Windows</MudRadio>
+        <MudRadio Option="false" Color="Color.Primary">Linux</MudRadio>
     </MudRadioGroup>
 </MudForm>
 @*</MudTabPanel>
@@ -66,24 +75,33 @@
 <br />
 
 <MudItem>
-    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Utwórz" Class="py-4 px-6 rounded-lg" />
+    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Create" Class="py-4 px-6 rounded-lg" OnClick="CreateContainer" />
 </MudItem>
 
 
 
 
 @code {
-    public string NameValue { get; set; }
+    /*
+     * public string NameValue { get; set; }
     public string ImageName { get; set; }
     public string ContainerPort { get; set; }
     public string TargerPort { get; set; }
     public string Flags { get; set; }
+     */
+    public ContainerModel newContainer { get; set; } = new();
+    public List<ImageModel> MyImages { get; set; }
 
-    public string SelectedOption { get; set; }
+    //public string SelectedOption { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        MyImages = await imageService.GetImageList();
+    }
 
     private void Reset()
     {
-        SelectedOption = null;
+        //SelectedOption = null;
     }
 
 
@@ -96,4 +114,11 @@
         }
         //TODO upload the files to the server
     }
+
+    public async Task CreateContainer()
+    {
+        Console.WriteLine(newContainer.Name);
+        var ret = await service.CreateContainer(newContainer);
+    }
+
 }

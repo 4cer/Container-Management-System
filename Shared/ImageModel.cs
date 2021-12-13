@@ -14,18 +14,24 @@ namespace ProITM.Shared
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
 
-        public string ImageId { get; set; }
+        // Maps to REPOSITORY in output of "docker images"
+        public string DockerImageName { get; set; }
 
         // Generated server-side, on creation
         public DateTime Created { get; set; }
 
-        // Maps to REPOSITORY in output of "docker images"
-        public string Name { get; set; }
+        // User-friendly name
+        public string DisplayName { get; set; }
 
         public string Description { get; set; }
 
         // Maps to TAG in output of "docker images"
         public string Version { get; set; }
+
+        public ImageModel()
+        {
+            this.Created = DateTime.UtcNow;
+        }
 
         // size doesn't matter - Ghandi, 2021
         // amount of nukes matter - Also Ghandi

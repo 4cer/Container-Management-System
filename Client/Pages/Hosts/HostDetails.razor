@@ -1,5 +1,8 @@
-﻿@page "/hosts/details" 
+﻿@page "/manage/hosts/details/{HostId}" 
+@using System.Collections
 @inject NavigationManager Navigation
+@inject IHostService service
+@attribute [Authorize(Roles = "Admin")]
 
 <style>
     .host-details-table{
@@ -13,9 +16,37 @@
 <h3>Host machine details</h3>
 
 <div>
-    { TODO } 
+    @if(Host != null){
+    
+    <MudTable Items="new List<HostModel>(){Host}" T="HostModel" Breakpoint="Breakpoint.Xl" style="width: 30%;" Bordered="true">
+        <HeaderContent>
+            <MudTh><b>ID</b></MudTh>
+            <MudTh><b>Display name</b></MudTh>
+            <MudTh><b>URI</b></MudTh>
+            <MudTh><b>Port</b></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="ID">@context.Id</MudTd>
+            <MudTd DataLabel="Name">@context.DisplayName</MudTd>
+            <MudTd DataLabel="URI">@context.URI</MudTd>
+            <MudTd DataLabel="Port">@context.Port</MudTd>
+        </RowTemplate>
+    </MudTable>
+    
+    }
+
 </div>
 
 @code {
-   
+    public HostModel Host { get; set; }
+    [Parameter]
+    public string HostId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var list = await service.GetHosts();
+        Host = list.Find(h => h.Id == HostId);
+        if (Host == null) return;
+    }
+
 }

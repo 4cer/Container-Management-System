@@ -96,7 +96,7 @@
                                 @img.Id
                             </td>
                             <td>
-                                @img.Name
+                                @img.DisplayName
                             </td>
                             <td>
                                 @img.Description
@@ -116,8 +116,19 @@
     </EditForm>
 }
 
+@if (warnings != null && warnings.Any())
+{
+    <h4>OSTRZEŻENIA DOCKERA:</h4>
+    foreach(var warning in warnings)
+    {
+        <p>@warning</p>
+    }
+}
+
 @code {
     List<ContainerModel> containers;
+
+    List<string> warnings;
 
     List<ImageModel> images;
 
@@ -132,7 +143,7 @@
 
     protected async Task OnCreat()
     {
-        _ = await cs.CreateContainer(container);
+        warnings = await cs.CreateContainer(container);
         containers = await cs.ListContainers(50);
     }
 
