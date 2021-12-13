@@ -56,7 +56,22 @@ namespace ProITM.Server.Controllers
         [HttpGet("{containerId}")]
         public async Task<IActionResult> ContainerDetails(string containerId)
         {
-            return Ok(GetContainerById(containerId));
+            // Get container in question
+            var container = GetContainerById(containerId);
+
+            #region 217, per operator authorization
+            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+
+            var user = await dbContext.Users
+                .AsNoTracking()
+                .Include(u => u.Containers)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (!user.Containers.Contains(container))
+                return Unauthorized();
+            #endregion
+
+            return Ok(container);
         }
 
         [HttpPost("edit")]
@@ -67,6 +82,18 @@ namespace ProITM.Server.Controllers
 
             if(container != null)
             {
+                #region 217, per operator authorization
+                string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+
+                var user = await dbContext.Users
+                    .AsNoTracking()
+                    .Include(u => u.Containers)
+                    .FirstOrDefaultAsync(u => u.Id == userId);
+
+                if (!user.Containers.Contains(container))
+                    return Unauthorized();
+                #endregion
+
                 // If anything needs to be changed, change here
                 container.Description = model.Description;
                 container.Name = model.Name;
@@ -80,14 +107,29 @@ namespace ProITM.Server.Controllers
         public async Task<IActionResult> StartContainer(string containerId)
         {
             // Get instance of appropriate host client and handle any fail to get one
+            ContainerModel container;
             DockerClient dockerClient;
             try
             {
-                dockerClient = GetContainerById(containerId)
+                container = GetContainerById(containerId);
+                dockerClient = container
                     .Machine
                     .GetDockerClient();
             }
             catch (Exception) { return NotFound(); }
+
+            #region 217, per operator authorization
+            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+
+            var user = await dbContext.Users
+                .AsNoTracking()
+                .Include(u => u.Containers)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (!user.Containers.Contains(container))
+                return Unauthorized();
+            #endregion
+
 
             var success = await dockerClient.Containers
                 .StartContainerAsync(containerId, new ContainerStartParameters());
@@ -113,14 +155,28 @@ namespace ProITM.Server.Controllers
         public async Task<IActionResult> StopContainer(string containerId)
         {
             // Get instance of appropriate host client and handle any fail to get one
+            ContainerModel container;
             DockerClient dockerClient;
             try
             {
-                dockerClient = GetContainerById(containerId)
+                container = GetContainerById(containerId);
+                dockerClient = container
                     .Machine
                     .GetDockerClient();
             }
             catch (Exception) { return NotFound(); }
+
+            #region 217, per operator authorization
+            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+
+            var user = await dbContext.Users
+                .AsNoTracking()
+                .Include(u => u.Containers)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (!user.Containers.Contains(container))
+                return Unauthorized();
+            #endregion
 
             var stopped = await dockerClient.Containers
                 .StopContainerAsync(containerId, new ContainerStopParameters()
@@ -148,9 +204,33 @@ namespace ProITM.Server.Controllers
         [HttpGet("stats/{containerId}")]
         public async Task<IActionResult> GetContainerStats(string containerId)
         {
-            var dockerClient = GetContainerById(containerId)
-                .Machine
-                .GetDockerClient();
+            //var dockerClient = GetContainerById(containerId)
+            //    .Machine
+            //    .GetDockerClient();
+
+            // Get instance of appropriate host client and handle any fail to get one
+            ContainerModel container;
+            DockerClient dockerClient;
+            try
+            {
+                container = GetContainerById(containerId);
+                dockerClient = container
+                    .Machine
+                    .GetDockerClient();
+            }
+            catch (Exception) { return NotFound(); }
+
+            #region 217, per operator authorization
+            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+
+            var user = await dbContext.Users
+                .AsNoTracking()
+                .Include(u => u.Containers)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (!user.Containers.Contains(container))
+                return Unauthorized();
+            #endregion
 
             var stats = await dockerClient.Containers.GetContainerStatsAsync(containerId, new ContainerStatsParameters { Stream = false }, default);
 
@@ -227,14 +307,28 @@ namespace ProITM.Server.Controllers
         public async Task<IActionResult> DeleteContainer(string containerId)
         {
             // Get instance of appropriate host client and handle any fail to get one
+            ContainerModel container;
             DockerClient dockerClient;
             try
             {
-                dockerClient = GetContainerById(containerId)
+                container = GetContainerById(containerId);
+                dockerClient = container
                     .Machine
                     .GetDockerClient();
             }
-            catch (Exception) {  return NotFound(); }
+            catch (Exception) { return NotFound(); }
+
+            #region 217, per operator authorization
+            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+
+            var user = await dbContext.Users
+                .AsNoTracking()
+                .Include(u => u.Containers)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (!user.Containers.Contains(container))
+                return Unauthorized();
+            #endregion
 
             await dockerClient.Containers
                 .StopContainerAsync(containerId, new ContainerStopParameters()
@@ -263,14 +357,29 @@ namespace ProITM.Server.Controllers
         public async Task<IActionResult> GetContainerLogs(string containerId, string since, string tail)
         {
             // Get instance of appropriate host client and handle any fail to get one
+            ContainerModel container;
             DockerClient dockerClient;
             try
             {
-                dockerClient = GetContainerById(containerId)
+                container = GetContainerById(containerId);
+                dockerClient = container
                     .Machine
                     .GetDockerClient();
             }
             catch (Exception) { return NotFound(); }
+
+            #region 217, per operator authorization
+            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+
+            var user = await dbContext.Users
+                .AsNoTracking()
+                .Include(u => u.Containers)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+                //if (!user.Containers.Exists(c => c.))
+            if (!user.Containers.Contains(container))
+                return Unauthorized();
+            #endregion
 
             if (dockerClient == null)
                 return Ok(new Tuple<string, string>("Container not found", "Container not found"));

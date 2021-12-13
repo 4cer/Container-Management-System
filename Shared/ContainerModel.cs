@@ -44,5 +44,16 @@ namespace ProITM.Shared
         // Username of container owner, for display purposes
         [NotMapped]
         public string OwnerName { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj.GetType() != typeof(ContainerModel))
+                return false;
+
+            ContainerModel c_obj = (ContainerModel)obj;
+
+            //return base.Equals(obj);
+            return this.Id.Equals(c_obj.Id);
+        }
     }
 }
