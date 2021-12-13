@@ -59,6 +59,23 @@ namespace ProITM.Server.Controllers
             return Ok(GetContainerById(containerId));
         }
 
+        [HttpPost("edit")]
+        public async Task<IActionResult> EditContainer(ContainerModel model)
+        {
+            var container = dbContext.Containers
+                .FirstOrDefault(c => c.Id == model.Id);
+
+            if(container != null)
+            {
+                // If anything needs to be changed, change here
+                container.Description = model.Description;
+                container.Name = model.Name;
+                dbContext.SaveChanges();
+                return Ok();
+            }
+            return NotFound();
+        }
+
         [HttpPost("start/{containerId}")]
         public async Task<IActionResult> StartContainer(string containerId)
         {
