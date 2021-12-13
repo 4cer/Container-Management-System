@@ -31,7 +31,7 @@ namespace ProITM.Client.Services
 
         public async Task<HttpResponseMessage> GetImageFromDockerHub(ImageModel image)
         {
-            return await _httpClient.PostAsJsonAsync($"Image/upload", image);
+            return await _httpClient.PostAsJsonAsync($"Image/create", image);
         }
 
         public async Task<HttpResponseMessage> DeleteImage(string imageId)

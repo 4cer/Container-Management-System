@@ -5,11 +5,11 @@
 <MudText Typo="Typo.h2">Dodaj obraz</MudText>
 
 <MudItem style="width: 410px">
-    <MudTextField @bind-Value="newImage.Name" Label="Nazwa obrazu" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    <MudTextField @bind-Value="newImage.DisplayName" Label="Nazwa obrazu" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
 </MudItem>
 
 <MudItem style="width: 410px">
-    <MudTextField @bind-Value="newImage.ImageId" Label="Adres obrazu w repozytorium dockerhub" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    <MudTextField @bind-Value="newImage.DockerImageName" Label="Adres obrazu w repozytorium dockerhub" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
 </MudItem>
 
 <MudForm>

@@ -141,7 +141,7 @@ namespace ProITM.Server.Controllers
         public async Task<IActionResult> CreateImage(ImageModel model)
         {
             await dbContext.Images.AddAsync(model);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
             return Ok();
         }
 
