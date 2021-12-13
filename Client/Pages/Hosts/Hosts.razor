@@ -107,16 +107,16 @@
 
     private void CreateHost()
     {
-        Navigation.NavigateTo($"/hosts/add");
+        Navigation.NavigateTo($"/manage/hosts/add");
     }
 
     private void EditHost(HostModel host)
     {
-        Navigation.NavigateTo("/hosts/edit/" + host.Id);
+        Navigation.NavigateTo("/manage/hosts/edit/" + host.Id);
     }
 
     private void ViewHost(HostModel host)
     {
-        Navigation.NavigateTo($"/hosts/details/" + host.Id);
+        Navigation.NavigateTo($"/manage/hosts/details/" + host.Id);
     }
 }

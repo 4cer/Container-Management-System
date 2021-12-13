@@ -94,7 +94,9 @@ namespace ProITM.Server.Areas.Identity.Pages.Account
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                        await _userManager.ConfirmEmailAsync(user, code);
+                        await _signInManager.SignInAsync(user, false);
+                        return Redirect(returnUrl);
                     }
                     else
                     {

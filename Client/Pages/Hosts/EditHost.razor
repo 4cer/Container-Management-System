@@ -1,74 +1,62 @@
-﻿@page "/manage/hosts/edit"
+﻿@page "/manage/hosts/edit/{HostId}"
 @inject NavigationManager Navigation
 @inject IHostService HostSrvc
 @attribute [Authorize(Roles = "Admin")]
 
-            href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
+<link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 
-<MudText Typo="Typo.h2">Edytuj host</MudText>
+<MudText Typo="Typo.h2">Edit host</MudText>
 
-<MudItem style="width: 410px">
-    <MudTextField @bind-Value="NameValue" Label="Nazwa hosta" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-</MudItem>
+@if(Host != null){
+
+    <MudItem style="width: 410px">
+        <MudTextField @bind-Value="Host.DisplayName" Label="Host display name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    </MudItem>
 
 
-<MudForm>
-    <MudRadioGroup @bind-SelectedOption="@SelectedOption">
-        <MudRadio Option="@("Windows")" Color="Color.Primary">Windows</MudRadio>
-        <MudRadio Option="@("Linux")" Color="Color.Primary">Linux</MudRadio>
-    </MudRadioGroup>
-</MudForm>
+    <MudForm>
+        <MudRadioGroup @bind-SelectedOption="@Host.IsWindows">
+            <MudRadio Option="true" Color="Color.Primary">Windows</MudRadio>
+            <MudRadio Option="false" Color="Color.Primary">Linux</MudRadio>
+        </MudRadioGroup>
+    </MudForm>
 
-<div class="d-flex align-center">
-    <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
-    <MudText Class="ml-4">(Do testów)Selected Option: @SelectedOption</MudText>
-</div>
+    <MudItem style="width: 410px">
+        <MudTextField @bind-Value="Host.URI" Label="Host URI" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    </MudItem>
 
-<MudItem style="width: 410px">
-    <MudTextField @bind-Value="ImageName" Label="Adres hosta" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-</MudItem>
+    <br />
 
-<MudItem style="width: 410px">
-    <MudTextField @bind-Value="ContainerPort" Label="Hasło" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-</MudItem>
+    <MudItem>
+        <MudFab Color="Color.Primary" Icon="fas fa-sync-alt" Label="Test connection" Class="py-4 px-6 rounded-lg" />
+    </MudItem>
 
-<br />
+    <br />
 
-<MudItem>
-    <MudFab Color="Color.Primary" Icon="fas fa-sync-alt" Label="Sprawdź połączenie" Class="py-4 px-6 rounded-lg" />
-</MudItem>
-
-<br />
-
-<MudItem>
-    <MudFab Color="Color.Primary" Icon="@Icons.Filled.Save" Label="Zapisz" Class="py-4 px-6 rounded-lg" />
-</MudItem>
-
+    <MudItem>
+        <MudFab Color="Color.Primary" Icon="@Icons.Filled.Save" Label="Save" Class="py-4 px-6 rounded-lg" OnClick="SaveChanges"/>
+    </MudItem>
+}
 
 
 
 @code {
-    public string NameValue { get; set; }
-    public string ImageName { get; set; }
-    public string ContainerPort { get; set; }
-    public string TargerPort { get; set; }
-    public string Flags { get; set; }
+    
+    
+    [Parameter]
+    public string HostId { get; set; }
+    public HostModel Host { get; set; }
 
-    public string SelectedOption { get; set; }
-
-    private void Reset()
+    protected override async Task OnParametersSetAsync()
     {
-        SelectedOption = null;
+        Host = await HostSrvc.HostDetails(HostId);
     }
 
 
-    IList<IBrowserFile> files = new List<IBrowserFile>();
-    private void UploadFiles(InputFileChangeEventArgs e)
+    private async Task SaveChanges()
     {
-        foreach (var file in e.GetMultipleFiles())
-        {
-            files.Add(file);
-        }
-        //TODO upload the files to the server
+        await HostSrvc.EditHost(Host);
+        Navigation.NavigateTo("/manage/hosts");
     }
+
 }

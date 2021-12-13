@@ -86,7 +86,7 @@ namespace ProITM.Server.Controllers.Admin
         [HttpGet("{hostId}")]
         public async Task<IActionResult> HostDetails(string hostId)
         {
-            return Ok(dbContext.Hosts
+            return Ok(await dbContext.Hosts
                 .AsNoTracking()
                 .SingleOrDefaultAsync(h => h.Id == hostId));
         }
