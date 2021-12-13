@@ -12,21 +12,11 @@
     <MudTextField @bind-Value="newImage.DockerImageName" Label="Adres obrazu w repozytorium dockerhub" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
 </MudItem>
 
-<MudForm>
-    <MudRadioGroup @bind-SelectedOption="@SelectedOption">
-        <MudRadio Option="@("Windows")" Color="Color.Primary">Windows</MudRadio>
-        <MudRadio Option="@("Linux")" Color="Color.Primary">Linux</MudRadio>
-    </MudRadioGroup>
-</MudForm>
-
 <br />
 
 <MudItem>
     <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Utwórz" Class="py-4 px-6 rounded-lg" OnClick="CreateImage" />
 </MudItem>
-
-
-
 
 @code {
     public ImageModel newImage { get; set; } = new();

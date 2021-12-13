@@ -1,6 +1,7 @@
 ﻿@page "/images"
 @inject NavigationManager Navigation
 @inject IImageService ImgSrvc
+@inject IDialogService DialogService
 
 <h2>List of images</h2>
 <MudButton Style="margin: 10px 0;" StartIcon="@Icons.Filled.Add" Color="Color.Primary" Variant="Variant.Filled" OnClick="CreateImage">Add</MudButton>
@@ -24,13 +25,14 @@
             <MudTd>@context.Created</MudTd>
             <MudTd>@context.Version</MudTd>
             <MudTd Class="actions-cell">
-                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewImage(context)"/>
-                <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Info" OnClick="e => EditImage(context)"/>
+                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewImage(context)" />
+                <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Info" OnClick="e => EditImage(context)" />
                 <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteImage(context)" />
             </MudTd>
         </RowTemplate>
     </MudTable>
-    @if(images == null) {
+    @if (images == null)
+    {
         <p><em>Loading...</em></p>
     }
 </div>
@@ -76,14 +78,23 @@
         }
     }
 
-    private void DeleteImage(ImageModel image)
+    async Task DeleteImage(ImageModel image)
     {
-        return;
+        var parameters = new DialogParameters { ["image"] = image };
+
+        var dialog = DialogService.Show<DeleteImageDialog>("Delete Image", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            //var Id = result.Data.ToString();
+            images.Remove(image);
+        }
     }
 
     private void EditImage(ImageModel image)
     {
-        return;
+        Navigation.NavigateTo($"/images/edit/" + image.Id);
     }
 
     private void ViewImage(ImageModel image)
