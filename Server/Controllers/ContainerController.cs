@@ -201,50 +201,50 @@ namespace ProITM.Server.Controllers
             }
         }
 
+        // TODO 216 Zadanie dodatkowe
         [HttpGet("stats/{containerId}")]
         public async Task<IActionResult> GetContainerStats(string containerId)
         {
-            //var dockerClient = GetContainerById(containerId)
-            //    .Machine
-            //    .GetDockerClient();
+            //// Get instance of appropriate host client and handle any fail to get one
+            //ContainerModel container;
+            //DockerClient dockerClient;
+            //try
+            //{
+            //    container = GetContainerById(containerId);
+            //    dockerClient = container
+            //        .Machine
+            //        .GetDockerClient();
+            //}
+            //catch (Exception) { return NotFound(); }
 
-            // Get instance of appropriate host client and handle any fail to get one
-            ContainerModel container;
-            DockerClient dockerClient;
-            try
-            {
-                container = GetContainerById(containerId);
-                dockerClient = container
-                    .Machine
-                    .GetDockerClient();
-            }
-            catch (Exception) { return NotFound(); }
+            //#region 217, per operator authorization
+            //string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
 
-            #region 217, per operator authorization
-            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+            //var user = await dbContext.Users
+            //    .AsNoTracking()
+            //    .Include(u => u.Containers)
+            //    .FirstOrDefaultAsync(u => u.Id == userId);
 
-            var user = await dbContext.Users
-                .AsNoTracking()
-                .Include(u => u.Containers)
-                .FirstOrDefaultAsync(u => u.Id == userId);
+            //if (!user.Containers.Contains(container))
+            //    return Unauthorized();
+            //#endregion
 
-            if (!user.Containers.Contains(container))
-                return Unauthorized();
-            #endregion
+            //var stats = await dockerClient.Containers.GetContainerStatsAsync(containerId, new ContainerStatsParameters { Stream = false }, default);
 
-            var stats = await dockerClient.Containers.GetContainerStatsAsync(containerId, new ContainerStatsParameters { Stream = false }, default);
+            //string allstats;
 
-            string allstats;
+            //using (System.IO.StreamReader sw = new System.IO.StreamReader(stats))
+            //{
+            //    allstats = sw.ReadToEnd();
+            //}
 
-            using (System.IO.StreamReader sw = new System.IO.StreamReader(stats))
-            {
-                allstats = sw.ReadToEnd();
-            }
+            //// TODO 216 Desarialize allstats JSON into custom model.
+            //// ContainerStatsModel?
 
-            // TODO 216 Desarialize allstats JSON into custom model.
-            // ContainerStatsModel?
+            //return Ok(allstats);
 
-            return Ok(allstats);
+
+            throw new NotImplementedException("ProITM.Server.Controllers.ContainerController.GetContainerStats(string containerId)");
         }
 
         [HttpPost("create")]
