@@ -1,56 +1,36 @@
-﻿@page "/images/edit"
+﻿@page "/images/edit/{ImageId}"
 @inject NavigationManager Navigation
 
-    @inject IImageService ImgSrvc
+@inject IImageService ImgSrvc
+@if (Image != null)
+{
 
-    <MudText Typo="Typo.h2">Edytuj obraz</MudText>
+    <MudText Typo="Typo.h2">Edit image</MudText>
 
     <MudItem style="width: 410px">
-        <MudTextField @bind-Value="NameValue" Label="Nazwa obrazu" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+        <MudTextField @bind-Value="Image.DisplayName" Label="Image name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
     </MudItem>
 
     <MudItem style="width: 410px">
-        <MudTextField @bind-Value="ImageName" Label="Adres obrazu w repozytorium dockerhub" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+        <MudTextField @bind-Value="Image.DisplayName" Label="Dockerhub Image ID" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
     </MudItem>
-
-    <MudForm>
-        <MudRadioGroup @bind-SelectedOption="@SelectedOption">
-            <MudRadio Option="@("Windows")" Color="Color.Primary">Windows</MudRadio>
-            <MudRadio Option="@("Linux")" Color="Color.Primary">Linux</MudRadio>
-        </MudRadioGroup>
-    </MudForm>
 
     <br />
 
     <MudItem>
-        <MudFab Color="Color.Primary" Icon="@Icons.Filled.Save" Label="Zapisz" Class="py-4 px-6 rounded-lg" />
+        <MudFab Color="Color.Primary" Icon="@Icons.Filled.Save" Label="Save" Class="py-4 px-6 rounded-lg" />
     </MudItem>
+}
 
 
+@code {
+    [Parameter]
+    public string ImageId { get; set; }
+    public ImageModel Image { get; set; }
 
-
-    @code {
-        public string NameValue { get; set; }
-        public string ImageName { get; set; }
-        public string ContainerPort { get; set; }
-        public string TargerPort { get; set; }
-        public string Flags { get; set; }
-
-        public string SelectedOption { get; set; }
-
-        private void Reset()
-        {
-            SelectedOption = null;
-        }
-
-
-        IList<IBrowserFile> files = new List<IBrowserFile>();
-        private void UploadFiles(InputFileChangeEventArgs e)
-        {
-            foreach (var file in e.GetMultipleFiles())
-            {
-                files.Add(file);
-            }
-            //TODO upload the files to the server
-        }
+    protected override async Task OnParametersSetAsync()
+    {
+        Image = await ImgSrvc.GetImageDetails(ImageId);
     }
+
+}
