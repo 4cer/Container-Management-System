@@ -29,6 +29,9 @@
                 <th>
                     URI
                 </th>
+                <th>
+                    Actions
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -53,6 +56,9 @@
                     <td>
                         @host.URI
                     </td>
+                    <td>
+                        <input type="button" class="btn btn-danger" value="Delet" @onclick="(() => DeleteHost(host.Id))" />
+                    </td>
                 </tr>
             }
             @if (!hosts.Any())
@@ -63,43 +69,57 @@
     </table>
 }
 
-<input class="btn btn-success" type="button" @onclick="(() => AddHost())" value="Add host" />
-<input class="btn btn-danger" type="button" @onclick="(() => DeleteHost())" value="Delete host" />
-<input class="btn btn-warning" type="button" @onclick="(() => EditHost())" value="Edit host" />
+@if (model != null)
+{
+    <h3>Creating containers</h3>
+    <EditForm Model="model" OnSubmit="OnCreat">
+        <div class="form-group">
+            <label for="host-name">Nazwa*</label>
+            <InputText id="host-name" @bind-Value="model.DisplayName" class="form-control"></InputText>
+        </div>
+        <div class="form-group">
+            <label for="host-desc">Ip</label>
+            <InputText id="host-desc" @bind-Value="model.IP" class="form-control"></InputText>
+        </div>
+        <div class="form-group">
+            <label for="host-port">Port</label>
+            <InputNumber id="host-port" @bind-Value="model.Port" class="form-control"></InputNumber>
+        </div>
+        <div class="form-group">
+            <label for="host-uri">URI*</label>
+            <InputText id="host-uri" @bind-Value="model.URI" class="form-control"></InputText>
+        </div>
+        <div class="form-group">
+            <InputCheckbox id="host-win" @bind-Value="model.IsWindows" class="form-check-input" />
+            <label for="host-win">Windows system*</label>
+        </div>
+        <div class="form-check">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </EditForm>
+}
 
 @code {
     List<HostModel> hosts;
 
+    HostModel model;
+
     protected override async Task OnInitializedAsync()
     {
-        HostModel hostModel = new HostModel();
-        Random r = new Random();
-
-        _ = await hostService.AddHost(hostModel);
+        this.model = new();
 
         hosts = await hostService.GetHosts();
     }
 
-
-    protected async Task AddHost()
+    protected async Task OnCreat()
     {
-        HostModel hostModel = new HostModel();
-        Random r = new Random();
-        var random = r.Next(10000);
-        hostModel.Id = random.ToString();
-        hostModel.IP = "111.222.333." + random.ToString();
-        hostModel.Port = 2137;
-        hostModel.IsWindows = true;
-        hostModel.DisplayName = "karakan";
-        hostModel.URI = "nie_wiem";
-
-        _ = await hostService.AddHost(hostModel);
+        _ = await hostService.AddHost(model);
         hosts = await hostService.GetHosts();
     }
 
-    protected async Task DeleteHost()
+    protected async Task DeleteHost(string id)
     {
-        _ = await hostService.DeleteHost(hosts.First().Id);
+        _ = await hostService.DeleteHost(id);
         hosts = await hostService.GetHosts();
     }
 

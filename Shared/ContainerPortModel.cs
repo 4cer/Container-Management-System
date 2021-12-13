@@ -10,6 +10,7 @@ namespace ProITM.Shared
 {
     public class ContainerPortModel
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
 
         public int Port { get; set; }

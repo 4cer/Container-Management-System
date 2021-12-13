@@ -19,6 +19,12 @@ namespace ProITM.Client.Services
 
         public Task<HttpResponseMessage> DeleteImage(string imageId);
 
+        #region Added later
+        public Task<List<ImageHubModel>> SearchImages(string term, bool official, bool automated);
+        public Task<HttpResponseMessage> CreateImage(ImageModel model);
+        #endregion
+
+        #region Extracurricular functionality
         public Task<HttpResponseMessage> UploadCompiledImage();
 
         public Task<HttpResponseMessage> UploadUncompiledImage();
@@ -26,5 +32,6 @@ namespace ProITM.Client.Services
         public Task<HttpResponseMessage> BuildImage(string imageId);
 
         public Task<HttpResponseMessage> ExportImage(string userId);
+        #endregion
     }
 }

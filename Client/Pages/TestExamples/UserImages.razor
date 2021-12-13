@@ -1,0 +1,176 @@
+﻿@page "/testing/images"
+@attribute [Authorize]
+
+@inject IImageService ims
+
+<h3>All images</h3>
+
+@if (images != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>DisplayName</th>
+                <th>DockerImageName</th>
+                <th>Description</th>
+                <th colspan="2">Version</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var image in images)
+            {
+                <tr>
+                    <td>@image.Id</td>
+                    <td>@image.DisplayName</td>
+                    <td>@image.DockerImageName</td>
+                    <td>@image.Description</td>
+                    <td>@image.Version</td>
+                    <td><input class="btn btn-danger" type="button" @onclick="(() => Delet(image.Id))" value="Delet" /></td>
+                </tr>
+            }
+            @if (!images.Any())
+            {
+                <tr><td colspan="1000">No images found. Add some below.</td></tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (model != null)
+{
+    <EditForm Model="model" OnSubmit="OnCreat">
+        <div class="form-group">
+            <label for="img-dname">Wyświetlana nazwa</label>
+            <InputText id="img-dname" @bind-Value="model.DisplayName" class="form-control"></InputText>
+        </div>
+        <div class="form-group">
+            <label for="image-rname">Nazwa repozytorium Docker</label>
+            <InputText id="image-rname" @bind-Value="model.DockerImageName" class="form-control"></InputText>
+        </div>
+        <div class="form-group">
+            <label for="image-desc">Opis</label>
+            <InputText id="image-desc" @bind-Value="model.Description" class="form-control"></InputText>
+        </div>
+        <div class="form-group">
+            <label for="image-vers">Wersja</label>
+            <InputText id="image-vers" @bind-Value="model.Version" class="form-control"></InputText>
+        </div>
+        <div class="form-check">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </EditForm>
+}
+<hr />
+
+@if (imageSearch != null)
+{
+    <EditForm Model="imageSearch" OnSubmit="OnSearch">
+        <h4>Wyszukaj obraz</h4>
+        <p>@errors</p>
+        <div class="form-group">
+            <label for="image-desc">Szukana nazwa</label>
+            <InputText id="image-desc" @bind-Value="imageSearch.Name" class="form-control"></InputText>
+        </div>
+        <div class="form-group">
+            <InputCheckbox id="image-siso" @bind-Value="imageSearch.Is_official" class="form-check-input" />
+            <label for="image-siso">Show only Official image</label>
+        </div>
+        <div class="form-group">
+            <InputCheckbox id="image-saut" @bind-Value="imageSearch.Is_automated" class="form-check-input" />
+            <label for="image-saut">Show only Automated</label>
+        </div>
+        <div class="form-check">
+            <button type="submit" class="btn btn-primary">Szukaj</button>
+        </div>
+    </EditForm>
+}
+
+<hr />
+
+@if (imagesFromHub != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Repo name</th>
+                <th>Official</th>
+                <th>Automated</th>
+                <th>Description</th>
+                <th colspan="2">Star count</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var imagefh in imagesFromHub)
+            {
+                <tr>
+                    <td>@imagefh.Name</td>
+                    <td>@imagefh.Is_official</td>
+                    <td>@imagefh.Is_automated</td>
+                    <td>@imagefh.Description</td>
+                    <td>@imagefh.Star_count</td>
+                    <td><input class="btn btn-success" type="button" @onclick="(() => Apply(imagefh.Name, imagefh.Description))" value="Apply" /></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+
+@code {
+    List<ImageModel> images;
+
+    ImageModel model;
+
+    ImageHubModel imageSearch;
+
+    string term;
+    bool isOfficial = true;
+    bool isAutomated = false;
+    List<ImageHubModel> imagesFromHub;
+
+    string errors;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.model = new();
+        this.imageSearch = new();
+
+        errors = "";
+
+        images = await ims.GetImageList();
+    }
+
+    protected async Task Apply(string repoName, string description)
+    {
+        model.DockerImageName = repoName;
+        model.Description = description;
+    }
+
+    protected async Task Delet(string id)
+    {
+        _ = await ims.DeleteImage(id);
+        images = await ims.GetImageList();
+    }
+
+    protected async Task OnCreat()
+    {
+        _ = await ims.CreateImage(model);
+        images = await ims.GetImageList();
+    }
+
+    protected async Task OnSearch()
+    {
+        if (string.IsNullOrWhiteSpace(imageSearch.Name))
+        {
+            errors = "Search term cannot be empty!";
+        }
+        else
+        {
+            errors = "";
+            imagesFromHub = await ims.SearchImages(imageSearch.Name, imageSearch.Is_official, imageSearch.Is_automated);
+        }
+
+    }
+}
