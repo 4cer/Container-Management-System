@@ -92,7 +92,7 @@
 
     public void ViewContainer(ContainerModel container)
     {
-        Navigation.NavigateTo($"/containers/details?id=" + container.Id);
+        Navigation.NavigateTo($"/containers/details/" + container.Id);
     }
 
     async Task DeleteContainer(ContainerModel container)
