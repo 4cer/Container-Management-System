@@ -157,13 +157,15 @@ namespace ProITM.Server.Controllers.Admin
 
 
             ContainerModel model = await dbContext.Containers
-                .Include(c => c.Port)
+                .Include(c => c.PortBindings)
                 .SingleOrDefaultAsync(c => c.Id == containerId);
-            var port = model.Port;
+
+            // Test port deletion
+            dbContext.ContainerPorts.AttachRange(model.PortBindings);
+            dbContext.ContainerPorts.RemoveRange(model.PortBindings);
+
             dbContext.Containers.Attach(model);
             dbContext.Containers.Remove(model);
-            dbContext.ContainerPorts.Attach(port);
-            dbContext.ContainerPorts.Remove(port);
             dbContext.SaveChanges();
 
             return Ok();

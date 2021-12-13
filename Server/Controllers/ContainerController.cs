@@ -44,11 +44,13 @@ namespace ProITM.Server.Controllers
 
             var userContainers = await dbContext.Users
                 .AsNoTracking()
+                .Include(u => u.Containers)
                 .Where(u => u.Id == userId)
-                .Select(u => u.Containers)
                 .FirstOrDefaultAsync();
 
-            var containers = userContainers.Take((int)limit);
+            var containers = userContainers.Containers;
+
+            //var containers = userContainers.Take((int)limit);
 
             return Ok(containers);
         }
@@ -265,9 +267,9 @@ namespace ProITM.Server.Controllers
             // TODO 222 Check if machine has selected image, if not: pull by name
 
             dbContext.Attach(host);
-            var port = new ContainerPortModel() { Id = Guid.NewGuid().ToString(), Port = model.PortNo, Host = host };
+            //var port = new ContainerPortModel() { Id = Guid.NewGuid().ToString(), Port = model.PortNo, Host = host };
             model.Machine = host;
-            model.Port = port;
+            //model.Port = port;
             model.IsRunning = false;
 
             // Make new instance of DockerClient from URI
@@ -291,12 +293,27 @@ namespace ProITM.Server.Controllers
 
             }
 
+            var exposedPorts = new Dictionary<string, EmptyStruct>();
+            var portBindings = new Dictionary<string, IList<PortBinding>>();
+
+            foreach (var portBind in model.PortBindings)
+            {
+                portBind.Host = host;
+                exposedPorts.Add(portBind.PublicPort.ToString() + "/tcp", default(EmptyStruct));
+                portBindings.Add(
+                    portBind.PublicPort.ToString()  +  "/tcp", new List<PortBinding>{
+                        new PortBinding { HostPort = portBind.PrivatePort.ToString() }
+                    });
+            }
+
             CreateContainerResponse result = await dockerClient.Containers.CreateContainerAsync(new CreateContainerParameters()
             {
                 Image = model.Image.DockerImageName,
+                ExposedPorts = exposedPorts,
                 HostConfig = new HostConfig()
                 {
-                    DNS = new[] { "8.8.8.8", "8.8.4.4" }
+                    DNS = new[] { "8.8.8.8", "8.8.4.4" },
+                    PortBindings = portBindings
                 }
                 // TODO 195 bind port
             });
@@ -359,13 +376,16 @@ namespace ProITM.Server.Controllers
 
 
             ContainerModel model = await dbContext.Containers
-                .Include(c => c.Port)
+                .Include(c => c.PortBindings)
                 .SingleOrDefaultAsync(c => c.Id == containerId);
-            var port = model.Port;
+
+            // Test port deletion
+            dbContext.ContainerPorts.AttachRange(model.PortBindings);
+            dbContext.ContainerPorts.RemoveRange(model.PortBindings);
+
             dbContext.Containers.Attach(model);
             dbContext.Containers.Remove(model);
-            dbContext.ContainerPorts.Attach(port);
-            dbContext.ContainerPorts.Remove(port);
+
             dbContext.SaveChanges();
 
             return Ok();

@@ -66,6 +66,7 @@
 @if (container != null && images != null)
 {
     <h3>Creating containers</h3>
+    <p>@formError</p>
     <EditForm Model="container" OnSubmit="OnCreat">
         <div class="form-group">
             <label for="" cont-name">Nazwa</label>
@@ -76,8 +77,12 @@
             <InputText id="cont-desc" @bind-Value="@container.Description" class="form-control"></InputText>
         </div>
         <div class="form-group">
-            <label for="cont-port">Port</label>
-            <InputNumber id="cont-port" @bind-Value="@container.PortNo" class="form-control"></InputNumber>
+            <label for="cont-port">Public Port</label>
+            <InputNumber id="cont-port" @bind-Value="portPub" class="form-control"></InputNumber>
+        </div>
+        <div class="form-group">
+            <label for="cont-portpri">Private Port</label>
+            <InputNumber id="cont-portpri" @bind-Value="portPri" class="form-control"></InputNumber>
         </div>
         <div class="form-group">
             <InputCheckbox id="cont-win" @bind-Value="@container.IsWindows" class="form-check-input" />
@@ -128,6 +133,11 @@
 @code {
     List<ContainerModel> containers;
 
+    string formError = "";
+
+    int portPub;
+    int portPri;
+
     List<string> warnings;
 
     List<ImageModel> images;
@@ -143,6 +153,17 @@
 
     protected async Task OnCreat()
     {
+        if(portPri > ushort.MaxValue || portPub > ushort.MaxValue)
+        {
+            formError = $"Port values cannot exceed {ushort.MaxValue}";
+            return;
+        }
+        formError = "";
+
+        container.PortBindings.Add(new ContainerPortModel {
+            PrivatePort = (ushort)portPri,
+            PublicPort = (ushort)portPub
+        });
         warnings = await cs.CreateContainer(container);
         containers = await cs.ListContainers(50);
     }

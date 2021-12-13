@@ -94,7 +94,8 @@ namespace ProITM.Server.Controllers
             DockerClient client;
             try
             {
-                client = dbContext.Hosts.First().GetDockerClient();
+                var host = dbContext.Hosts.First();
+                client = host.GetDockerClient();
             }
             catch (Exception)
             {

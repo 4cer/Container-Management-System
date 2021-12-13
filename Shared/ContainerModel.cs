@@ -19,7 +19,7 @@ namespace ProITM.Shared
 
         public string Description { get; set; }
 
-        public virtual List<ContainerPortModel> PortBindings { get; set; }
+        public virtual List<ContainerPortModel> PortBindings { get; set; } = new();
 
         public HostModel Machine { get; set; }
 
