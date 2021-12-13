@@ -20,20 +20,6 @@
 
 @code {
     public ImageModel newImage { get; set; } = new();
-    /*
-     * public string NameValue { get; set; }
-    public string ImageName { get; set; }
-    public string ContainerPort { get; set; }
-    public string TargerPort { get; set; }
-    public string Flags { get; set; }
-     */
-    public string SelectedOption { get; set; }
-
-    private void Reset()
-    {
-        SelectedOption = null;
-    }
-
 
     IList<IBrowserFile> files = new List<IBrowserFile>();
     private void UploadFiles(InputFileChangeEventArgs e)
