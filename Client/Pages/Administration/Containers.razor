@@ -1,11 +1,10 @@
-﻿@page "/containers"
+﻿@page "/manage/containers"
 @inject NavigationManager Navigation
-@inject IContainerService ContSrvc
+@inject IAdminContainerService ContSrvc
 @inject IDialogService DialogService 
 @inject AuthenticationStateProvider provider
 
-<h2>Your containers</h2>
-<MudButton Style="margin: 10px 0;" StartIcon="@Icons.Filled.Add" Color="Color.Primary" Variant="Variant.Filled" OnClick="CreateContainer">Add</MudButton>
+<h2>Manage containers</h2>
 <div>
     <MudTable Items="containers" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent" Hover="true" Dense="true"
               RowClassFunc="@SelectedRowClassFunc" OnRowClick="e => RowClickEvent(e)" @ref="mudTable" T="ContainerModel">
@@ -14,7 +13,7 @@
             <MudTh>Name</MudTh>
             <MudTh>Image</MudTh>
             <MudTh>Description</MudTh>
-            <MudTh>Port</MudTh>
+            <MudTh>Port</MudTh> 
             <MudTh>Machine</MudTh>
             <MudTh>State</MudTh>
             <MudTh>Is running</MudTh>
@@ -58,7 +57,7 @@
     {
         var authstate = await provider.GetAuthenticationStateAsync();
         var id = authstate.User.Claims.First(c => c.Type == "sub")?.Value;
-        containers = await ContSrvc.ListContainers(100);
+        containers = await ContSrvc.GetContainers(100);
     }
 
     public void SelectionChangedEvent(object row)
@@ -108,10 +107,5 @@
             var deletedServer = result.Data.ToString();
             containers.RemoveAll(item => item.Id.Equals(deletedServer));
         }
-    }
-
-    private void CreateContainer()
-    {
-        Navigation.NavigateTo($"/containers/add");
     }
 }

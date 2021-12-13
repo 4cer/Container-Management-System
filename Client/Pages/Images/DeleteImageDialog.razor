@@ -1,0 +1,30 @@
+﻿@inject IImageService ImageSrvc
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.DeleteForever" Class="mr-3 mb-n1" />
+            Do you want to delete image <b>@image.DisplayName</b>?
+        </MudText>
+    </TitleContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Error" OnClick="DeleteHost">Delete Host</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public ImageModel image { get; set; } = new ImageModel();
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private void DeleteHost()
+    {
+        ImageSrvc.DeleteImage(image.Id);
+        MudDialog.Close(DialogResult.Ok(image.Id));
+    }
+}
