@@ -1,6 +1,6 @@
 ﻿@page "/manage/admins"
-@attribute [Authorize(Roles = "Admin")]
-
+@*attribute [Authorize(Roles = "Admin")]
+*@
 @inject IAdministrationService administrationService
 @inject NavigationManager navigationManager
 
@@ -8,11 +8,12 @@
 
 @if (admins == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>Loading...asd</em></p>
+
 }
 else
 {
-    <button class="btn btn-secondary mb-1" @onclick="(() => EditUsersInGroup())">Add or Remove Admins</button>
+    <MudButton @onclick="(() => EditUsersInGroup())">Add or Remove Admins</MudButton>
 
     @if (!admins.Any())
     {
@@ -21,44 +22,24 @@ else
     }
     else
     {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        Name
-                    </th>
-                    <th>
-                        Email
-                    </th>
-                    <th>
-                        Confirmed
-                    </th>
-                    <th>
-
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var adm in admins)
-                {
-                    <tr onclick="">
-                        <td>
-                            @adm.UserName
-                        </td>
-                        <td>
-                            @adm.Email
-                        </td>
-                        <td>
-                            @adm.EmailConfirmed
-                        </td>
-                        <td>
-                            <button class="btn btn-secondary" href="#">Delete</button>
-                            <button class="btn btn-secondary" href="#">Demote</button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <MudTable Items="admins" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent" Hover="true" Dense="true"
+                  RowClassFunc="@SelectedRowClassFunc" OnRowClick="e => RowClickEvent(e)" @ref="mudTable" T="UserModel">
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Email</MudTh>
+                <MudTh>Confirmed</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>@context.UserName</MudTd>
+                <MudTd>@context.Email</MudTd>
+                <MudTd>@context.EmailConfirmed</MudTd>
+                <MudTd Class="actions-cell">
+                    <MudIconButton Icon="@Icons.Filled.Edit" Color="Color.Info" />
+                    <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" />
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
 
     }
 
@@ -68,15 +49,40 @@ else
 @code {
 
     private List<UserModel> admins;
+    private int selectedRowNumber = -1;
+    private MudTable<UserModel> mudTable;
 
-    protected override async Task OnInitializedAsync()
-    {
-        admins = await administrationService.GetAdmins();
-    }
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    admins = await administrationService.GetAdmins();
+    //}
 
     protected void EditUsersInGroup()
     {
         navigationManager.NavigateTo($"manage/admins/usersinrole/");
+    }
+
+    private string SelectedRowClassFunc(UserModel host, int rowNumber)
+    {
+        if (selectedRowNumber == rowNumber)
+        {
+            selectedRowNumber = -1;
+            return string.Empty;
+        }
+        else if (mudTable.SelectedItem != null && mudTable.SelectedItem.Equals(host))
+        {
+            selectedRowNumber = rowNumber;
+            return "selected";
+        }
+        else
+        {
+            return string.Empty;
+        }
+    }
+
+    private void RowClickEvent(TableRowClickEventArgs<UserModel> tableRowClickEventArgs)
+    {
+        return;
     }
 
 }
