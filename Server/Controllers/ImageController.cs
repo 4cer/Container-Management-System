@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using ProITM.Shared;
 using Docker.DotNet;
 using Microsoft.AspNetCore.Authorization;
+using ProITM.Server.Utilities;
+using Docker.DotNet.Models;
+using System.Threading;
 
 namespace ProITM.Server.Controllers
 {
@@ -80,6 +83,64 @@ namespace ProITM.Server.Controllers
             ImageModel model = new() { Id = imageId };
             dbContext.Attach(model);
             dbContext.Remove(model);
+            dbContext.SaveChanges();
+            return Ok();
+        }
+
+        [HttpGet("search/{term}/{official}/{automated}")]
+        public async Task<IActionResult> SearchImages(string term, bool official, bool automated)
+        {
+            DockerClient client;
+            try
+            {
+                client = dbContext.Hosts.First().GetDockerClient();
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+
+            var filters = new Dictionary<string, IDictionary<string, bool>>
+            {
+                //{ "is-official", new Dictionary<string, bool> { { "true", true } } },
+                //{ "is-automated", new Dictionary<string, bool> { { "true", true } } }
+            };
+
+            if (official)
+                filters.Add( "is-official", new Dictionary<string, bool> { { "true", true } } );
+            if (automated)
+                filters.Add( "is-automated", new Dictionary<string, bool> { { "true", true } } );
+
+            ImagesSearchParameters parameters = new()
+            {
+                Limit = 10,
+                Term = term,
+                Filters = filters
+            };
+
+            var images = await client.Images.SearchImagesAsync(parameters, default);
+            var outImages = new List<ImageHubModel>();
+
+            // Client has no concept of ImageSearchResponse, so gotta translate
+            foreach (var image in images)
+            {
+                outImages.Add(new ImageHubModel()
+                {
+                    Name = image.Name,
+                    Description = image.Description,
+                    Is_automated = image.IsAutomated,
+                    Is_official = image.IsOfficial,
+                    Star_count = image.StarCount
+                });
+            }
+
+            return Ok(outImages);
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateImage(ImageModel model)
+        {
+            await dbContext.Images.AddAsync(model);
             dbContext.SaveChanges();
             return Ok();
         }

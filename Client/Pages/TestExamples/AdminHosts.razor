@@ -107,10 +107,6 @@
     protected override async Task OnInitializedAsync()
     {
         this.model = new();
-        HostModel hostModel = new HostModel();
-        Random r = new Random();
-
-        //_ = await hostService.AddHost(hostModel);
 
         hosts = await hostService.GetHosts();
     }
@@ -118,22 +114,6 @@
     protected async Task OnCreat()
     {
         _ = await hostService.AddHost(model);
-        hosts = await hostService.GetHosts();
-    }
-
-    protected async Task AddHost()
-    {
-        HostModel hostModel = new HostModel();
-        Random r = new Random();
-        var random = r.Next(10000);
-        hostModel.Id = random.ToString();
-        hostModel.IP = "111.222.333." + random.ToString();
-        hostModel.Port = 2137;
-        hostModel.IsWindows = true;
-        hostModel.DisplayName = "karakan";
-        hostModel.URI = "nie_wiem";
-
-        _ = await hostService.AddHost(hostModel);
         hosts = await hostService.GetHosts();
     }
 

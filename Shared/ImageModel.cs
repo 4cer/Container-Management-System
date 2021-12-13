@@ -28,6 +28,11 @@ namespace ProITM.Shared
         // Maps to TAG in output of "docker images"
         public string Version { get; set; }
 
+        public ImageModel()
+        {
+            this.Created = DateTime.UtcNow;
+        }
+
         // size doesn't matter - Ghandi, 2021
         // amount of nukes matter - Also Ghandi
 
