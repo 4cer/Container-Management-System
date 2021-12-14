@@ -42,18 +42,28 @@ namespace ProITM.Server.Controllers
         {
             string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
 
-            var userContainers = await dbContext.Users
+            var containers = await dbContext.Users
                 .AsNoTracking()
                 .Include(u => u.Containers)
                 .ThenInclude(c => c.Machine)
                 .Include(u => u.Containers)
                 .ThenInclude(c => c.Image)
+                //.Where(u => u.Id == userId)
                 .Where(u => u.Id == userId)
+                .Select(u => u.Containers)
                 .FirstOrDefaultAsync();
 
-            var containers = userContainers.Containers;
+            if (containers == null)
+                return Ok(new List<ContainerModel>());
 
-            //var containers = userContainers.Take((int)limit);
+            foreach (var container in containers)
+            {
+                container.IsWindows = container.Machine.IsWindows;
+                container.DockerImageName = container.Image.DockerImageName;
+                // Sanitize user-shown objects
+                container.Machine = null;
+                container.Image = null;
+            }
 
             return Ok(containers);
         }
@@ -72,6 +82,7 @@ namespace ProITM.Server.Controllers
                 container = await dbContext.Containers
                     .Include(c => c.Machine)
                     .Include(c => c.Image)
+                    .Include(c => c.PortBindings)
                     .FirstOrDefaultAsync(c => c.Id == containerId);
                 dockerClient = container
                     .Machine
@@ -98,14 +109,21 @@ namespace ProITM.Server.Controllers
                 container.IsRunning = state.State.Running;
                 container.State = state.State.Status;
                 container.IsWindows = container.Machine.IsWindows;
-                container.ImageIdC = container.Image.DockerImageName;
+                container.DockerImageName = container.Image.DockerImageName;
                 dbContext.SaveChangesAsync().Wait();
+                // Sanitize user-shown objects
+                container.Machine = null;
+                container.Image = null;
                 return Ok(container);
             } else
             {
                 dbContext.Entry(container).State = EntityState.Detached;
-                container.IsWindows = container.Machine.IsWindows;
                 container.State = "Unknown (No reply from Docker API)";
+                container.IsWindows = container.Machine.IsWindows;
+                container.DockerImageName = container.Image.DockerImageName;
+                // Sanitize user-shown objects
+                container.Machine = null;
+                container.Image = null;
                 return Ok(dbContext);
             }
         }
@@ -277,7 +295,7 @@ namespace ProITM.Server.Controllers
             {
                 container.IsRunning = state.State.Running;
                 container.State = state.State.Status;
-                container.ImageIdC = container.Image.DockerImageName;
+                container.DockerImageName = container.Image.DockerImageName;
                 dbContext.SaveChangesAsync().Wait();
                 return Ok(container);
             }
@@ -297,7 +315,7 @@ namespace ProITM.Server.Controllers
 
             // Construct model
             string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
-            var image = await dbContext.Images.SingleOrDefaultAsync(i => i.Id == model.ImageIdC);
+            var image = await dbContext.Images.SingleOrDefaultAsync(i => i.Id == model.DockerImageName);
             dbContext.Attach(image);
             model.Image = image;
 
@@ -314,7 +332,7 @@ namespace ProITM.Server.Controllers
 
             // Find the image we're going to use, and if it's missing - download it
             var imageFromDb = await dbContext.Images
-                .FirstOrDefaultAsync(i => i.Id == model.ImageIdC);
+                .FirstOrDefaultAsync(i => i.Id == model.DockerImageName);
 
             if (imageFromDb == null) return NotFound();
 

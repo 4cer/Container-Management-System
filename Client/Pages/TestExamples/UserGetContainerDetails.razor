@@ -14,7 +14,7 @@
     @if (container.IsWindows) { <p><b>OS:</b> Windows</p> }
     else { <p><b>OS:</b> Linux</p> }
     <p><b>State:</b> @container.State</p>
-    <p><b>Image name:</b> @container.Image.DisplayName</p>
+    <p><b>Image name:</b> @container.DockerImageName</p>
 }
  else
 {
@@ -91,6 +91,7 @@ else
         try
         {
             logs = await cs.GetContainerLogs(id, "0", "0");
+            StateHasChanged();
             container = await cs.ContainerDetails(id);
             IsRefreshing = false;
         }

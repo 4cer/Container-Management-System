@@ -53,6 +53,10 @@ namespace ProITM.Server.Controllers.Admin
             var users = await dbContext.Users
                 .AsNoTracking()
                 .Include(u => u.Containers)
+                .ThenInclude(c => c.Machine)
+                .Include(u => u.Containers)
+                .ThenInclude(c => c.Image)
+                .Include(u => u.Containers)
                 .ThenInclude(c => c.PortBindings)
                 .Where(u => u.Containers.Any())
                 .ToListAsync();
