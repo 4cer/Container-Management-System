@@ -19,9 +19,11 @@ namespace ProITM.Shared
 
         #region marked for delete/unlink from DB
         // Unused, as expected
+        [Obsolete("URI is the only thing needed")]
         public string IP { get; set; }
 
         // Unused, as expected
+        [Obsolete("URI is the only thing needed")]
         public int Port { get; set; }
         #endregion
 

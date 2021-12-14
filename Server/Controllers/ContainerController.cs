@@ -43,15 +43,28 @@ namespace ProITM.Server.Controllers
         {
             string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
 
-            var userContainers = await dbContext.Users
+            var containers = await dbContext.Users
                 .AsNoTracking()
                 .Include(u => u.Containers)
+                .ThenInclude(c => c.Machine)
+                .Include(u => u.Containers)
+                .ThenInclude(c => c.Image)
+                //.Where(u => u.Id == userId)
                 .Where(u => u.Id == userId)
+                .Select(u => u.Containers)
                 .FirstOrDefaultAsync();
 
-            var containers = userContainers.Containers;
+            if (containers == null)
+                return Ok(new List<ContainerModel>());
 
-            //var containers = userContainers.Take((int)limit);
+            foreach (var container in containers)
+            {
+                container.IsWindows = container.Machine.IsWindows;
+                container.DockerImageName = container.Image.DockerImageName;
+                // Sanitize user-shown objects
+                container.Machine = null;
+                container.Image = null;
+            }
 
             return Ok(containers);
         }
@@ -59,8 +72,24 @@ namespace ProITM.Server.Controllers
         [HttpGet("{containerId}")]
         public async Task<IActionResult> ContainerDetails(string containerId)
         {
-            // Get container in question
-            var container = GetContainerById(containerId);
+            // Get instance of appropriate host client and handle any fail to get one
+            ContainerModel container;
+            DockerClient dockerClient;
+            try
+            {
+                // Doesn't map to db entity
+                //container = GetContainerById(containerId);
+                // Need to have it map to db entity:
+                container = await dbContext.Containers
+                    .Include(c => c.Machine)
+                    .Include(c => c.Image)
+                    .Include(c => c.PortBindings)
+                    .FirstOrDefaultAsync(c => c.Id == containerId);
+                dockerClient = container
+                    .Machine
+                    .GetDockerClient();
+            }
+            catch (Exception) { return NotFound(); }
 
             #region 217, per operator authorization
             string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
@@ -74,7 +103,30 @@ namespace ProITM.Server.Controllers
                 return Unauthorized();
             #endregion
 
-            return Ok(container);
+            var state = await dockerClient.Containers.InspectContainerAsync(containerId, default);
+
+            if (state != null)
+            {
+                container.IsRunning = state.State.Running;
+                container.State = state.State.Status;
+                container.IsWindows = container.Machine.IsWindows;
+                container.DockerImageName = container.Image.DockerImageName;
+                dbContext.SaveChangesAsync().Wait();
+                // Sanitize user-shown objects
+                container.Machine = null;
+                container.Image = null;
+                return Ok(container);
+            } else
+            {
+                dbContext.Entry(container).State = EntityState.Detached;
+                container.State = "Unknown (No reply from Docker API)";
+                container.IsWindows = container.Machine.IsWindows;
+                container.DockerImageName = container.Image.DockerImageName;
+                // Sanitize user-shown objects
+                container.Machine = null;
+                container.Image = null;
+                return Ok(dbContext);
+            }
         }
 
         [HttpPost("edit")]
@@ -208,46 +260,49 @@ namespace ProITM.Server.Controllers
         [HttpGet("stats/{containerId}")]
         public async Task<IActionResult> GetContainerStats(string containerId)
         {
-            //// Get instance of appropriate host client and handle any fail to get one
-            //ContainerModel container;
-            //DockerClient dockerClient;
-            //try
-            //{
-            //    container = GetContainerById(containerId);
-            //    dockerClient = container
-            //        .Machine
-            //        .GetDockerClient();
-            //}
-            //catch (Exception) { return NotFound(); }
+            // Get instance of appropriate host client and handle any fail to get one
+            ContainerModel container;
+            DockerClient dockerClient;
+            try
+            {
+                // Doesn't map to db entity
+                //container = GetContainerById(containerId);
+                // Need to have it map to db entity:
+                container = await dbContext.Containers
+                    .Include(c => c.Machine)
+                    .Include(c => c.Image)
+                    .FirstOrDefaultAsync(c => c.Id == containerId);
+                dockerClient = container
+                    .Machine
+                    .GetDockerClient();
+            }
+            catch (Exception) { return NotFound(); }
 
-            //#region 217, per operator authorization
-            //string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+            #region 217, per operator authorization
+            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
 
-            //var user = await dbContext.Users
-            //    .AsNoTracking()
-            //    .Include(u => u.Containers)
-            //    .FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await dbContext.Users
+                .AsNoTracking()
+                .Include(u => u.Containers)
+                .FirstOrDefaultAsync(u => u.Id == userId);
 
-            //if (!user.Containers.Contains(container))
-            //    return Unauthorized();
-            //#endregion
+            if (!user.Containers.Contains(container))
+                return Unauthorized();
+            #endregion
 
-            //var stats = await dockerClient.Containers.GetContainerStatsAsync(containerId, new ContainerStatsParameters { Stream = false }, default);
+            var state = await dockerClient.Containers.InspectContainerAsync(containerId, default);
 
-            //string allstats;
+            if(state != null)
+            {
+                container.IsRunning = state.State.Running;
+                container.State = state.State.Status;
+                container.DockerImageName = container.Image.DockerImageName;
+                dbContext.SaveChangesAsync().Wait();
+                return Ok(container);
+            }
+            return NotFound();
 
-            //using (System.IO.StreamReader sw = new System.IO.StreamReader(stats))
-            //{
-            //    allstats = sw.ReadToEnd();
-            //}
-
-            //// TODO 216 Desarialize allstats JSON into custom model.
-            //// ContainerStatsModel?
-
-            //return Ok(allstats);
-
-
-            throw new NotImplementedException("ProITM.Server.Controllers.ContainerController.GetContainerStats(string containerId)");
+            //throw new NotImplementedException("ProITM.Server.Controllers.ContainerController.GetContainerStats(string containerId)");
         }
 
         [HttpPost("create")]
@@ -261,7 +316,7 @@ namespace ProITM.Server.Controllers
 
             // Construct model
             string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
-            var image = await dbContext.Images.SingleOrDefaultAsync(i => i.Id == model.ImageIdC);
+            var image = await dbContext.Images.SingleOrDefaultAsync(i => i.Id == model.DockerImageName);
             dbContext.Attach(image);
             model.Image = image;
 
@@ -278,7 +333,7 @@ namespace ProITM.Server.Controllers
 
             // Find the image we're going to use, and if it's missing - download it
             var imageFromDb = await dbContext.Images
-                .FirstOrDefaultAsync(i => i.Id == model.ImageIdC);
+                .FirstOrDefaultAsync(i => i.Id == model.DockerImageName);
 
             if (imageFromDb == null) return NotFound();
 

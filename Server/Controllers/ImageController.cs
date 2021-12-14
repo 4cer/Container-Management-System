@@ -71,7 +71,8 @@ namespace ProITM.Server.Controllers
             model.Created = DateTime.Now;
             model.DisplayName = name;
             model.Description = description;
-            model.Version = version;
+            // 264 - wersja zawsze latest
+            model.Version = "latest";
             
             dbContext.Images.Add(model);
             await dbContext.SaveChangesAsync();
@@ -167,9 +168,7 @@ namespace ProITM.Server.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateImage(ImageModel model)
         {
-            if (string.IsNullOrWhiteSpace(model.Version))
-                model.Version = "latest";
-
+            model.Version = "latest";
             await dbContext.Images.AddAsync(model);
             await dbContext.SaveChangesAsync();
             return Ok();

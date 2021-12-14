@@ -34,12 +34,13 @@ namespace ProITM.Shared
         public bool IsWindows { get; set; }
 
         // Numeric port number passed by the form
+        [Obsolete("Ports now marked as Objects containing pairs")]
         [NotMapped]
         public int PortNo { get; set; }
 
         // Docker Image name passed by container form at creation
         [NotMapped]
-        public string ImageIdC { get; set; }
+        public string DockerImageName { get; set; }
 
         // Username of container owner, for display purposes
         [NotMapped]
