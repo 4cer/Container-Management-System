@@ -282,7 +282,7 @@ namespace ProITM.Server.Controllers
             if (imageFromDb == null) return NotFound();
 
             var images = await dockerClient.Images.ListImagesAsync(new ImagesListParameters());
-            if (images.First(i => i.RepoTags[0] == $"{imageFromDb.DockerImageName}:{imageFromDb.Version}") == null)
+            if (images.FirstOrDefault(i => i.RepoTags[0] == $"{imageFromDb.DockerImageName}:{imageFromDb.Version}") == null)
             {
                 dockerClient.Images.CreateImageAsync(
                     new ImagesCreateParameters

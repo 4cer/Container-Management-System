@@ -142,6 +142,9 @@ namespace ProITM.Server.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateImage(ImageModel model)
         {
+            if (string.IsNullOrWhiteSpace(model.Version))
+                model.Version = "latest";
+
             await dbContext.Images.AddAsync(model);
             dbContext.SaveChanges();
             return Ok();
