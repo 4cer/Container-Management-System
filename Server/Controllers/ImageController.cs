@@ -60,7 +60,8 @@ namespace ProITM.Server.Controllers
             return Ok(dbContext.Images.Find(imageId));
         }
 
-
+        // TODO 222 dis needs to be fixed, delegated to helper method
+        [Obsolete]
         [HttpPost("upload/{name}/{version}")]
         public async Task<IActionResult> GetImageFromDockerHub(string name, string version, [FromBody] string description)
         {
@@ -70,7 +71,8 @@ namespace ProITM.Server.Controllers
             model.Created = DateTime.Now;
             model.DisplayName = name;
             model.Description = description;
-            model.Version = version;
+            // 264 - wersja zawsze latest
+            model.Version = "latest";
             
             dbContext.Images.Add(model);
             await dbContext.SaveChangesAsync();
@@ -80,9 +82,34 @@ namespace ProITM.Server.Controllers
         [HttpDelete("{imageId}")]
         public async Task<IActionResult> DeleteImage(string imageId)
         {
-            ImageModel model = new() { Id = imageId };
-            dbContext.Attach(model);
-            dbContext.Remove(model);
+            var image = await dbContext.Images
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == imageId);
+
+            if (image == null) return NotFound();
+
+            var containers = await dbContext.Containers
+                .AsNoTracking()
+                .Include(c => c.Image)
+                .Where(c => c.Image.Id == imageId)
+                .ToListAsync();
+
+            if (containers.Count > 0) return BadRequest($"Image in use by {containers.Count} containers");
+
+            var hosts = await dbContext.Hosts
+                .ToListAsync();
+
+            foreach(var h in hosts)
+            {
+                // underscore discards warning
+                _ = h.GetDockerClient()
+                    .Images
+                    .DeleteImageAsync($"{image.DockerImageName}:{image.Version}", new ImageDeleteParameters
+                    {
+                        Force = true
+                    });
+            }
+
             dbContext.SaveChanges();
             return Ok();
         }
@@ -93,7 +120,8 @@ namespace ProITM.Server.Controllers
             DockerClient client;
             try
             {
-                client = dbContext.Hosts.First().GetDockerClient();
+                var host = dbContext.Hosts.First();
+                client = host.GetDockerClient();
             }
             catch (Exception)
             {
@@ -140,6 +168,7 @@ namespace ProITM.Server.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateImage(ImageModel model)
         {
+            model.Version = "latest";
             await dbContext.Images.AddAsync(model);
             await dbContext.SaveChangesAsync();
             return Ok();

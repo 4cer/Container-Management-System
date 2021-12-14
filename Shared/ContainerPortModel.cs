@@ -13,7 +13,8 @@ namespace ProITM.Shared
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
 
-        public int Port { get; set; }
+        public ushort PrivatePort { get; set; }
+        public ushort PublicPort { get; set; }
 
         public HostModel Host { get; set; }
     }

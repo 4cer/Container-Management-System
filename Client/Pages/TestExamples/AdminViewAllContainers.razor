@@ -62,7 +62,9 @@
                         <input class="btn btn-danger" type="button" @onclick="(() => Delet(con.Id))" value="Delet" />
                     </td>
                     <td>
-                        @con.Port.Port
+                        @foreach(var portBind in con.PortBindings) { 
+                            <p>@portBind.PrivatePort @portBind.PublicPort</p>
+                        }
                     </td>
                     <td>
                         @con.Id

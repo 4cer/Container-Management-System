@@ -18,11 +18,13 @@ namespace ProITM.Server.Controllers.Admin
     {
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public AdministrationController(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager)
+        public AdministrationController(RoleManager<IdentityRole> roleManager, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> _signInManager)
         {
             this.roleManager = roleManager;
             this.userManager = userManager;
+            this._signInManager = _signInManager;
         }
 
         [HttpGet("Users")]
@@ -73,6 +75,10 @@ namespace ProITM.Server.Controllers.Admin
             userEdit.UserName = user.UserName;
             userEdit.Email = user.Email;
             userEdit.EmailConfirmed = user.EmailConfirmed;
+            if (!user.EmailConfirmed)
+            {
+                await userManager.UpdateSecurityStampAsync(userEdit);
+            }
 
             IdentityResult result = await userManager.UpdateAsync(userEdit);
 

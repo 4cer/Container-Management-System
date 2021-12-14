@@ -105,7 +105,7 @@ else
         var result = await administrationService.DeleteUser(id);
         if (result.IsSuccessStatusCode)
         {
-            navigationManager.NavigateTo($"manage/users", true);
+            navigationManager.NavigateTo($"manage/users");
         }
         message = result;
     }
@@ -115,9 +115,9 @@ else
         var result = await administrationService.PromoteUser(id);
         if (result.IsSuccessStatusCode)
         {
-            navigationManager.NavigateTo($"manage/users", true);
+            users = await administrationService.GetUsers();
+            StateHasChanged();
         }
-        message = result;
     }
 
     protected async void ClickDemoteUser(string id)
@@ -125,15 +125,14 @@ else
         var result = await administrationService.DemoteUser(id);
         if (result.IsSuccessStatusCode)
         {
-            navigationManager.NavigateTo($"manage/users", true);
+            users = await administrationService.GetUsers();
+            StateHasChanged();
         }
-        message = result;
     }
 
-    protected async void ClickEditUser(string id)
+    protected void ClickEditUser(string id)
     {
-
-        navigationManager.NavigateTo($"/manage/users/edit/{id}", true);
+        navigationManager.NavigateTo($"/manage/users/edit/{id}");
     }
 
     private string SelectedRowClassFunc(UserModel host, int rowNumber)

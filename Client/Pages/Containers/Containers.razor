@@ -10,24 +10,19 @@
     <MudTable Items="containers" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent" Hover="true" Dense="true"
               RowClassFunc="@SelectedRowClassFunc" OnRowClick="e => RowClickEvent(e)" @ref="mudTable" T="ContainerModel">
         <HeaderContent>
-            <MudTh>ID</MudTh>
             <MudTh>Name</MudTh>
-            <MudTh>Image</MudTh>
+            <MudTh>Source image</MudTh>
             <MudTh>Description</MudTh>
-            <MudTh>Port</MudTh>
-            <MudTh>Machine</MudTh>
             <MudTh>State</MudTh>
-            <MudTh>Is running</MudTh>
+            <MudTh>Running</MudTh>
             <MudTh>Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd>@context.Id</MudTd>
             <MudTd>@context.Name</MudTd>
             <MudTd>@context.Image</MudTd>
             <MudTd>@context.Description</MudTd>
-            <MudTd>@context.Port</MudTd>
-            <MudTd>@context.Machine</MudTd>
             <MudTd>@context.State</MudTd>
+            @*<MudTd>@context.Machine.DisplayName</MudTd>*@
             @if (context.IsRunning)
             {
                 <MudTd><MudIcon Icon="@Icons.Filled.Circle" Color="Color.Success"></MudIcon></MudTd>
@@ -81,15 +76,12 @@
             selectedRowNumber = -1;
             return string.Empty;
         }
-        else if (mudTable.SelectedItem != null && mudTable.SelectedItem.Equals(container))
+        if (mudTable.SelectedItem != null && mudTable.SelectedItem.Equals(container))
         {
             selectedRowNumber = rowNumber;
             return "selected";
         }
-        else
-        {
-            return string.Empty;
-        }
+        return string.Empty;
     }
 
     public void ViewContainer(ContainerModel container)
@@ -108,7 +100,11 @@
         {
             //In a real world scenario we would reload the data from the source here since we "removed" it in the dialog already.
             var deletedServer = result.Data.ToString();
-            containers.RemoveAll(item => item.Id.Equals(deletedServer));
+            var response = await ContSrvc.DeleteContainer(container.Id);
+            if (response.IsSuccessStatusCode)
+            {
+                containers.RemoveAll(item => item.Id.Equals(deletedServer));
+            }
         }
     }
 

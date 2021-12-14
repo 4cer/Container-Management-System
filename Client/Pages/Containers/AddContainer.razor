@@ -13,22 +13,41 @@
     <MudTabPanel Text="Podstawowe">*@
 <MudItem style="width: 410px">
     <MudSelect Label="Source image" @bind-Value="newContainer.ImageIdC" AnchorOrigin="Origin.BottomCenter">
-        @if(MyImages != null){
+        @if (MyImages != null)
+        {
             @foreach (var image in MyImages)
             {
                 <MudSelectItem T="string" Value="@image.Id">@image.DisplayName  <span style="color: #888; font-style: italic;">[@image.DockerImageName]</span></MudSelectItem>
             }
         }
     </MudSelect>
-    </MudItem>
-<MudGrid>
-    <MudItem>
-        <MudTextField @bind-Value="@newContainer.PortNo" Label="Container port" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-    </MudItem>
-    <!--MudItem>
-        <MudTextField @bind-Value="" Label="Target port" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-    </MudItem-->
-</MudGrid>
+</MudItem>
+
+<br />
+
+<MudGrid style="width: 550px">
+    @for (var i = 0; i < portsList.Count; i++)
+    {
+        var index = i;
+        var port = portsList[i];
+
+        <MudItem>
+            <MudTextField @bind-Value="@port.ContainerPort" Label="Container port" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+        </MudItem>
+        <MudItem>
+            <MudTextField @bind-Value="@port.TargertPort" Label="Target port" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+        </MudItem>
+        <MudItem>
+            <MudFab Icon="@Icons.Filled.Remove" Size="Size.Small" Color="Color.Error" OnClick="() => portsList.RemoveAt(index)"></MudFab>
+        </MudItem>
+            <br />
+            }
+    </MudGrid>
+
+<br />
+<MudFab Label="Add ports" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="() => portsList.Add(new Ports())"></MudFab>
+<br />
+<br />
 <MudForm>
     <MudRadioGroup @bind-SelectedOption="@newContainer.IsWindows">
         <MudRadio Option="true" Color="Color.Primary">Windows</MudRadio>
@@ -92,6 +111,8 @@
     public ContainerModel newContainer { get; set; } = new();
     public List<ImageModel> MyImages { get; set; }
 
+    public List<Ports> portsList { get; set; } = new List<Ports>();
+
     //public string SelectedOption { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -119,6 +140,13 @@
     {
         Console.WriteLine(newContainer.Name);
         var ret = await service.CreateContainer(newContainer);
+        Navigation.NavigateTo("/containers");
+    }
+
+    public class Ports
+    {
+        public string ContainerPort { get; set; }
+        public string TargertPort { get; set; }
     }
 
 }
