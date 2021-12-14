@@ -4,8 +4,24 @@
 @inject IContainerService cs
 @inject NavigationManager navMgr
 
+<h2>@id</h2>
+<h3>Inspect</h3>
+@if (container != null)
+{
+    <p><b>Id:</b> @container.Id</p>
+    <p><b>Name:</b> @container.Name</p>
+    <p><b>Running:</b> @container.IsRunning</p>
+    @if (container.IsWindows) { <p><b>OS:</b> Windows</p> }
+    else { <p><b>OS:</b> Linux</p> }
+    <p><b>State:</b> @container.State</p>
+    <p><b>Image name:</b> @container.Image.DisplayName</p>
+}
+ else
+{
+    <p>Container detes loading...</p>
+}
 
-<h3>Get Logs for @id</h3>
+<h3>Get Logs</h3>
 @if (!IsStderr)
 {
     <input class="btn btn-secondary" type="button" @onclick="(() => ToggleStream())" value="Show errors" />
@@ -75,19 +91,12 @@ else
         try
         {
             logs = await cs.GetContainerLogs(id, "0", "0");
+            container = await cs.ContainerDetails(id);
             IsRefreshing = false;
         }
         catch (Exception)
         {
             logs = new Tuple<string, string>("CONTAINER NOT FOUND", "CONTAINER NOT FOUND");
-        }
-
-        try
-        {
-            _ = await cs.GetContainerStats(id);
-        }catch (Exception)
-        {
-            _ = "Not found";
         }
     }
 
@@ -100,6 +109,7 @@ else
     {
         IsRefreshing = true;
         logs = await cs.GetContainerLogs(id, "0", "0");
+        container = await cs.ContainerDetails(id);
         IsRefreshing = false;
     }
 }

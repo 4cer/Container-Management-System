@@ -45,6 +45,9 @@ namespace ProITM.Server.Controllers
             var userContainers = await dbContext.Users
                 .AsNoTracking()
                 .Include(u => u.Containers)
+                .ThenInclude(c => c.Machine)
+                .Include(u => u.Containers)
+                .ThenInclude(c => c.Image)
                 .Where(u => u.Id == userId)
                 .FirstOrDefaultAsync();
 
@@ -68,6 +71,7 @@ namespace ProITM.Server.Controllers
                 // Need to have it map to db entity:
                 container = await dbContext.Containers
                     .Include(c => c.Machine)
+                    .Include(c => c.Image)
                     .FirstOrDefaultAsync(c => c.Id == containerId);
                 dockerClient = container
                     .Machine
@@ -93,11 +97,14 @@ namespace ProITM.Server.Controllers
             {
                 container.IsRunning = state.State.Running;
                 container.State = state.State.Status;
+                container.IsWindows = container.Machine.IsWindows;
+                container.ImageIdC = container.Image.DockerImageName;
                 dbContext.SaveChangesAsync().Wait();
                 return Ok(container);
             } else
             {
                 dbContext.Entry(container).State = EntityState.Detached;
+                container.IsWindows = container.Machine.IsWindows;
                 container.State = "Unknown (No reply from Docker API)";
                 return Ok(dbContext);
             }
@@ -244,6 +251,7 @@ namespace ProITM.Server.Controllers
                 // Need to have it map to db entity:
                 container = await dbContext.Containers
                     .Include(c => c.Machine)
+                    .Include(c => c.Image)
                     .FirstOrDefaultAsync(c => c.Id == containerId);
                 dockerClient = container
                     .Machine
@@ -269,6 +277,7 @@ namespace ProITM.Server.Controllers
             {
                 container.IsRunning = state.State.Running;
                 container.State = state.State.Status;
+                container.ImageIdC = container.Image.DockerImageName;
                 dbContext.SaveChangesAsync().Wait();
                 return Ok(container);
             }
