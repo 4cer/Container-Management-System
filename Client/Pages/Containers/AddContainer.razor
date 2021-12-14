@@ -119,6 +119,7 @@
     {
         Console.WriteLine(newContainer.Name);
         var ret = await service.CreateContainer(newContainer);
+        Navigation.NavigateTo("/containers");
     }
 
 }
