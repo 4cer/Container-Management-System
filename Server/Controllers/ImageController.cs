@@ -60,7 +60,8 @@ namespace ProITM.Server.Controllers
             return Ok(dbContext.Images.Find(imageId));
         }
 
-
+        // TODO 222 dis needs to be fixed, delegated to helper method
+        [Obsolete]
         [HttpPost("upload/{name}/{version}")]
         public async Task<IActionResult> GetImageFromDockerHub(string name, string version, [FromBody] string description)
         {
@@ -93,7 +94,8 @@ namespace ProITM.Server.Controllers
             DockerClient client;
             try
             {
-                client = dbContext.Hosts.First().GetDockerClient();
+                var host = dbContext.Hosts.First();
+                client = host.GetDockerClient();
             }
             catch (Exception)
             {

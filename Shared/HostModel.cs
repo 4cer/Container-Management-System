@@ -17,11 +17,13 @@ namespace ProITM.Shared
 
         public bool IsWindows { get; set; }
 
+        #region marked for delete/unlink from DB
         // Unused, as expected
         public string IP { get; set; }
 
         // Unused, as expected
         public int Port { get; set; }
+        #endregion
 
         // Only addressing field in actual use
         public string URI { get; set; }

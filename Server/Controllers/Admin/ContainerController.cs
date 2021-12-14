@@ -37,7 +37,7 @@ namespace ProITM.Server.Controllers.Admin
                 .AsNoTracking()
                 .Where(u => u.Id == userId)
                 .Include(u => u.Containers)
-                .ThenInclude(c => c.Port)
+                .ThenInclude(c => c.PortBindings)
                 .Select(u => u.Containers)
                 //.Include(u => u.Containers)
                 .FirstOrDefaultAsync();
@@ -53,7 +53,7 @@ namespace ProITM.Server.Controllers.Admin
             var users = await dbContext.Users
                 .AsNoTracking()
                 .Include(u => u.Containers)
-                .ThenInclude(c => c.Port)
+                .ThenInclude(c => c.PortBindings)
                 .Where(u => u.Containers.Any())
                 .ToListAsync();
 
@@ -157,13 +157,15 @@ namespace ProITM.Server.Controllers.Admin
 
 
             ContainerModel model = await dbContext.Containers
-                .Include(c => c.Port)
+                .Include(c => c.PortBindings)
                 .SingleOrDefaultAsync(c => c.Id == containerId);
-            var port = model.Port;
+
+            // Test port deletion
+            dbContext.ContainerPorts.AttachRange(model.PortBindings);
+            dbContext.ContainerPorts.RemoveRange(model.PortBindings);
+
             dbContext.Containers.Attach(model);
             dbContext.Containers.Remove(model);
-            dbContext.ContainerPorts.Attach(port);
-            dbContext.ContainerPorts.Remove(port);
             dbContext.SaveChanges();
 
             return Ok();

@@ -44,11 +44,13 @@ namespace ProITM.Server.Controllers
 
             var userContainers = await dbContext.Users
                 .AsNoTracking()
+                .Include(u => u.Containers)
                 .Where(u => u.Id == userId)
-                .Select(u => u.Containers)
                 .FirstOrDefaultAsync();
 
-            var containers = userContainers.Take((int)limit);
+            var containers = userContainers.Containers;
+
+            //var containers = userContainers.Take((int)limit);
 
             return Ok(containers);
         }
@@ -80,7 +82,7 @@ namespace ProITM.Server.Controllers
             var container = dbContext.Containers
                 .FirstOrDefault(c => c.Id == model.Id);
 
-            if(container != null)
+            if (container != null)
             {
                 #region 217, per operator authorization
                 string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
@@ -137,7 +139,7 @@ namespace ProITM.Server.Controllers
             if (success)
             {
                 var result = await dbContext.Containers.SingleOrDefaultAsync(c => c.Id == containerId);
-                if(result != null)
+                if (result != null)
                 {
                     result.IsRunning = true;
                     dbContext.SaveChangesAsync().Wait();
@@ -265,20 +267,53 @@ namespace ProITM.Server.Controllers
             // TODO 222 Check if machine has selected image, if not: pull by name
 
             dbContext.Attach(host);
-            var port = new ContainerPortModel() { Id = Guid.NewGuid().ToString(), Port = model.PortNo, Host = host };
+            //var port = new ContainerPortModel() { Id = Guid.NewGuid().ToString(), Port = model.PortNo, Host = host };
             model.Machine = host;
-            model.Port = port;
+            //model.Port = port;
             model.IsRunning = false;
 
             // Make new instance of DockerClient from URI
-            DockerClient dockerClient = new DockerClientConfiguration(new Uri(host.URI)).CreateClient();
+            DockerClient dockerClient = host.GetDockerClient();
+
+            // Find the image we're going to use, and if it's missing - download it
+            var imageFromDb = await dbContext.Images
+                .FirstAsync(i => i.Id == model.ImageIdC);
+
+            if (imageFromDb == null) return NotFound();
+
+            var images = await dockerClient.Images.ListImagesAsync(new ImagesListParameters());
+            if (images.First(i => i.RepoTags[0] == $"{imageFromDb.DockerImageName}:{imageFromDb.Version}") == null)
+            {
+                dockerClient.Images.CreateImageAsync(
+                    new ImagesCreateParameters
+                    {
+                        FromImage = imageFromDb.DockerImageName,
+                        Tag = imageFromDb.Version
+                    }, null, new Progress<JSONMessage>()).Wait();
+
+            }
+
+            var exposedPorts = new Dictionary<string, EmptyStruct>();
+            var portBindings = new Dictionary<string, IList<PortBinding>>();
+
+            foreach (var portBind in model.PortBindings)
+            {
+                portBind.Host = host;
+                exposedPorts.Add(portBind.PublicPort.ToString() + "/tcp", default(EmptyStruct));
+                portBindings.Add(
+                    portBind.PublicPort.ToString()  +  "/tcp", new List<PortBinding>{
+                        new PortBinding { HostPort = portBind.PrivatePort.ToString() }
+                    });
+            }
 
             CreateContainerResponse result = await dockerClient.Containers.CreateContainerAsync(new CreateContainerParameters()
             {
                 Image = model.Image.DockerImageName,
+                ExposedPorts = exposedPorts,
                 HostConfig = new HostConfig()
                 {
-                    DNS = new[] { "8.8.8.8", "8.8.4.4" }
+                    DNS = new[] { "8.8.8.8", "8.8.4.4" },
+                    PortBindings = portBindings
                 }
                 // TODO 195 bind port
             });
@@ -291,7 +326,7 @@ namespace ProITM.Server.Controllers
             dbContext.Attach(user);
             user.Containers.Add(model);
 
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             //Voodo conversion magic
             IList<string> warnings = result.Warnings;
@@ -341,13 +376,16 @@ namespace ProITM.Server.Controllers
 
 
             ContainerModel model = await dbContext.Containers
-                .Include(c => c.Port)
+                .Include(c => c.PortBindings)
                 .SingleOrDefaultAsync(c => c.Id == containerId);
-            var port = model.Port;
+
+            // Test port deletion
+            dbContext.ContainerPorts.AttachRange(model.PortBindings);
+            dbContext.ContainerPorts.RemoveRange(model.PortBindings);
+
             dbContext.Containers.Attach(model);
             dbContext.Containers.Remove(model);
-            dbContext.ContainerPorts.Attach(port);
-            dbContext.ContainerPorts.Remove(port);
+
             dbContext.SaveChanges();
 
             return Ok();
@@ -376,7 +414,7 @@ namespace ProITM.Server.Controllers
                 .Include(u => u.Containers)
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
-                //if (!user.Containers.Exists(c => c.))
+            //if (!user.Containers.Exists(c => c.))
             if (!user.Containers.Contains(container))
                 return Unauthorized();
             #endregion
@@ -384,14 +422,14 @@ namespace ProITM.Server.Controllers
             if (dockerClient == null)
                 return Ok(new Tuple<string, string>("Container not found", "Container not found"));
 
-            var log_stream = await dockerClient.Containers.GetContainerLogsAsync(containerId, true, new ContainerLogsParameters { ShowStdout = true, ShowStderr = true, Timestamps = true, Tail = "50"}, default);
+            var log_stream = await dockerClient.Containers.GetContainerLogsAsync(containerId, true, new ContainerLogsParameters { ShowStdout = true, ShowStderr = true, Timestamps = true, Tail = "50" }, default);
             var log_tuple = (await log_stream.ReadOutputToEndAsync(default)).ToTuple();
 
-            var stdout_sp = 
+            var stdout_sp =
                 Regex
-                .Replace(log_tuple.Item1, "^(?:.{1,})([0-9]{4}.{1,})(?:T)([0-9]{2}.{1,})(?:[.]{1}.{1,})(?:Z)", "<B>[$1 $2]\t</B> ",RegexOptions.Multiline)
+                .Replace(log_tuple.Item1, "^(?:.{1,})([0-9]{4}.{1,})(?:T)([0-9]{2}.{1,})(?:[.]{1}.{1,})(?:Z)", "<B>[$1 $2]\t</B> ", RegexOptions.Multiline)
                 .Replace("\n", "<BR />");
-            var stderr_sp = 
+            var stderr_sp =
                 Regex
                 .Replace(log_tuple.Item2, "^(?:.{1,})([0-9]{4}.{1,})(?:T)([0-9]{2}.{1,})(?:[.]{1}.{1,})(?:Z)", "<B>[$1 $2]\t</B> ", RegexOptions.Multiline)
                 .Replace("\n", "<BR />");
@@ -418,7 +456,7 @@ namespace ProITM.Server.Controllers
             HostModel minhost = hosts[0];
 
             int min = int.MaxValue;
-            foreach(var host in hosts)
+            foreach (var host in hosts)
             {
                 var cmp = dbContext.Containers
                     .AsNoTracking()
