@@ -45,5 +45,9 @@ namespace ProITM.Client.Services
         {
             return await _httpClient.GetAsync($"Host/logs/{hostId}");
         }
+        public async Task<bool> TestConnection(string hostUri)
+        {
+            return await _httpClient.GetFromJsonAsync<bool>($"Host/test/{hostUri}");
+        }
     }
 }
