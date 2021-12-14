@@ -96,17 +96,12 @@ namespace ProITM.Server.Controllers.Admin
         [HttpGet("test/{hostUri}")]
         public async Task<IActionResult> TestConnection(string hostUri)
         {
-            
-            if (host == null)
-            {
-                return Ok(false);
-            }
             DockerClient client;
             try
             {
-                client = host.GetDockerClient();
+                client = HostModelUtils.GetDockerClient(hostUri);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return Ok(false);
             }
@@ -121,7 +116,7 @@ namespace ProITM.Server.Controllers.Admin
                     await client.System.PingAsync();
                     return Ok(true);
                 }
-                catch(Exception e)
+                catch (Exception)
                 {
                     return Ok(false);
                 }
