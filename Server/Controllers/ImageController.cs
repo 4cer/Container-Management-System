@@ -81,9 +81,34 @@ namespace ProITM.Server.Controllers
         [HttpDelete("{imageId}")]
         public async Task<IActionResult> DeleteImage(string imageId)
         {
-            ImageModel model = new() { Id = imageId };
-            dbContext.Attach(model);
-            dbContext.Remove(model);
+            var image = await dbContext.Images
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.Id == imageId);
+
+            if (image == null) return NotFound();
+
+            var containers = await dbContext.Containers
+                .AsNoTracking()
+                .Include(c => c.Image)
+                .Where(c => c.Image.Id == imageId)
+                .ToListAsync();
+
+            if (containers.Count > 0) return BadRequest($"Image in use by {containers.Count} containers");
+
+            var hosts = await dbContext.Hosts
+                .ToListAsync();
+
+            foreach(var h in hosts)
+            {
+                // underscore discards warning
+                _ = h.GetDockerClient()
+                    .Images
+                    .DeleteImageAsync($"{image.DockerImageName}:{image.Version}", new ImageDeleteParameters
+                    {
+                        Force = true
+                    });
+            }
+
             dbContext.SaveChanges();
             return Ok();
         }
@@ -142,6 +167,9 @@ namespace ProITM.Server.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateImage(ImageModel model)
         {
+            if (string.IsNullOrWhiteSpace(model.Version))
+                model.Version = "latest";
+
             await dbContext.Images.AddAsync(model);
             await dbContext.SaveChangesAsync();
             return Ok();
