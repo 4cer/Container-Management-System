@@ -58,8 +58,22 @@ namespace ProITM.Server.Controllers
         [HttpGet("{containerId}")]
         public async Task<IActionResult> ContainerDetails(string containerId)
         {
-            // Get container in question
-            var container = GetContainerById(containerId);
+            // Get instance of appropriate host client and handle any fail to get one
+            ContainerModel container;
+            DockerClient dockerClient;
+            try
+            {
+                // Doesn't map to db entity
+                //container = GetContainerById(containerId);
+                // Need to have it map to db entity:
+                container = await dbContext.Containers
+                    .Include(c => c.Machine)
+                    .FirstOrDefaultAsync(c => c.Id == containerId);
+                dockerClient = container
+                    .Machine
+                    .GetDockerClient();
+            }
+            catch (Exception) { return NotFound(); }
 
             #region 217, per operator authorization
             string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
@@ -73,7 +87,20 @@ namespace ProITM.Server.Controllers
                 return Unauthorized();
             #endregion
 
-            return Ok(container);
+            var state = await dockerClient.Containers.InspectContainerAsync(containerId, default);
+
+            if (state != null)
+            {
+                container.IsRunning = state.State.Running;
+                container.State = state.State.Status;
+                dbContext.SaveChangesAsync().Wait();
+                return Ok(container);
+            } else
+            {
+                dbContext.Entry(container).State = EntityState.Detached;
+                container.State = "Unknown (No reply from Docker API)";
+                return Ok(dbContext);
+            }
         }
 
         [HttpPost("edit")]
@@ -207,46 +234,47 @@ namespace ProITM.Server.Controllers
         [HttpGet("stats/{containerId}")]
         public async Task<IActionResult> GetContainerStats(string containerId)
         {
-            //// Get instance of appropriate host client and handle any fail to get one
-            //ContainerModel container;
-            //DockerClient dockerClient;
-            //try
-            //{
-            //    container = GetContainerById(containerId);
-            //    dockerClient = container
-            //        .Machine
-            //        .GetDockerClient();
-            //}
-            //catch (Exception) { return NotFound(); }
+            // Get instance of appropriate host client and handle any fail to get one
+            ContainerModel container;
+            DockerClient dockerClient;
+            try
+            {
+                // Doesn't map to db entity
+                //container = GetContainerById(containerId);
+                // Need to have it map to db entity:
+                container = await dbContext.Containers
+                    .Include(c => c.Machine)
+                    .FirstOrDefaultAsync(c => c.Id == containerId);
+                dockerClient = container
+                    .Machine
+                    .GetDockerClient();
+            }
+            catch (Exception) { return NotFound(); }
 
-            //#region 217, per operator authorization
-            //string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+            #region 217, per operator authorization
+            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
 
-            //var user = await dbContext.Users
-            //    .AsNoTracking()
-            //    .Include(u => u.Containers)
-            //    .FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await dbContext.Users
+                .AsNoTracking()
+                .Include(u => u.Containers)
+                .FirstOrDefaultAsync(u => u.Id == userId);
 
-            //if (!user.Containers.Contains(container))
-            //    return Unauthorized();
-            //#endregion
+            if (!user.Containers.Contains(container))
+                return Unauthorized();
+            #endregion
 
-            //var stats = await dockerClient.Containers.GetContainerStatsAsync(containerId, new ContainerStatsParameters { Stream = false }, default);
+            var state = await dockerClient.Containers.InspectContainerAsync(containerId, default);
 
-            //string allstats;
+            if(state != null)
+            {
+                container.IsRunning = state.State.Running;
+                container.State = state.State.Status;
+                dbContext.SaveChangesAsync().Wait();
+                return Ok(container);
+            }
+            return NotFound();
 
-            //using (System.IO.StreamReader sw = new System.IO.StreamReader(stats))
-            //{
-            //    allstats = sw.ReadToEnd();
-            //}
-
-            //// TODO 216 Desarialize allstats JSON into custom model.
-            //// ContainerStatsModel?
-
-            //return Ok(allstats);
-
-
-            throw new NotImplementedException("ProITM.Server.Controllers.ContainerController.GetContainerStats(string containerId)");
+            //throw new NotImplementedException("ProITM.Server.Controllers.ContainerController.GetContainerStats(string containerId)");
         }
 
         [HttpPost("create")]
