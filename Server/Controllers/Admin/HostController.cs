@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Docker.DotNet;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProITM.Server.Data;
+using ProITM.Server.Utilities;
 using ProITM.Shared;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -90,6 +91,42 @@ namespace ProITM.Server.Controllers.Admin
             // TODO decide if necessary
 
             throw new NotImplementedException("Implement me");
+        }
+
+        [HttpGet("test/{hostUri}")]
+        public async Task<IActionResult> TestConnection(string hostUri)
+        {
+            
+            if (host == null)
+            {
+                return Ok(false);
+            }
+            DockerClient client;
+            try
+            {
+                client = host.GetDockerClient();
+            }
+            catch (Exception e)
+            {
+                return Ok(false);
+            }
+            if(client == null)
+            {
+                return Ok(false);
+            }
+            else
+            {
+                try
+                {
+                    await client.System.PingAsync();
+                    return Ok(true);
+                }
+                catch(Exception e)
+                {
+                    return Ok(false);
+                }
+            }
+            
         }
     }
 }
