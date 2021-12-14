@@ -277,7 +277,7 @@ namespace ProITM.Server.Controllers
 
             // Find the image we're going to use, and if it's missing - download it
             var imageFromDb = await dbContext.Images
-                .FirstAsync(i => i.Id == model.ImageIdC);
+                .FirstOrDefaultAsync(i => i.Id == model.ImageIdC);
 
             if (imageFromDb == null) return NotFound();
 
