@@ -305,12 +305,12 @@ namespace ProITM.Server.Controllers
 
             // Find the image we're going to use, and if it's missing - download it
             var imageFromDb = await dbContext.Images
-                .FirstAsync(i => i.Id == model.ImageIdC);
+                .FirstOrDefaultAsync(i => i.Id == model.ImageIdC);
 
             if (imageFromDb == null) return NotFound();
 
             var images = await dockerClient.Images.ListImagesAsync(new ImagesListParameters());
-            if (images.FirstOrDefault(i => i.RepoTags[0] == $"{imageFromDb.DockerImageName}:{imageFromDb.Version}") == null)
+            if (images.FirstOrDefault(i => i.RepoTags.Count == 0 || i.RepoTags[0] == $"{imageFromDb.DockerImageName}:{imageFromDb.Version}") == null)
             {
                 dockerClient.Images.CreateImageAsync(
                     new ImagesCreateParameters
