@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ProITM.Server.Controllers.Admin
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     [ApiController]
     [Route("[controller]")]
     public class HostController : ControllerBase
@@ -96,10 +96,11 @@ namespace ProITM.Server.Controllers.Admin
         [HttpGet("test/{hostUri}")]
         public async Task<IActionResult> TestConnection(string hostUri)
         {
+            string addr = System.Net.WebUtility.UrlDecode(hostUri);
             DockerClient client;
             try
             {
-                client = HostModelUtils.GetDockerClient(hostUri);
+                client = HostModelUtils.GetDockerClient(addr);
             }
             catch (Exception)
             {
