@@ -4,6 +4,8 @@
 @inject IDialogService DialogService 
 @inject AuthenticationStateProvider provider
 
+<link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
+
 <h2>Your containers</h2>
 <MudButton Style="margin: 10px 0;" StartIcon="@Icons.Filled.Add" Color="Color.Primary" Variant="Variant.Filled" OnClick="CreateContainer">Add</MudButton>
 <div>
@@ -13,14 +15,27 @@
             <MudTh>Name</MudTh>
             <MudTh>Source image</MudTh>
             <MudTh>Description</MudTh>
+            <MudTh>OS</MudTh>
             <MudTh>State</MudTh>
             <MudTh>Running</MudTh>
             <MudTh>Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTd>@context.Name</MudTd>
-            <MudTd>@context.Image</MudTd>
+            <MudTd>@context.DockerImageName</MudTd>
             <MudTd>@context.Description</MudTd>
+            @if (context.IsWindows)
+                        {
+                            <MudTd>
+                                <MudIcon Icon="@Icons.Custom.Brands.MicrosoftWindows" />
+                            </MudTd>
+                        }
+                        else
+                        {
+                            <MudTd>
+                                <MudIcon Icon="fab fa-linux" />
+                            </MudTd>
+                        }
             <MudTd>@context.State</MudTd>
             @*<MudTd>@context.Machine.DisplayName</MudTd>*@
             @if (context.IsRunning)
@@ -53,9 +68,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var authstate = await provider.GetAuthenticationStateAsync();
-        var id = authstate.User.Claims.First(c => c.Type == "sub")?.Value;
         containers = await ContSrvc.ListContainers(100);
+        var res = await ContSrvc.RefreshUserContainers();
+        if (res)
+        {
+            containers = await ContSrvc.ListContainers(100);
+        }
     }
 
     public void SelectionChangedEvent(object row)
