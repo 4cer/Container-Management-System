@@ -314,8 +314,10 @@ namespace ProITM.Server.Controllers
             if (host == null || string.IsNullOrEmpty(host.URI))
                 return NotFound();
 
-            // Construct model
+            // Get creating user Id
             string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+
+            // Construct model
             var image = await dbContext.Images.SingleOrDefaultAsync(i => i.Id == model.DockerImageName);
             dbContext.Attach(image);
             model.Image = image;
@@ -491,6 +493,53 @@ namespace ProITM.Server.Controllers
                 .Replace("\n", "<BR />");
 
             return Ok(new Tuple<string, string>(stdout_sp, stderr_sp));
+        }
+
+        [HttpGet("refresh")]
+        public async Task<IActionResult> RefreshUserContainers()
+        {
+            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+
+            // Get all user containers
+            var containers = await dbContext.Users
+                //.AsNoTracking()
+                .Include(u => u.Containers)
+                .ThenInclude(c => c.Machine)
+                .Where(u => u.Id == userId)
+                .Select(u => u.Containers)
+                .FirstOrDefaultAsync();
+
+            var groupedContainers = containers.GroupBy(c => c.Machine.Id).ToList();
+
+            foreach (var contGroup in groupedContainers)
+            {
+                if(contGroup.Any())
+                {
+                    var client = contGroup.FirstOrDefault().Machine.GetDockerClient();
+
+                    var dcContainers = await client.Containers.ListContainersAsync(new ContainersListParameters { All = true });
+
+                    // TODO 271 anything below is to be written/rewritten
+
+                    // Iterating over the set containing the other set is suboptimal
+                    //foreach(var dcc in dcContainers)
+                    foreach(var dbc in contGroup)
+                    {
+                        var container = dcContainers.FirstOrDefault(c => c.ID == dbc.Id);
+                        if (container == null)
+                        {
+                            dbc.State = "Unknown (No reply from Docker API)";
+                            //return NotFound();
+                        }
+                        dbc.IsRunning = (container.State.Equals("running")) ? true : false;
+                        dbc.State = container.Status;
+                    }
+                }
+            }
+
+            await dbContext.SaveChangesAsync();
+
+            return Ok(true);
         }
 
         private ContainerModel GetContainerById(string containerId)
