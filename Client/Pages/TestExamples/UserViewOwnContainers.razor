@@ -59,6 +59,9 @@
             }
         </tbody>
     </table>
+
+    <input type="button" class="btn btn-danger" value="Refresh my containers" @onclick="(() => Refresh())" />
+    <p>@refreshStat</p>
 }
 
 <hr />
@@ -133,6 +136,8 @@
 @code {
     List<ContainerModel> containers;
 
+    string refreshStat = "";
+
     string formError = "";
 
     int portPub;
@@ -197,5 +202,12 @@
     {
         navMgr.NavigateTo($"/testing/cont/userViewDetes/{id}");
         containers = await cs.ListContainers(50);
+    }
+
+    protected async Task Refresh()
+    {
+        await cs.RefreshUserContainers();
+        containers = await cs.ListContainers(50);
+        refreshStat = $"Refreshed {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.f")}";
     }
 }

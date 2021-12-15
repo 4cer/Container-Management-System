@@ -501,32 +501,44 @@ namespace ProITM.Server.Controllers
 
             // Get all user containers
             var containers = await dbContext.Users
-                .AsNoTracking()
+                //.AsNoTracking()
+                .Include(u => u.Containers)
+                .ThenInclude(c => c.Machine)
                 .Where(u => u.Id == userId)
                 .Select(u => u.Containers)
                 .FirstOrDefaultAsync();
 
-            foreach (var container in containers)
-            {
+            var groupedContainers = containers.GroupBy(c => c.Machine.Id).ToList();
 
+            foreach (var contGroup in groupedContainers)
+            {
+                if(contGroup.Any())
+                {
+                    var client = contGroup.FirstOrDefault().Machine.GetDockerClient();
+
+                    var dcContainers = await client.Containers.ListContainersAsync(new ContainersListParameters { All = true });
+
+                    // TODO 271 anything below is to be written/rewritten
+
+                    // Iterating over the set containing the other set is suboptimal
+                    //foreach(var dcc in dcContainers)
+                    foreach(var dbc in contGroup)
+                    {
+                        var container = dcContainers.FirstOrDefault(c => c.ID == dbc.Id);
+                        if (container == null)
+                        {
+                            dbc.State = "Unknown (No reply from Docker API)";
+                            //return NotFound();
+                        }
+                        dbc.IsRunning = (container.State.Equals("running")) ? true : false;
+                        dbc.State = container.Status;
+                    }
+                }
             }
 
-            //ContainerModel container;
-            //DockerClient dockerClient;
-            //try
-            //{
-            //    // Doesn't map to db entity
-            //    //container = GetContainerById(containerId);
-            //    // Need to have it map to db entity:
-            //    container = await dbContext.Users
-            //        .FirstOrDefaultAsync(c => c.Id == containerId);
-            //    //dockerClient = container
-            //    //    .Machine
-            //    //    .GetDockerClient();
-            //}
-            //catch (Exception) { return NotFound(); }
+            await dbContext.SaveChangesAsync();
 
-            throw new NotImplementedException("ProITM.Server.ContainerController.RefreshUserContainers()");
+            return Ok(true);
         }
 
         private ContainerModel GetContainerById(string containerId)
