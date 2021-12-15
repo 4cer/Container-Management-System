@@ -15,5 +15,6 @@ namespace ProITM.Client.Services
         public Task<List<HostModel>> GetHosts();
         public Task<HostModel> HostDetails(string hostId);
         public Task<HttpResponseMessage> GetHostLogs(string hostId);
+        public Task<bool> TestConnection(string hostUri);
     }
 }

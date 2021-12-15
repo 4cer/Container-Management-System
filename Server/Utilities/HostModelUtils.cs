@@ -24,5 +24,11 @@ namespace ProITM.Server.Utilities
             return new DockerClientConfiguration(new Uri(address))
                 .CreateClient();
         }
+
+        public static DockerClient GetDockerClient(string hostUri)
+        {
+            return new DockerClientConfiguration(new Uri(hostUri))
+                .CreateClient();
+        }
     }
 }
