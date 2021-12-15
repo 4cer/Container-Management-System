@@ -313,8 +313,10 @@ namespace ProITM.Server.Controllers
             if (host == null || string.IsNullOrEmpty(host.URI))
                 return NotFound();
 
-            // Construct model
+            // Get creating user Id
             string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+
+            // Construct model
             var image = await dbContext.Images.SingleOrDefaultAsync(i => i.Id == model.DockerImageName);
             dbContext.Attach(image);
             model.Image = image;
@@ -490,6 +492,41 @@ namespace ProITM.Server.Controllers
                 .Replace("\n", "<BR />");
 
             return Ok(new Tuple<string, string>(stdout_sp, stderr_sp));
+        }
+
+        [HttpGet("refresh")]
+        public async Task<IActionResult> RefreshUserContainers()
+        {
+            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+
+            // Get all user containers
+            var containers = await dbContext.Users
+                .AsNoTracking()
+                .Where(u => u.Id == userId)
+                .Select(u => u.Containers)
+                .FirstOrDefaultAsync();
+
+            foreach (var container in containers)
+            {
+
+            }
+
+            //ContainerModel container;
+            //DockerClient dockerClient;
+            //try
+            //{
+            //    // Doesn't map to db entity
+            //    //container = GetContainerById(containerId);
+            //    // Need to have it map to db entity:
+            //    container = await dbContext.Users
+            //        .FirstOrDefaultAsync(c => c.Id == containerId);
+            //    //dockerClient = container
+            //    //    .Machine
+            //    //    .GetDockerClient();
+            //}
+            //catch (Exception) { return NotFound(); }
+
+            throw new NotImplementedException("ProITM.Server.ContainerController.RefreshUserContainers()");
         }
 
         private ContainerModel GetContainerById(string containerId)

@@ -71,5 +71,10 @@ namespace ProITM.Client.Services
         {
             return await _httpClient.GetFromJsonAsync<Tuple<string, string>>($"Container/logs/{containerId}/{since}/{tail}");
         }
+
+        public async Task<bool> RefreshUserContainers()
+        {
+            return await _httpClient.GetFromJsonAsync<bool>("Container/refresh");
+        }
     }
 }
