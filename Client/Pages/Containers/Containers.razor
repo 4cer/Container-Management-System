@@ -1,4 +1,6 @@
 ﻿@page "/containers"
+@using System.Threading
+@using System.ComponentModel
 @inject NavigationManager Navigation
 @inject IContainerService ContSrvc
 @inject IDialogService DialogService 
@@ -68,6 +70,12 @@
             </MudTd>
         </RowTemplate>
     </MudTable>
+    <br/><br/>
+    
+    <MudItem>
+        <MudFab Color="Color.Primary" Icon="fas fa-sync-alt" Label="Refresh" Class="py-4 px-6 rounded-lg" OnClick="refresh" />
+    </MudItem>
+    
     @if (containers == null)
     {
         <p><em>Loading...</em></p>
@@ -83,13 +91,21 @@
     protected override async Task OnInitializedAsync()
     {
         containers = await ContSrvc.ListContainers(100);
+        
+
+    }
+
+    public async void refresh()
+    {
         var res = await ContSrvc.RefreshUserContainers();
         if (res)
         {
             containers = await ContSrvc.ListContainers(100);
         }
+        StateHasChanged();
+        Console.WriteLine("Refreshed");
     }
-
+    
     public void SelectionChangedEvent(object row)
     {
         //Navigation.NavigateTo($"/images/details?id=" + (row as ImageModel).Id);
@@ -171,4 +187,7 @@
             StateHasChanged();
         }
     }
+    
+
+}
 }

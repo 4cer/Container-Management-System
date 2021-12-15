@@ -1,17 +1,15 @@
 ﻿@page "/manage/hosts/add"
+@using System.Net
 @inject NavigationManager Navigation
 @inject IHostService service
 @attribute [Authorize(Roles = "Admin")]
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 
-<MudText Typo="Typo.h2">Dodaj host</MudText>
+<MudText Typo="Typo.h2">Add host</MudText>
 
 <MudItem style="width: 410px">
-    <MudTextField @bind-Value="NewHost.DisplayName" Label="Nazwa hosta" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-</MudItem>
-<MudItem style="width: 410px">
-    <MudTextField @bind-Value="NewHost" Label="Nazwa hosta" Variant="Variant.Text" Margin="Margin.Dense" Lines="3"></MudTextField>
+    <MudTextField @bind-Value="NewHost.DisplayName" Label="Name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
 </MudItem>
 
 
@@ -22,24 +20,21 @@
     </MudRadioGroup>
 </MudForm>
 
-<div class="d-flex align-center">
-    <MudButton Variant="Variant.Outlined" OnClick="Reset">Reset</MudButton>
-    <MudText Class="ml-4">(Do testów)Selected Option (IsWindows?): @(NewHost.IsWindows ? "Windows" : "Linux")</MudText>
-</div>
-
 <MudItem style="width: 410px">
-    <MudTextField @bind-Value="NewHost.URI" Label="Adres hosta" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-</MudItem>
-
-<MudItem style="width: 410px">
-    <MudTextField @bind-Value="NewHost.Port" Label="Port" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    <MudTextField @bind-Value="NewHost.URI" Label="Host URI" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
 </MudItem>
 
 <br />
 
 <MudItem>
-    <MudFab Color="Color.Primary" Icon="fas fa-sync-alt" Label="Sprawdź połączenie" Class="py-4 px-6 rounded-lg" />
+    <MudFab Color="conn switch
+    {
+    -1 => Color.Error,
+    0 => Color.Primary,
+    _ => Color.Success
+    } " Icon="fas fa-sync-alt" Label="Test connection" Class="py-4 px-6 rounded-lg" OnClick="Test" />
 </MudItem>
+<MudText Color="conn == -1 ? Color.Error : Color.Success" Text="conn == -1 ? 'Connection could not be established!' : 'Connection successful!'"></MudText>
 
 <br />
 
@@ -54,6 +49,7 @@
     public HostModel NewHost { get; set; } = new();
 
     public string SelectedOption { get; set; }
+    private int conn = 0;
 
     private void Reset()
     {
@@ -75,6 +71,11 @@
     {
         await service.AddHost(NewHost);
         Navigation.NavigateTo($"/manage/hosts");
+    }
+
+    private async Task Test()
+    {
+        conn = await service.TestConnection(WebUtility.UrlEncode(NewHost.URI)) ? 1 : -1;
     }
 
 }
