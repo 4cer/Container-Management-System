@@ -5,7 +5,11 @@
 
 
 <MudText Typo="Typo.h2">Create container</MudText>
-
+@if (IsLoading)
+{
+    <MudText >Pulling your docker image to the remote host</MudText>
+    <MudProgressCircular Indeterminate="true" Size="Size.Large"></MudProgressCircular>
+} else {
 <MudItem style="width: 410px">
     <MudTextField @bind-Value="@newContainer.Name" Label="Container name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
 </MudItem>
@@ -100,13 +104,21 @@
     <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Create" Class="py-4 px-6 rounded-lg" OnClick="CreateContainer" />
 </MudItem>
 
-
-
+}
 
 @code {
-    
+    /*
+     * public string NameValue { get; set; }
+    public string ImageName { get; set; }
+    public string ContainerPort { get; set; }
+    public string TargerPort { get; set; }
+    public string Flags { get; set; }
+     */
     public ContainerModel newContainer { get; set; } = new();
     public List<ImageModel> MyImages { get; set; }
+    public bool IsLoading = false;
+
+    //public List<ContainerPortModel> portsList { get; set; } = new();
 
     //public string SelectedOption { get; set; }
 
@@ -133,8 +145,10 @@
 
     public async Task CreateContainer()
     {
-        Console.WriteLine(newContainer.Name);
+        IsLoading = true;
         var ret = await service.CreateContainer(newContainer);
+        IsLoading = false;
+        Navigation.NavigateTo("/containers");
     }
 
 }

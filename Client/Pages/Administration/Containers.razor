@@ -1,13 +1,27 @@
 ﻿@page "/manage/containers"
+@using System.ComponentModel
 @inject NavigationManager Navigation
 @inject IAdminContainerService ContSrvc
+@inject IAdministrationService adminService
 @inject IDialogService DialogService 
 @inject AuthenticationStateProvider provider
 
 <h2>Manage containers</h2>
 <div>
-    <MudTable Items="containers" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent" Hover="true" Dense="true"
+    <MudTable Items="containers" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent" Hover="true" Dense="true" Filter="new Func<ContainerModel,bool>(FilterFunc1)"
               RowClassFunc="@SelectedRowClassFunc" OnRowClick="e => RowClickEvent(e)" @ref="mudTable" T="ContainerModel">
+        <ToolBarContent>
+            
+            <MudSelect T="string" @bind-Value="FilterUser">
+                <MudSelectItem T="string" Value="string.Empty">All users</MudSelectItem>
+                @foreach (var user in users)
+                {
+                    <MudSelectItem T="string" Value="user.UserName">@user.UserName</MudSelectItem>
+                }
+            </MudSelect>
+            <MudSpacer /><MudSpacer />
+                @*<MudTextField @bind-Value="FilterUser" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>*@
+            </ToolBarContent>
         <HeaderContent>
             <MudTh>Name</MudTh>
             <MudTh>Owner</MudTh>
@@ -20,7 +34,7 @@
         <RowTemplate>
             <MudTd>@context.Name</MudTd>
             <MudTd>@context.OwnerName</MudTd>
-            <MudTd>@context.Image</MudTd>
+            <MudTd>@context.Image.DisplayName <span style="color: gray; font-style: italic">[@context.Image.DockerImageName]</span></MudTd>
             <MudTd>@context.Description</MudTd>
             <MudTd>@context.State</MudTd>
             @*<MudTd>@context.Machine.DisplayName</MudTd>*@
@@ -49,12 +63,13 @@
     List<ContainerModel> containers;
     private int selectedRowNumber = -1;
     private MudTable<ContainerModel> mudTable;
+    private string FilterUser = String.Empty;
+    private List<UserModel> users = new();
 
     protected override async Task OnInitializedAsync()
     {
-        var authstate = await provider.GetAuthenticationStateAsync();
-        var id = authstate.User.Claims.First(c => c.Type == "sub")?.Value;
         containers = await ContSrvc.GetContainers(100);
+        users = await adminService.GetUsers();
     }
 
     public void SelectionChangedEvent(object row)
@@ -108,5 +123,13 @@
                 containers.RemoveAll(item => item.Id.Equals(deletedServer));
             }
         }
+    }
+
+    private bool FilterFunc1(ContainerModel element) => FilterFunc(element, FilterUser);
+    private bool FilterFunc(ContainerModel container, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        return container.OwnerName == searchString;
     }
 }
