@@ -32,7 +32,9 @@
                 <MudTd><MudIcon Icon="@Icons.Filled.Circle" Color="Color.Error"></MudIcon></MudTd>            
             }
 
-            <MudTd Class="actions-cell">
+        <MudTd Class="actions-cell">
+                <MudIconButton Icon="@Icons.Filled.StopCircle" Color="Color.Primary" OnClick="e => StopContainer(context)" />
+                <MudIconButton Icon="@Icons.Filled.PlayCircle" Color="Color.Primary" OnClick="e => StartContainer(context)" />
                 <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewContainer(context)" />
                 <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteContainer(context)" />
             </MudTd>
@@ -45,7 +47,7 @@
 </div>
 
 @code {
-    List<ContainerModel> containers;
+        List<ContainerModel> containers;
     private int selectedRowNumber = -1;
     private MudTable<ContainerModel> mudTable;
 
@@ -110,4 +112,13 @@
     {
         Navigation.NavigateTo($"/containers/add");
     }
-}
+
+    private async Task StopContainer(ContainerModel container)
+    {
+            await ContSrvc.StopContainer(container.Id);
+    }
+    private async Task StartContainer(ContainerModel container)
+    {
+            await ContSrvc.StartContainer(container.Id);
+    }
+    }
