@@ -12,7 +12,7 @@
 @*<MudTabs>
     <MudTabPanel Text="Podstawowe">*@
 <MudItem style="width: 410px">
-    <MudSelect Label="Source image" @bind-Value="newContainer.ImageIdC" AnchorOrigin="Origin.BottomCenter">
+    <MudSelect Label="Source image" @bind-Value="newContainer.DockerImageName" AnchorOrigin="Origin.BottomCenter">
         @if (MyImages != null)
         {
             @foreach (var image in MyImages)
