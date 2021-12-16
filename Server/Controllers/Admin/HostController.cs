@@ -122,8 +122,11 @@ namespace ProITM.Server.Controllers.Admin
             {
                 try
                 {
-                    await client.System.PingAsync();
-                    return Ok(true);
+                    var response = await client.System.GetSystemInfoAsync();
+                    if (response.Containers >= 0)
+                        return Ok(true);
+                    //await client.System.PingAsync();
+                    return Ok(false);
                 }
                 catch (Exception)
                 {
