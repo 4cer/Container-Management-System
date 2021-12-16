@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ProITM.Server.Models;
 using ProITM.Shared;
+using System.Security.Claims;
 
 namespace ProITM.Server.Controllers.Admin
 {
@@ -87,6 +88,13 @@ namespace ProITM.Server.Controllers.Admin
         [HttpDelete("Users/{Id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
+            #region 299 If admin tries to delete/demote self, is dzban
+            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+
+            if (userId.Equals(id))
+                return StatusCode(StatusCodes.Status418ImATeapot);
+            #endregion
+
             var user = await userManager.FindByIdAsync(id);
 
             // Error out if user not found?
@@ -118,6 +126,13 @@ namespace ProITM.Server.Controllers.Admin
         [HttpPost("Users/Demote/{Id}")]
         public async Task<IActionResult> DemoteUser(string id)
         {
+            #region 299 If admin tries to delete/demote self, is dzban
+            string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+
+            if(userId.Equals(id))
+                return StatusCode(StatusCodes.Status418ImATeapot);
+            #endregion
+
             var user = await userManager.FindByIdAsync(id);
 
             // Error out if user not found?
@@ -130,7 +145,7 @@ namespace ProITM.Server.Controllers.Admin
             IdentityResult result = await userManager.RemoveFromRoleAsync(user, "Admin");
 
             if (result.Succeeded)
-                return Ok();
+                return Ok(true);
 
             return Problem("Administration:PUT:DemoteUser(string id): Could not demote user");
         }
