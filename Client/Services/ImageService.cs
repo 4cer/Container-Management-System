@@ -51,7 +51,7 @@ namespace ProITM.Client.Services
         }
         public async Task<HttpResponseMessage> EditImage(ImageModel model)
         {
-            return await _httpClient.PutAsJsonAsync<ImageModel>("edit", model);
+            return await _httpClient.PutAsJsonAsync<ImageModel>("Image/edit", model);
         }
         #endregion
 
