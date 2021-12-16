@@ -110,7 +110,9 @@ namespace ProITM.Server.Controllers
                     });
             }
 
-            dbContext.SaveChanges();
+            dbContext.Images.Remove(image);
+
+            await dbContext.SaveChangesAsync();
             return Ok();
         }
 

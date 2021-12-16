@@ -36,9 +36,9 @@
     }
 
 
-    private void CreateImage()
+    private async void CreateImage()
     {
-        service.GetImageFromDockerHub(newImage);
+        await service.GetImageFromDockerHub(newImage);
         Navigation.NavigateTo("/images");
     }
 

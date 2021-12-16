@@ -20,9 +20,9 @@
 
             
             <div class="form-group">
-                <label asp-for="Input.Email" for="email">Email address</label>
-                <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email" asp-for="Input.Email">
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                <label asp-for="Input.Username" for="email">Login</label>
+                <input type="text" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter login" asp-for="Input.Username">
+                <span asp-validation-for="Input.Username" class="text-danger"></span>
             </div>
             <br>
             <div class="form-group">
@@ -31,11 +31,13 @@
                 <span asp-validation-for="Input.Password" class="text-danger"></span>
             </div>
             <br>
-            <button type="submit" class="btn btn-primary">Submit</button>
-
+            <div style="text-align: center; margin:  auto;">
+                <button type="submit" class="btn btn-success">Login</button>
+                <a href="Register"><button type="button" class="btn btn-outline-primary" >Register</button></a>
+            </div>
             <div asp-validation-summary="All" class="text-danger"></div>
             
-            <div class="text-center">Don't you have an account? <a href="Register" class="link-primary">Register</a></div>
+            
         </form>
     </div>
 
@@ -50,7 +52,7 @@
 
 
 
-<!--
+@*
 <h1>@ViewData["Title"]</h1>
 <div class="row">
     <div class="col-md-4">
@@ -60,9 +62,9 @@
                 <hr />
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="form-group">
-                    <label asp-for="Input.Email"></label>
-                    <input asp-for="Input.Email" class="form-control" />
-                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    <label asp-for="Input.Username"></label>
+                    <input asp-for="Input.Username" class="form-control" />
+                    <span asp-validation-for="Input.Username" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="Input.Password"></label>
@@ -126,7 +128,7 @@
     </div>
 </div>
 
--->
+*@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

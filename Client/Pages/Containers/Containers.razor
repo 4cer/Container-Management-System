@@ -63,9 +63,9 @@
                     <MudIconButton Icon="@Icons.Filled.PlayCircle" Color="Color.Primary" OnClick="e => StartContainer(context)" />
                 }
             }
-                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewContainer(context)" />
-                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteContainer(context)" />
-            </MudTd>
+            <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewContainer(context)" />
+            <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteContainer(context)" Disabled="loadingContainers.Contains(context)"/>
+        </MudTd>
         </RowTemplate>
     </MudTable>
     <br/><br/>
@@ -83,15 +83,10 @@
 @code {
     List<ContainerModel> containers;
     List<ContainerModel> loadingContainers = new ();
+    List<ContainerModel> removingContainers = new ();
     private int selectedRowNumber = -1;
     private MudTable<ContainerModel> mudTable;
 
-    protected override async Task OnInitializedAsync()
-    {
-        containers = await ContSrvc.ListContainers(100);
-        
-
-    }
 
     public async void refresh()
     {
@@ -103,7 +98,14 @@
         StateHasChanged();
         Console.WriteLine("Refreshed");
     }
-    
+
+    protected override async Task OnInitializedAsync()
+    {
+        containers = await ContSrvc.ListContainers(100);
+        StateHasChanged();
+        refresh();
+    }
+
     public void SelectionChangedEvent(object row)
     {
         //Navigation.NavigateTo($"/images/details?id=" + (row as ImageModel).Id);
@@ -135,7 +137,7 @@
         Navigation.NavigateTo($"/containers/details/" + container.Id);
     }
 
-    async Task DeleteContainer(ContainerModel container)
+    private async Task DeleteContainer(ContainerModel container)
     {
         var parameters = new DialogParameters { ["container"] = container };
 
@@ -144,7 +146,8 @@
 
         if (!result.Cancelled)
         {
-            //In a real world scenario we would reload the data from the source here since we "removed" it in the dialog already.
+            loadingContainers.Add(container);
+            StateHasChanged();
             var deletedServer = result.Data.ToString();
             var response = await ContSrvc.DeleteContainer(container.Id);
             if (response.IsSuccessStatusCode)
@@ -152,6 +155,8 @@
                 containers.RemoveAll(item => item.Id.Equals(deletedServer));
                 StateHasChanged();
             }
+            loadingContainers.Remove(container);
+            StateHasChanged();
         }
     }
 
@@ -185,6 +190,10 @@
             StateHasChanged();
         }
     }
-    
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        
+    }
 
 }

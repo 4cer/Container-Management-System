@@ -88,7 +88,12 @@
         if (!result.Cancelled)
         {
             //var Id = result.Data.ToString();
-            images.Remove(image);
+            var response = await ImgSrvc.DeleteImage(image.Id);
+            if (response.IsSuccessStatusCode)
+            {
+                images.Remove(image);
+            }
+            Console.WriteLine(response);
         }
     }
 

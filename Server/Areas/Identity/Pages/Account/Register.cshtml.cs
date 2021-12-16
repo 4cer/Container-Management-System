@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -82,7 +83,7 @@ namespace ProITM.Server.Areas.Identity.Pages.Account
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
                         "/Account/ConfirmEmail",
                         pageHandler: null,
@@ -94,7 +95,8 @@ namespace ProITM.Server.Areas.Identity.Pages.Account
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
-                        await _userManager.ConfirmEmailAsync(user, code);
+                        var confirmed = await _userManager.ConfirmEmailAsync(user, code);
+                        Debug.WriteLine(confirmed.Succeeded ? " Potwierdzono konto! " : "Nie udało się potwierdzić konta ");
                         await _signInManager.SignInAsync(user, false);
                         return Redirect(returnUrl);
                     }
