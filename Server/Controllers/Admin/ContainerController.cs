@@ -80,6 +80,54 @@ namespace ProITM.Server.Controllers.Admin
             //    .ToListAsync();
         }
 
+        [HttpGet("manage/refresh")]
+        public async Task<IActionResult> RefreshAllContainers()
+        {
+            // TODO 298 Refresh all containers
+            //string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+
+            // Get all user containers
+            var containers = await dbContext.Users
+                //.AsNoTracking()
+                .Include(u => u.Containers)
+                .ThenInclude(c => c.Machine)
+                .Select(u => u.Containers)
+                .FirstOrDefaultAsync();
+
+            var groupedContainers = containers.GroupBy(c => c.Machine.Id).ToList();
+
+            foreach (var contGroup in groupedContainers)
+            {
+                if (contGroup.Any())
+                {
+                    var client = contGroup.FirstOrDefault().Machine.GetDockerClient();
+
+                    var dcContainers = await client.Containers.ListContainersAsync(new ContainersListParameters { All = true });
+
+                    // TODO 271 anything below is to be written/rewritten
+
+                    // Iterating over the set containing the other set is suboptimal
+                    //foreach(var dcc in dcContainers)
+                    foreach (var dbc in contGroup)
+                    {
+                        var container = dcContainers.FirstOrDefault(c => c.ID == dbc.Id);
+                        if (container == null)
+                        {
+                            dbc.State = "Unknown (No reply from Docker API)";
+                            continue;
+                            //return NotFound();
+                        }
+                        dbc.IsRunning = (container.State.Equals("running")) ? true : false;
+                        dbc.State = container.Status;
+                    }
+                }
+            }
+
+            await dbContext.SaveChangesAsync();
+
+            return Ok(true);
+        }
+
         [HttpGet("manage/{containerId}")]
         public async Task<IActionResult> ContainerDetails(string containerId)
         {

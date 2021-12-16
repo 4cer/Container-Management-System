@@ -62,7 +62,8 @@
                         <input class="btn btn-danger" type="button" @onclick="(() => Delet(con.Id))" value="Delet" />
                     </td>
                     <td>
-                        @foreach(var portBind in con.PortBindings) { 
+                        @foreach (var portBind in con.PortBindings)
+                        {
                             <p>@portBind.PrivatePort @portBind.PublicPort</p>
                         }
                     </td>
@@ -78,6 +79,9 @@
         </tbody>
     </table>
 
+    <input type="button" class="btn btn-danger" value="Refresh my containers" @onclick="(() => Refresh())" />
+    <p>@refreshStat</p>
+
 }
 
 @code {
@@ -86,6 +90,8 @@
     List<ImageModel> images;
 
     ContainerModel container;
+
+    string refreshStat = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -108,5 +114,12 @@
     {
         _ = await acs.StopUsersContainer(id);
         containers = await acs.GetContainers(50);
+    }
+
+    protected async Task Refresh()
+    {
+        await acs.RefreshAllContainers();
+        containers = await acs.GetContainers(50);
+        refreshStat = $"Refreshed {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.f")}";
     }
 }
