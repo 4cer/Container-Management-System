@@ -4,6 +4,7 @@
 
 @inject IAdministrationService administrationService
 @inject NavigationManager navigationManager
+@inject ISnackbar Snackbar
 
 <h2>Edit User</h2>
 
@@ -26,8 +27,8 @@ else
     <div style="width: 400px">
 
         <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
-            <MudTextField  Required="true" Label="Username" RequiredError="User name is required!" @bind-Value="@user.UserName" />
-            <MudTextField  Required="true" Label="Email" RequiredError="Email is required!" @bind-Value="@user.Email" />
+            <MudTextField Required="true" Label="Username" RequiredError="User name is required!" @bind-Value="@user.UserName" />
+            <MudTextField Required="true" Label="Email" RequiredError="Email is required!" @bind-Value="@user.Email" />
             <p>* Required</p>
             <MudCheckBox Color="Color.Primary" Class="ml-n2" Label="Activate account" @bind-Checked="@user.EmailConfirmed" />
             <br />
@@ -58,6 +59,8 @@ else
         if (result.IsSuccessStatusCode)
         {
             navigationManager.NavigateTo($"manage/users", forceLoad: true);
+            Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+            Snackbar.Add("User has been edited successfully", Severity.Success);
         }
         message = result;
     }

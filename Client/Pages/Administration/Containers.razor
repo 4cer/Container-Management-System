@@ -3,15 +3,16 @@
 @inject NavigationManager Navigation
 @inject IAdminContainerService ContSrvc
 @inject IAdministrationService adminService
-@inject IDialogService DialogService 
+@inject IDialogService DialogService
 @inject AuthenticationStateProvider provider
+@inject ISnackbar Snackbar
 
 <h2>Manage containers</h2>
 <div>
     <MudTable Items="containers" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent" Hover="true" Dense="true" Filter="new Func<ContainerModel,bool>(FilterFunc1)"
               RowClassFunc="@SelectedRowClassFunc" OnRowClick="e => RowClickEvent(e)" @ref="mudTable" T="ContainerModel">
         <ToolBarContent>
-            
+
             <MudSelect T="string" @bind-Value="FilterUser">
                 <MudSelectItem T="string" Value="string.Empty">All users</MudSelectItem>
                 @foreach (var user in users)
@@ -20,8 +21,8 @@
                 }
             </MudSelect>
             <MudSpacer /><MudSpacer />
-                @*<MudTextField @bind-Value="FilterUser" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>*@
-            </ToolBarContent>
+            @*<MudTextField @bind-Value="FilterUser" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>*@
+        </ToolBarContent>
         <HeaderContent>
             <MudTh>Name</MudTh>
             <MudTh>Owner</MudTh>
@@ -44,7 +45,7 @@
             }
             else
             {
-                <MudTd><MudIcon Icon="@Icons.Filled.Circle" Color="Color.Error"></MudIcon></MudTd>            
+                <MudTd><MudIcon Icon="@Icons.Filled.Circle" Color="Color.Error"></MudIcon></MudTd>
             }
 
             <MudTd Class="actions-cell">
@@ -121,6 +122,8 @@
             if (response.IsSuccessStatusCode)
             {
                 containers.RemoveAll(item => item.Id.Equals(deletedServer));
+                Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+                Snackbar.Add("Container has been deleted successfully", Severity.Success);
             }
         }
     }

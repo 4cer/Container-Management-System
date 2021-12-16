@@ -1,5 +1,6 @@
 ﻿@page "/images/edit/{ImageId}"
 @inject NavigationManager Navigation
+@inject ISnackbar Snackbar
 
 @inject IImageService ImgSrvc
 @if (Image != null)
@@ -12,7 +13,7 @@
     </MudItem>
 
     <MudItem style="width: 410px">
-        <MudTextField @bind-Value="Image.DisplayName" Label="Dockerhub Image ID" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+        <MudTextField @bind-Value="Image.DockerImageName" Label="Dockerhub Image ID" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
     </MudItem>
 
     <MudItem style="width: 410px">
@@ -22,7 +23,7 @@
     <br />
 
     <MudItem>
-        <MudFab Color="Color.Primary" Icon="@Icons.Filled.Save" Label="Save" Class="py-4 px-6 rounded-lg" OnClick="UpdateImage"/>
+        <MudFab Color="Color.Primary" Icon="@Icons.Filled.Save" Label="Save" Class="py-4 px-6 rounded-lg" OnClick="UpdateImage" />
     </MudItem>
 }
 
@@ -40,8 +41,13 @@
 
     private async void UpdateImage()
     {
-        await ImgSrvc.GetImageFromDockerHub(Image);
+        var ret = await ImgSrvc.GetImageFromDockerHub(Image);
         Navigation.NavigateTo("/images");
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        if (ret.IsSuccessStatusCode) 
+        {
+            Snackbar.Add("Image has been edited successfully", Severity.Success);
+        }
     }
 
 }

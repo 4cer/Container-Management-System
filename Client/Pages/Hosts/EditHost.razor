@@ -2,6 +2,7 @@
 @using System.Net
 @inject NavigationManager Navigation
 @inject IHostService HostSrvc
+@inject ISnackbar Snackbar
 @attribute [Authorize(Roles = "Admin")]
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
@@ -58,8 +59,13 @@
 
     private async Task SaveChanges()
     {
-        await HostSrvc.EditHost(Host);
+        var ret = await HostSrvc.EditHost(Host);
         Navigation.NavigateTo("/manage/hosts");
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        if (ret.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Host has been edited successfully", Severity.Success);
+        }
     }
 
     private async Task Test()

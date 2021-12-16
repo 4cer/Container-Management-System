@@ -4,7 +4,7 @@
 @inject IAdministrationService administrationService
 @inject IDialogService DialogService
 @inject NavigationManager navigationManager
-
+@inject ISnackbar Snackbar
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 
@@ -116,6 +116,8 @@ else
             if (response.IsSuccessStatusCode)
             {
                 users.RemoveAll(item => item.Id.Equals(deletedServer));
+                Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+                Snackbar.Add("User has been deleted successfully", Severity.Success);
             }
         }
     }
@@ -127,6 +129,8 @@ else
         {
             users = await administrationService.GetUsers();
             StateHasChanged();
+            Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+            Snackbar.Add("User has been promoted to administrator", Severity.Success);
         }
     }
 
@@ -137,6 +141,8 @@ else
         {
             users = await administrationService.GetUsers();
             StateHasChanged();
+            Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+            Snackbar.Add("User has been demoted to normal user", Severity.Success);
         }
     }
 
