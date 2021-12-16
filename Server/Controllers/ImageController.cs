@@ -31,7 +31,7 @@ namespace ProITM.Server.Controllers
         public async Task<IActionResult> EditImage(ImageModel image)
         {
             var foundImage = await dbContext.Images
-                .FirstAsync(i => i.Id == image.Id);
+                .FirstOrDefaultAsync(i => i.Id == image.Id);
 
             if (foundImage == null) return BadRequest();
 
