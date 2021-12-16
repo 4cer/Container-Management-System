@@ -19,7 +19,6 @@ namespace ProITM.Shared
 
         public ImageModel Image { get; set; }
 
-        [Required(ErrorMessage = "To pole jest wymagane")]
         [StringLength(1000, ErrorMessage = "Opis może mieć maksymalnie 1000 znaków")]
         public string Description { get; set; }
 
@@ -51,7 +50,10 @@ namespace ProITM.Shared
         public string OwnerName { get; set; }
 
         [NotMapped]
-        public Dictionary<ushort, string> PortBindUris { get; set; }
+        public Dictionary<ushort, string> PortBindUris { get; set; } = new();
+
+        [NotMapped]
+        public List<string> Commands { get; set; } = new();
 
         public override bool Equals(object obj)
         {

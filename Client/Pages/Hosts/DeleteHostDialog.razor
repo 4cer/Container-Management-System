@@ -24,7 +24,6 @@
 
     private void DeleteHost()
     {
-        HostSrvc.DeleteHost(host.Id);
         MudDialog.Close(DialogResult.Ok(host.Id));
     }
 }

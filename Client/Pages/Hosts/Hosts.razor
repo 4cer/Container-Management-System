@@ -13,16 +13,12 @@
     <MudTable Items="hosts" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent" Hover="true" Dense="true"
               RowClassFunc="@SelectedRowClassFunc" OnRowClick="e => RowClickEvent(e)" @ref="mudTable" T="HostModel">
         <HeaderContent>
-            <MudTh>ID</MudTh>
             <MudTh>Name</MudTh>
             <MudTh>OS</MudTh>
-            <MudTh>IP</MudTh>
-            <MudTh>Port</MudTh>
             <MudTh>URI</MudTh>
             <MudTh>Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd>@context.Id</MudTd>
             <MudTd>@context.DisplayName</MudTd>
             @if (context.IsWindows)
             {
@@ -36,8 +32,6 @@
                     <MudIcon Icon="fab fa-linux" />
                 </MudTd>
             }
-            <MudTd>@context.IP</MudTd>
-            <MudTd>@context.Port</MudTd>
             <MudTd>@context.URI</MudTd>
             <MudTd Class="actions-cell">
                 <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewHost(context)" />
@@ -101,10 +95,15 @@
 
         if (!result.Cancelled)
         {
-            //var Id = result.Data.ToString();
-            hosts.Remove(host);
-            Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
-            Snackbar.Add("Host has been deleted successfully", Severity.Success);
+            var Id = result.Data.ToString();
+            var ret = await HostSrvc.DeleteHost(Id);
+            if (ret.IsSuccessStatusCode)
+            {
+                hosts.Remove(host);
+                StateHasChanged();
+                Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+                Snackbar.Add("Host has been deleted successfully", Severity.Success);
+            }
         }
     }
 

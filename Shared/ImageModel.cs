@@ -15,14 +15,18 @@ namespace ProITM.Shared
         public string Id { get; set; }
 
         // Maps to REPOSITORY in output of "docker images"
+        [Required(ErrorMessage ="To pole jest wymagane")]
         public string DockerImageName { get; set; }
 
         // Generated server-side, on creation
         public DateTime Created { get; set; }
 
         // User-friendly name
+        [Required(ErrorMessage = "To pole jest wymagane")]
+        [StringLength(50, ErrorMessage = "Nazwa może mieć maksymalnie 50 znaków")]
         public string DisplayName { get; set; }
 
+        [StringLength(1000, ErrorMessage = "Opis może mieć maksymalnie 1000 znaków")]
         public string Description { get; set; }
 
         // Maps to TAG in output of "docker images"
