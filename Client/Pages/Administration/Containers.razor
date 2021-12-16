@@ -66,7 +66,7 @@
                 }
             }
             <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewContainer(context)" />
-            <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteContainer(context)" />
+            <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteContainer(context)" Disabled="loadingContainers.Contains(context)" />
         </MudTd>
         </RowTemplate>
     </MudTable>
@@ -157,7 +157,7 @@
     {
         loadingContainers.Add(container);
         await ContSrvc.StopUsersContainer(container.Id);
-        bool refr = await ContSrvc.RefreshUserContainers();
+        bool refr = await ContSrvc.RefreshAllContainers();
         if (refr)
         {
             containers = await ContSrvc.GetContainers(100);
@@ -170,7 +170,7 @@
     {
         loadingContainers.Add(container);
         await ContSrvc.StartUsersContainer(container.Id);
-        bool refr = await ContSrvc.RefreshUserContainers();
+        bool refr = await ContSrvc.RefreshAllContainers();
         if (refr)
         {
             containers = await ContSrvc.GetContainers(100);
