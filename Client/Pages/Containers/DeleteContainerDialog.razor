@@ -25,7 +25,6 @@
     private void DeleteContainer()
     {
         //In a real world scenario this bool would probably be a service to delete the item from api/database
-        ContainerSrvc.DeleteContainer(container.Id);
         MudDialog.Close(DialogResult.Ok(container.Id));
     }
 }

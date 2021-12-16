@@ -31,28 +31,28 @@
 </MudItem>
 
 <br />
+    <MudText>Add your container's private ports, and we will give you some public (external)</MudText><br/>
+    <MudGrid style="width: 550px">
+        @for (var i = 0; i < newContainer.PortBindings.Count; i++)
+        {
+            var index = i;
+            var port = newContainer.PortBindings[i];
 
-<MudGrid style="width: 550px">
-    @for (var i = 0; i < newContainer.PortBindings.Count; i++)
-    {
-        var index = i;
-        var port = newContainer.PortBindings[i];
-
-        <MudItem>
-            <MudNumericField @bind-Value="@port.PublicPort" T="ushort" Label="Container port" Variant="Variant.Text" Margin="Margin.Dense" Min="30000" Max="31000"></MudNumericField>
-        </MudItem>
-        <MudItem>
-            <MudNumericField @bind-Value="@port.PrivatePort" T="ushort" Label="Target port" Variant="Variant.Text" Margin="Margin.Dense" Min="1" Max="65535"></MudNumericField>
-        </MudItem>
-        <MudItem>
-            <MudFab Icon="@Icons.Filled.Remove" Size="Size.Small" Color="Color.Error" OnClick="() => newContainer.PortBindings.RemoveAt(index)"></MudFab>
-        </MudItem>
+            <MudItem>
+                <MudTextField @bind-Value="@port.PublicPort" Label="Container port" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+            </MudItem>
+        @*<MudItem>
+            <MudTextField @bind-Value="@port.PrivatePort" Label="Target port" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+        </MudItem>*@
+            <MudItem>
+                <MudFab Icon="@Icons.Filled.Remove" Size="Size.Small" Color="Color.Error" OnClick="() => newContainer.PortBindings.RemoveAt(index)"></MudFab>
+            </MudItem>
             <br />
-            }
+        }
     </MudGrid>
 
-<br />
-<MudFab Label="Add ports" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="() => newContainer.PortBindings.Add(new ContainerPortModel())"></MudFab>
+    <br />
+<MudFab Label="Add ports" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="() => newContainer.PortBindings.Add(new ContainerPortModel(){PrivatePort = 0, PublicPort = 0})"></MudFab>
 <br />
 <br />
 <MudForm>
