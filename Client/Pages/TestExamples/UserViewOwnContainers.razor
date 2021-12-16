@@ -12,30 +12,18 @@
     <table class="table">
         <thead>
             <tr>
-                <th>
-                    Name
-                </th>
-                <th>
-                    Description
-                </th>
-                <th>
-                    Actions
-                </th>
-                <th>
-                    Id
-                </th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+                <th>Id</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var con in containers)
             {
             <tr>
-                <td>
-                    @con.Name
-                </td>
-                <td>
-                    @con.Description
-                </td>
+                <td>@con.Name</td>
+                <td>@con.Description</td>
                 <td>
                     @if (con.IsRunning)
                     {
@@ -48,9 +36,7 @@
                     <input class="btn btn-danger" type="button" @onclick="(() => Delet(con.Id))" value="Delet" />
                     <input class="btn btn-secondary" type="button" @onclick="(() => Detes(con.Id))" value="Detes" />
                 </td>
-                <td>
-                    @con.Id
-                </td>
+                <td>@con.Id</td>
             </tr>
             }
             @if (!containers.Any())

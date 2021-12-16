@@ -88,10 +88,16 @@ else
 @code {
     [Parameter]
     public string id { get; set; }
-    bool IsStderr = false;
     bool IsRefreshing = true;
     ContainerModel container;
     Tuple<string, string> logs;
+
+    bool IsStderr = false;
+
+    protected async Task ToggleStream()
+    {
+        IsStderr = !IsStderr;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -107,11 +113,6 @@ else
         {
             logs = new Tuple<string, string>("CONTAINER NOT FOUND", "CONTAINER NOT FOUND");
         }
-    }
-
-    protected async Task ToggleStream()
-    {
-        IsStderr = !IsStderr;
     }
 
     protected async Task RefreshStream()

@@ -92,13 +92,14 @@ namespace ProITM.Server.Controllers
 
             #region 217, per operator authorization
             string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+            var IsAdmin = await userManager.IsInRoleAsync(new ApplicationUser { Id = userId }, "Admin");
 
             var user = await dbContext.Users
                 .AsNoTracking()
                 .Include(u => u.Containers)
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
-            if (!user.Containers.Contains(container))
+            if (!user.Containers.Contains(container) && !IsAdmin)
                 return Unauthorized();
             #endregion
 
@@ -401,7 +402,8 @@ namespace ProITM.Server.Controllers
                 {
                     DNS = new[] { "8.8.8.8", "8.8.4.4" },
                     PortBindings = portBindings
-                }
+                },
+                Cmd = new List<string> { "nginx", "nginx-debug", "-g", "daemon off;" }
             });
 
             model.Id = result.ID;
@@ -494,14 +496,14 @@ namespace ProITM.Server.Controllers
 
             #region 217, per operator authorization
             string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
+            var IsAdmin = await userManager.IsInRoleAsync(new ApplicationUser { Id = userId }, "Admin");
 
             var user = await dbContext.Users
                 .AsNoTracking()
                 .Include(u => u.Containers)
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
-            //if (!user.Containers.Exists(c => c.))
-            if (!user.Containers.Contains(container))
+            if (!user.Containers.Contains(container) && !IsAdmin)
                 return Unauthorized();
             #endregion
 

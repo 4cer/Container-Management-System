@@ -49,6 +49,9 @@ namespace ProITM.Shared
         [NotMapped]
         public Dictionary<ushort, string> PortBindUris { get; set; }
 
+        [NotMapped]
+        public List<string> Commands { get; set; } = new();
+
         public override bool Equals(object obj)
         {
             if (obj.GetType() != typeof(ContainerModel))
