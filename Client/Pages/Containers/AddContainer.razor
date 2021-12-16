@@ -159,7 +159,7 @@ else
         var ret = await service.CreateContainer(newContainer);
         IsLoading = false;
         Navigation.NavigateTo("/containers");
-        if (ret.Count == 0)
+        if(ret == null || ret.Count == 0)
         {
             Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
             Snackbar.Add("Container has been created sucessfully", Severity.Success);
