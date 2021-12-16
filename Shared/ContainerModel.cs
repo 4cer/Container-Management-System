@@ -19,7 +19,6 @@ namespace ProITM.Shared
 
         public ImageModel Image { get; set; }
 
-        [Required(ErrorMessage = "To pole jest wymagane")]
         [StringLength(1000, ErrorMessage = "Opis może mieć maksymalnie 1000 znaków")]
         public string Description { get; set; }
 

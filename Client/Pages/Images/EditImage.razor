@@ -7,24 +7,26 @@
 {
 
     <h2>Edit Image</h2>
+    <EditForm Model="@Image" OnValidSubmit="UpdateImage">
+        <DataAnnotationsValidator />
+        <MudItem style="width: 410px">
+            <MudTextField @bind-Value="@Image.DisplayName" For="@(() => Image.DisplayName)" Label="Image name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+        </MudItem>
 
-    <MudItem style="width: 410px">
-        <MudTextField @bind-Value="Image.DisplayName" Label="Image name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-    </MudItem>
+        <MudItem style="width: 410px">
+            <MudTextField @bind-Value="@Image.DockerImageName" For="@(() => Image.DockerImageName)" Label="Dockerhub Image ID" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+        </MudItem>
 
-    <MudItem style="width: 410px">
-        <MudTextField @bind-Value="Image.DockerImageName" Label="Dockerhub Image ID" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-    </MudItem>
+        <MudItem style="width: 410px">
+            <MudTextField @bind-Value="@Image.Description" For="@(() => Image.Description)" Label="Image description" Variant="Variant.Text" Margin="Margin.Dense" Lines="3"></MudTextField>
+        </MudItem>
 
-    <MudItem style="width: 410px">
-        <MudTextField @bind-Value="Image.Description" Label="Image description" Variant="Variant.Text" Margin="Margin.Dense" Lines="3"></MudTextField>
-    </MudItem>
+        <br />
 
-    <br />
-
-    <MudItem>
-        <MudFab Color="Color.Primary" Icon="@Icons.Filled.Save" Label="Save" Class="py-4 px-6 rounded-lg" OnClick="UpdateImage" />
-    </MudItem>
+        <MudItem>
+            <MudFab Color="Color.Primary" Icon="@Icons.Filled.Save" Label="Save" Class="py-4 px-6 rounded-lg" ButtonType="ButtonType.Submit" />
+        </MudItem>
+    </EditForm>
 }
 
 
@@ -44,7 +46,7 @@
         var ret = await ImgSrvc.GetImageFromDockerHub(Image);
         Navigation.NavigateTo("/images");
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
-        if (ret.IsSuccessStatusCode) 
+        if (ret.IsSuccessStatusCode)
         {
             Snackbar.Add("Image has been edited successfully", Severity.Success);
         }
