@@ -10,28 +10,30 @@
     <MudText >Pulling your docker image to the remote host</MudText>
     <MudProgressCircular Indeterminate="true" Size="Size.Large"></MudProgressCircular>
 } else {
-<MudItem style="width: 410px">
-    <MudTextField @bind-Value="@newContainer.Name" Label="Container name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-</MudItem>
-<MudItem style="width: 410px">
-    <MudTextField @bind-Value="@newContainer.Description" Lines="3" Label="Description" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-</MudItem>
-@*<MudTabs>
-    <MudTabPanel Text="Podstawowe">*@
-<MudItem style="width: 410px">
-    <MudSelect Label="Source image" @bind-Value="newContainer.DockerImageName" AnchorOrigin="Origin.BottomCenter">
-        @if (MyImages != null)
-        {
-            @foreach (var image in MyImages)
-            {
-                <MudSelectItem T="string" Value="@image.Id">@image.DisplayName  <span style="color: #888; font-style: italic;">[@image.DockerImageName]</span></MudSelectItem>
-            }
-        }
-    </MudSelect>
-</MudItem>
+<EditForm Model="@newContainer" OnValidSubmit="CreateContainer">
+    <DataAnnotationsValidator/>
+    <MudItem style="width: 410px">
+        <MudTextField @bind-Value="@newContainer.Name" For="@(() => newContainer.Name)" Label="Container name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    </MudItem>
+    <MudItem style="width: 410px">
+        <MudTextField @bind-Value="@newContainer.Description" For="@(() => newContainer.Description)" Lines="3" Label="Description" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    </MudItem>
+    @*<MudTabs>
+        <MudTabPanel Text="Podstawowe">*@
+    <MudItem style="width: 410px">
+        <MudSelect Label="Source image" @bind-Value="newContainer.DockerImageName" AnchorOrigin="Origin.BottomCenter">
+            @if (MyImages != null)
+                {
+                @foreach (var image in MyImages)
+                    {
+                    <MudSelectItem T="string" Value="@image.Id">@image.DisplayName  <span style="color: #888; font-style: italic;">[@image.DockerImageName]</span></MudSelectItem>
+                    }
+                }
+        </MudSelect>
+    </MudItem>
 
-<br />
-    <MudText>Add your container's private ports, and we will give you some public (external)</MudText><br/>
+    <br />
+    <MudText>Add your container's private ports, and we will give you some public (external)</MudText><br />
     <MudGrid style="width: 550px">
         @for (var i = 0; i < newContainer.PortBindings.Count; i++)
         {
@@ -39,70 +41,72 @@
             var port = newContainer.PortBindings[i];
 
             @*<MudItem>
-                <MudNumericField @bind-Value="@port.PublicPort" T="ushort" Label="Container port" Variant="Variant.Text" Margin="Margin.Dense" Min="30000" Max="31000"></MudNumericField>
-            </MudItem>*@
+                    <MudNumericField @bind-Value="@port.PublicPort" T="ushort" Label="Container port" Variant="Variant.Text" Margin="Margin.Dense" Min="30000" Max="31000"></MudNumericField>
+                </MudItem>*@
             <MudItem>
-                <MudNumericField @bind-Value="@port.PrivatePort" T="ushort" Label="Target port" Variant="Variant.Text" Margin="Margin.Dense" Min="1" Max="65535"></MudNumericField>
+                <MudNumericField @bind-Value="@port.PrivatePort" For="@(() => port.PrivatePort)" T="ushort" Label="Target port" Variant="Variant.Text" Margin="Margin.Dense" Min="1" Max="65535"></MudNumericField>
             </MudItem>
             <MudItem>
                 <MudFab Icon="@Icons.Filled.Remove" Size="Size.Small" Color="Color.Error" OnClick="() => newContainer.PortBindings.RemoveAt(index)"></MudFab>
             </MudItem>
-            <br/>
+            <br />
         }
     </MudGrid>
 
     <br />
-<MudFab Label="Add ports" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="() => newContainer.PortBindings.Add(new ContainerPortModel(){PrivatePort = 0, PublicPort = 0})"></MudFab>
-<br />
-<br />
-<MudForm>
-    <MudRadioGroup @bind-SelectedOption="@newContainer.IsWindows">
-        <MudRadio Option="true" Color="Color.Primary">Windows</MudRadio>
-        <MudRadio Option="false" Color="Color.Primary">Linux</MudRadio>
-    </MudRadioGroup>
-</MudForm>
-@*</MudTabPanel>
-        <MudTabPanel Text="Zaawansowane">
-            <MudItem style="width: 410px">
-                <MudTextField @bind-Value="Flags" Label="Flagi uruchomienia" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-            </MudItem>
-            <br />
-            <p>Dockerfile</p>
-            <br />
-            <p>Kontekst</p>
-            <br />
+    <MudFab Label="Add ports" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" OnClick="() => newContainer.PortBindings.Add(new ContainerPortModel(){PrivatePort = 1, PublicPort = 0})"></MudFab>
+    <br />
+    <br />
+    <MudForm>
+        <MudRadioGroup @bind-SelectedOption="@newContainer.IsWindows">
+            <MudRadio Option="true" Color="Color.Primary">Windows</MudRadio>
+            <MudRadio Option="false" Color="Color.Primary">Linux</MudRadio>
+        </MudRadioGroup>
+    </MudForm>
+    @*</MudTabPanel>
+            <MudTabPanel Text="Zaawansowane">
+                <MudItem style="width: 410px">
+                    <MudTextField @bind-Value="Flags" Label="Flagi uruchomienia" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+                </MudItem>
+                <br />
+                <p>Dockerfile</p>
+                <br />
+                <p>Kontekst</p>
+                <br />
 
-            <MudGrid>
-                <InputFile id="fileInput" OnChange="UploadFiles" hidden />
+                <MudGrid>
+                    <InputFile id="fileInput" OnChange="UploadFiles" hidden />
 
-                <MudButton HtmlTag="label"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           StartIcon="@Icons.Filled.CloudUpload"
-                           for="fileInput">
-                    Upload Files
-                </MudButton>
+                    <MudButton HtmlTag="label"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Filled.CloudUpload"
+                               for="fileInput">
+                        Upload Files
+                    </MudButton>
 
-                @if (files != null)
-                {
-                    <MudList Style="padding:0px 20px">
-                        @foreach (var file in files)
-                        {
-                            <MudListItem @key="@file" Style="padding:0px 20px">
-                                @file.Name
-                            </MudListItem>
-                        }
-                    </MudList>
-                }
+                    @if (files != null)
+                    {
+                        <MudList Style="padding:0px 20px">
+                            @foreach (var file in files)
+                            {
+                                <MudListItem @key="@file" Style="padding:0px 20px">
+                                    @file.Name
+                                </MudListItem>
+                            }
+                        </MudList>
+                    }
 
-            </MudGrid>
-        </MudTabPanel>
-    </MudTabs>*@
-<br />
+                </MudGrid>
+            </MudTabPanel>
+        </MudTabs>*@
+    <br />
 
-<MudItem>
-    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Create" Class="py-4 px-6 rounded-lg" OnClick="CreateContainer" />
-</MudItem>
+    <MudItem>
+        <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Create" Class="py-4 px-6 rounded-lg" ButtonType="ButtonType.Submit" />
+    </MudItem>
+</EditForm>
+
 
 }
 

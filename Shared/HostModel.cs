@@ -13,6 +13,8 @@ namespace ProITM.Shared
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
 
+        [Required(ErrorMessage ="To pole jest wymagane")]
+        [StringLength(50, ErrorMessage = "Nazwa może mieć od 1 do 50 znaków", MinimumLength = 1)]
         public string DisplayName { get; set; }
 
         public bool IsWindows { get; set; }
@@ -27,6 +29,8 @@ namespace ProITM.Shared
         public int Port { get; set; }
         #endregion
 
+        [Required(ErrorMessage = "To pole jest wymagane")]
+        [Url(ErrorMessage = "Niepoprawny Url")]
         // Only addressing field in actual use
         public string URI { get; set; }
 

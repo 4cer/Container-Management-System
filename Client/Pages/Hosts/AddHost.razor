@@ -7,35 +7,36 @@
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 
 <h2>Add host</h2>
+<EditForm Model="@NewHost" OnValidSubmit="Test">
+    <DataAnnotationsValidator/>
+    <MudItem style="width: 410px">
+        <MudTextField @bind-Value="@NewHost.DisplayName" For="@(() => NewHost.DisplayName)" Label="Host display name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    </MudItem>
 
-<MudItem style="width: 410px">
-    <MudTextField @bind-Value="NewHost.DisplayName" Label="Host display name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-</MudItem>
 
+    <MudForm>
+        <MudRadioGroup @bind-SelectedOption="@NewHost.IsWindows">
+            <MudRadio Option="true" Color="Color.Primary">Windows</MudRadio>
+            <MudRadio Option="false" Color="Color.Primary">Linux</MudRadio>
+        </MudRadioGroup>
+    </MudForm>
 
-<MudForm>
-    <MudRadioGroup @bind-SelectedOption="@NewHost.IsWindows">
-        <MudRadio Option="true" Color="Color.Primary">Windows</MudRadio>
-        <MudRadio Option="false" Color="Color.Primary">Linux</MudRadio>
-    </MudRadioGroup>
-</MudForm>
+    <MudItem style="width: 410px">
+        <MudTextField @bind-Value="@NewHost.URI" For="@(() => NewHost.URI)" Label="Host URI" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    </MudItem>
 
-<MudItem style="width: 410px">
-    <MudTextField @bind-Value="NewHost.URI" Label="Host URI" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
-</MudItem>
+    <br />
 
-<br />
-
-<MudItem>
-    <MudFab Color="conn switch
+    <MudItem>
+        <MudFab Color="conn switch
     {
     -1 => Color.Error,
     0 => Color.Primary,
     _ => Color.Success
-    } " Icon="fas fa-sync-alt" Label="Test connection" Class="py-4 px-6 rounded-lg" OnClick="Test" />
-</MudItem>
-<MudText Color="conn == -1 ? Color.Error : Color.Success" Text="conn == -1 ? 'Connection could not be established!' : 'Connection successful!'"></MudText>
-
+    } " Icon="fas fa-sync-alt" Label="Test connection" Class="py-4 px-6 rounded-lg" ButtonType="ButtonType.Submit" />
+    </MudItem>
+    <MudText Color="conn == -1 ? Color.Error : Color.Success" Text="conn == -1 ? 'Connection could not be established!' : 'Connection successful!'"></MudText>
+</EditForm>
 <br />
 
 <MudItem>
