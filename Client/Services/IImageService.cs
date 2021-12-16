@@ -22,6 +22,7 @@ namespace ProITM.Client.Services
         #region Added later
         public Task<List<ImageHubModel>> SearchImages(string term, bool official, bool automated);
         public Task<HttpResponseMessage> CreateImage(ImageModel model);
+        public Task<HttpResponseMessage> EditImage(ImageModel model);
         #endregion
 
         #region Extracurricular functionality

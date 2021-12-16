@@ -1,6 +1,7 @@
 ﻿@page "/images/add"
 @inject NavigationManager Navigation
 @inject IImageService service
+@inject ISnackbar Snackbar
 
 <h2>Add Image</h2>
 
@@ -36,10 +37,15 @@
     }
 
 
-    private void CreateImage()
+    private async void CreateImage()
     {
-        service.GetImageFromDockerHub(newImage);
+        var ret = await service.GetImageFromDockerHub(newImage);
         Navigation.NavigateTo("/images");
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        if (ret.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Image has been added sucessfully", Severity.Success);
+        }
     }
 
 }

@@ -2,6 +2,7 @@
 @inject NavigationManager Navigation
 @inject IHostService HostSrvc
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
 @attribute [Authorize(Roles = "Admin")]
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
@@ -102,6 +103,8 @@
         {
             //var Id = result.Data.ToString();
             hosts.Remove(host);
+            Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+            Snackbar.Add("Host has been deleted successfully", Severity.Success);
         }
     }
 

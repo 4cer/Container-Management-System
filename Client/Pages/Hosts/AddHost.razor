@@ -2,6 +2,7 @@
 @using System.Net
 @inject NavigationManager Navigation
 @inject IHostService service
+@inject ISnackbar Snackbar
 @attribute [Authorize(Roles = "Admin")]
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
@@ -40,7 +41,7 @@
 <br />
 
 <MudItem>
-    <MudFab Disabled="conn!=1" Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Create" Class="py-4 px-6 rounded-lg" OnClick="CreateHost"/>
+    <MudFab Disabled="conn!=1" Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Create" Class="py-4 px-6 rounded-lg" OnClick="CreateHost" />
 </MudItem>
 
 
@@ -70,8 +71,13 @@
 
     private async void CreateHost()
     {
-        await service.AddHost(NewHost);
+        var ret = await service.AddHost(NewHost);
         Navigation.NavigateTo($"/manage/hosts");
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        if (ret.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Host has been added sucessfully", Severity.Success);
+        }
     }
 
     private async Task Test()

@@ -50,6 +50,9 @@ namespace ProITM.Shared
         [NotMapped]
         public string OwnerName { get; set; }
 
+        [NotMapped]
+        public Dictionary<ushort, string> PortBindUris { get; set; }
+
         public override bool Equals(object obj)
         {
             if (obj.GetType() != typeof(ContainerModel))

@@ -2,6 +2,7 @@
 @inject NavigationManager Navigation
 @inject IImageService ImgSrvc
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
 <h2>List of images</h2>
 <MudButton Style="margin: 10px 0;" StartIcon="@Icons.Filled.Add" Color="Color.Primary" Variant="Variant.Filled" OnClick="CreateImage">Add</MudButton>
@@ -88,7 +89,14 @@
         if (!result.Cancelled)
         {
             //var Id = result.Data.ToString();
-            images.Remove(image);
+            var response = await ImgSrvc.DeleteImage(image.Id);
+            if (response.IsSuccessStatusCode)
+            {
+                images.Remove(image);
+                Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+                Snackbar.Add("Image has been deleted successfully", Severity.Success);
+            }
+            Console.WriteLine(response);
         }
     }
 

@@ -49,6 +49,10 @@ namespace ProITM.Client.Services
         {
             return await _httpClient.PostAsJsonAsync<ImageModel>("Image/create", model);
         }
+        public async Task<HttpResponseMessage> EditImage(ImageModel model)
+        {
+            return await _httpClient.PutAsJsonAsync<ImageModel>("Image/edit", model);
+        }
         #endregion
 
         #region Extra-curricular functionality

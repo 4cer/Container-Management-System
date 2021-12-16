@@ -1,8 +1,9 @@
 ﻿@page "/containers"
 @inject NavigationManager Navigation
 @inject IContainerService ContSrvc
-@inject IDialogService DialogService 
+@inject IDialogService DialogService
 @inject AuthenticationStateProvider provider
+@inject ISnackbar Snackbar
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 
@@ -25,17 +26,17 @@
             <MudTd>@context.DockerImageName</MudTd>
             <MudTd>@context.Description</MudTd>
             @if (context.IsWindows)
-                        {
-                            <MudTd>
-                                <MudIcon Icon="@Icons.Custom.Brands.MicrosoftWindows" />
-                            </MudTd>
-                        }
-                        else
-                        {
-                            <MudTd>
-                                <MudIcon Icon="fab fa-linux" />
-                            </MudTd>
-                        }
+            {
+                <MudTd>
+                    <MudIcon Icon="@Icons.Custom.Brands.MicrosoftWindows" />
+                </MudTd>
+            }
+            else
+            {
+                <MudTd>
+                    <MudIcon Icon="fab fa-linux" />
+                </MudTd>
+            }
             <MudTd>@context.State</MudTd>
             @*<MudTd>@context.Machine.DisplayName</MudTd>*@
             @if (context.IsRunning)
@@ -44,36 +45,36 @@
             }
             else
             {
-                <MudTd><MudIcon Icon="@Icons.Filled.Circle" Color="Color.Error"></MudIcon></MudTd>            
+                <MudTd><MudIcon Icon="@Icons.Filled.Circle" Color="Color.Error"></MudIcon></MudTd>
             }
-        <MudTd Class="actions-cell">
-            @if (loadingContainers != null && loadingContainers.Contains(context))
-            {
-                <MudProgressCircular Indeterminate="true" Size="Size.Small"></MudProgressCircular>
-            }
-            else
-            {
-                @if (context.IsRunning)
+            <MudTd Class="actions-cell">
+                @if (loadingContainers != null && loadingContainers.Contains(context))
                 {
-
-                    <MudIconButton Icon="@Icons.Filled.StopCircle" Color="Color.Primary" OnClick="e => StopContainer(context)" />
+                    <MudProgressCircular Indeterminate="true" Size="Size.Small"></MudProgressCircular>
                 }
                 else
                 {
-                    <MudIconButton Icon="@Icons.Filled.PlayCircle" Color="Color.Primary" OnClick="e => StartContainer(context)" />
+                    @if (context.IsRunning)
+                    {
+
+                        <MudIconButton Icon="@Icons.Filled.StopCircle" Color="Color.Primary" OnClick="e => StopContainer(context)" />
+                    }
+                    else
+                    {
+                        <MudIconButton Icon="@Icons.Filled.PlayCircle" Color="Color.Primary" OnClick="e => StartContainer(context)" />
+                    }
                 }
-            }
                 <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewContainer(context)" />
-                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteContainer(context)" />
+                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteContainer(context)" Disabled="loadingContainers.Contains(context)" />
             </MudTd>
         </RowTemplate>
     </MudTable>
-    <br/><br/>
-    
+    <br /><br />
+
     <MudItem>
         <MudFab Color="Color.Primary" Icon="fas fa-sync-alt" Label="Refresh" Class="py-4 px-6 rounded-lg" OnClick="refresh" />
     </MudItem>
-    
+
     @if (containers == null)
     {
         <p><em>Loading...</em></p>
@@ -82,16 +83,11 @@
 
 @code {
     List<ContainerModel> containers;
-    List<ContainerModel> loadingContainers = new ();
+    List<ContainerModel> loadingContainers = new();
+    List<ContainerModel> removingContainers = new();
     private int selectedRowNumber = -1;
     private MudTable<ContainerModel> mudTable;
 
-    protected override async Task OnInitializedAsync()
-    {
-        containers = await ContSrvc.ListContainers(100);
-        
-
-    }
 
     public async void refresh()
     {
@@ -103,7 +99,14 @@
         StateHasChanged();
         Console.WriteLine("Refreshed");
     }
-    
+
+    protected override async Task OnInitializedAsync()
+    {
+        containers = await ContSrvc.ListContainers(100);
+        StateHasChanged();
+        refresh();
+    }
+
     public void SelectionChangedEvent(object row)
     {
         //Navigation.NavigateTo($"/images/details?id=" + (row as ImageModel).Id);
@@ -135,7 +138,7 @@
         Navigation.NavigateTo($"/containers/details/" + container.Id);
     }
 
-    async Task DeleteContainer(ContainerModel container)
+    private async Task DeleteContainer(ContainerModel container)
     {
         var parameters = new DialogParameters { ["container"] = container };
 
@@ -144,14 +147,20 @@
 
         if (!result.Cancelled)
         {
-            //In a real world scenario we would reload the data from the source here since we "removed" it in the dialog already.
+            loadingContainers.Add(container);
+            StateHasChanged();
             var deletedServer = result.Data.ToString();
             var response = await ContSrvc.DeleteContainer(container.Id);
             if (response.IsSuccessStatusCode)
             {
                 containers.RemoveAll(item => item.Id.Equals(deletedServer));
                 StateHasChanged();
+                Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+                Snackbar.Add("Container has been deleted successfully", Severity.Success);
             }
+            loadingContainers.Remove(container);
+            StateHasChanged();
+
         }
     }
 
@@ -185,6 +194,10 @@
             StateHasChanged();
         }
     }
-    
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+    }
 
 }

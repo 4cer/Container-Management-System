@@ -105,6 +105,17 @@ namespace ProITM.Server.Controllers
 
             var state = await dockerClient.Containers.InspectContainerAsync(containerId, default);
 
+            if(container.PortBindings.Any())
+            {
+                container.PortBindUris = new();
+                var parts = container.Machine.URI.Split("://");
+                foreach (var bind in container.PortBindings)
+                {
+                    container.PortBindUris.Add(bind.PrivatePort, $"{parts[0]}://con{bind.PublicPort}.{parts[1]}");
+                }
+            }
+            
+
             if (state != null)
             {
                 container.IsRunning = state.State.Running;
@@ -354,8 +365,26 @@ namespace ProITM.Server.Controllers
             var exposedPorts = new Dictionary<string, EmptyStruct>();
             var portBindings = new Dictionary<string, IList<PortBinding>>();
 
+            // 277 Populate public ports for bindings
+            // Get a list of taken ports
+            var takenPorts = await dbContext.ContainerPorts
+                .AsNoTracking()
+                .Include(p => p.Host)
+                .Where(p => p.Host.Id == host.Id)
+                .Select(p => p.PublicPort)
+                .ToListAsync();
+            // Make a list of free ports
+            var freePorts = Enumerable.Range(30000, 1001).Select(p => (ushort)p).Where(fp => !takenPorts.Contains(fp)).ToList();
+
+            var rng = new Random((int)DateTime.Now.Ticks);
+
             foreach (var portBind in model.PortBindings)
             {
+                int fpc = freePorts.Count();
+                int sel = rng.Next(0, fpc);
+                portBind.PublicPort = (ushort)freePorts.ElementAt(sel);
+                freePorts.RemoveAt(sel);
+
                 portBind.Host = host;
                 exposedPorts.Add(portBind.PublicPort.ToString() + "/tcp", default(EmptyStruct));
                 // TODO 275 Test private port/public port order
@@ -529,6 +558,7 @@ namespace ProITM.Server.Controllers
                         if (container == null)
                         {
                             dbc.State = "Unknown (No reply from Docker API)";
+                            continue;
                             //return NotFound();
                         }
                         dbc.IsRunning = (container.State.Equals("running")) ? true : false;
