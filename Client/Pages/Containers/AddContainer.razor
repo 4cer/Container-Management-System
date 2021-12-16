@@ -48,7 +48,7 @@ else
                             <MudNumericField @bind-Value="@port.PublicPort" T="ushort" Label="Container port" Variant="Variant.Text" Margin="Margin.Dense" Min="30000" Max="31000"></MudNumericField>
                         </MudItem>*@
                     <MudItem>
-                        <MudNumericField @bind-Value="@port.PrivatePort" For="@(() => port.PrivatePort)" T="ushort" Label="Target port" Variant="Variant.Text" Margin="Margin.Dense" Min="1" Max="65535" ></MudNumericField>
+                        <MudNumericField @bind-Value="@port.PrivatePort" For="@(() => port.PrivatePort)" T="ushort" Label="Target port" Variant="Variant.Text" Margin="Margin.Dense" Min="1" Max="65535"></MudNumericField>
                     </MudItem>
                     <MudItem>
                         <MudFab Icon="@Icons.Filled.Remove" Size="Size.Small" Color="Color.Error" OnClick="() => newContainer.PortBindings.RemoveAt(index)"></MudFab>
@@ -107,7 +107,7 @@ else
         <br />
 
         <MudItem>
-            <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Create" Class="py-4 px-6 rounded-lg" ButtonType="ButtonType.Submit"/>
+            <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Create" Class="py-4 px-6 rounded-lg" ButtonType="ButtonType.Submit" />
         </MudItem>
     </EditForm>
 
@@ -159,7 +159,7 @@ else
         var ret = await service.CreateContainer(newContainer);
         IsLoading = false;
         Navigation.NavigateTo("/containers");
-        if(ret.Count == 0)
+        if (ret.Count == 0)
         {
             Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
             Snackbar.Add("Container has been created sucessfully", Severity.Success);
