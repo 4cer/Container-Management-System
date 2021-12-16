@@ -32,9 +32,9 @@
                 <MudTd DataLabel="Ports">
                     <div>
                         @foreach (var p in context.PortBindings)
-                                            {
-                                                <span>@p.PublicPort : @p.PrivatePort</span>
-                                            }
+                        {
+                            <span>@p.PublicPort : @p.PrivatePort</span>
+                        }
                     </div>
                 </MudTd>
             </RowTemplate>
