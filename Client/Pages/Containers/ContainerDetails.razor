@@ -31,9 +31,9 @@
                 <MudTd DataLabel="Running"><MudIcon Icon="@Icons.Filled.Circle" Color="@(context.IsRunning ? Color.Success : Color.Error)"></MudIcon></MudTd>
                 <MudTd DataLabel="Ports">
                     <div>
-                        @foreach (var p in context.PortBindings)
+                        @foreach (var p in context.PortBindUris)
                         {
-                            <span>@p.PublicPort : @p.PrivatePort</span>
+                            <span>port @p.Key: <a href="@p.Value">@p.Value</a> </span><br/>
                         }
                     </div>
                 </MudTd>
