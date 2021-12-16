@@ -15,6 +15,14 @@
     else { <p><b>OS:</b> Linux</p> }
     <p><b>State:</b> @container.State</p>
     <p><b>Image name:</b> @container.DockerImageName</p>
+    <p>Port binds:</p>
+    <ul>
+        @foreach (var uri in container.PortBindUris)
+        {
+            <li>@uri.Key <a class="ml-2" href="@uri.Value">@uri.Value</a></li>
+        }
+    </ul>
+    
 }
  else
 {

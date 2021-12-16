@@ -104,6 +104,17 @@ namespace ProITM.Server.Controllers
 
             var state = await dockerClient.Containers.InspectContainerAsync(containerId, default);
 
+            if(container.PortBindings.Any())
+            {
+                container.PortBindUris = new();
+                var parts = container.Machine.URI.Split("://");
+                foreach (var bind in container.PortBindings)
+                {
+                    container.PortBindUris.Add(bind.PrivatePort, $"{parts[0]}://con{bind.PublicPort}.{parts[1]}");
+                }
+            }
+            
+
             if (state != null)
             {
                 container.IsRunning = state.State.Running;
