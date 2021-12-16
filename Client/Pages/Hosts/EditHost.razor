@@ -10,9 +10,10 @@
 
 @if (Host != null)
 {
-
+<EditForm Model="@Host" OnValidSubmit="Test">
+    <DataAnnotationsValidator />
     <MudItem style="width: 410px">
-        <MudTextField @bind-Value="Host.DisplayName" Label="Host display name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+        <MudTextField @bind-Value="@Host.DisplayName" Label="Host display name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
     </MudItem>
 
 
@@ -24,7 +25,7 @@
     </MudForm>
 
     <MudItem style="width: 410px">
-        <MudTextField @bind-Value="Host.URI" Label="Host URI" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+        <MudTextField @bind-Value="@Host.URI" Label="Host URI" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
     </MudItem>
 
     <br />
@@ -38,6 +39,8 @@
     <MudItem>
         <MudFab Disabled="conn!=1" Color="Color.Primary" Icon="@Icons.Filled.Save" Label="Save" Class="py-4 px-6 rounded-lg" OnClick="SaveChanges" />
     </MudItem>
+
+</EditForm>
 }
 
 

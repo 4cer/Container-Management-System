@@ -19,5 +19,11 @@ namespace ProITM.Shared
         public ushort PublicPort { get; set; }
 
         public HostModel Host { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            ContainerPortModel model = (ContainerPortModel)obj;
+            return model.PrivatePort == this.PrivatePort && model.PublicPort == this.PublicPort;
+        }
     }
 }
