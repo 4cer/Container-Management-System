@@ -6,10 +6,10 @@
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 
-<MudText Typo="Typo.h2">Add host</MudText>
+<h2>Add host</h2>
 
 <MudItem style="width: 410px">
-    <MudTextField @bind-Value="NewHost.DisplayName" Label="Name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    <MudTextField @bind-Value="NewHost.DisplayName" Label="Host display name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
 </MudItem>
 
 
@@ -39,7 +39,7 @@
 <br />
 
 <MudItem>
-    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Utwórz" Class="py-4 px-6 rounded-lg" OnClick="CreateHost"/>
+    <MudFab Disabled="conn!=1" Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Create" Class="py-4 px-6 rounded-lg" OnClick="CreateHost"/>
 </MudItem>
 
 

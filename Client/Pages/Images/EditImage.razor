@@ -5,7 +5,7 @@
 @if (Image != null)
 {
 
-    <MudText Typo="Typo.h2">Edit image</MudText>
+    <h2>Edit Image</h2>
 
     <MudItem style="width: 410px">
         <MudTextField @bind-Value="Image.DisplayName" Label="Image name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
@@ -13,6 +13,10 @@
 
     <MudItem style="width: 410px">
         <MudTextField @bind-Value="Image.DisplayName" Label="Dockerhub Image ID" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    </MudItem>
+
+    <MudItem style="width: 410px">
+        <MudTextField @bind-Value="Image.Description" Label="Image description" Variant="Variant.Text" Margin="Margin.Dense" Lines="3"></MudTextField>
     </MudItem>
 
     <br />
