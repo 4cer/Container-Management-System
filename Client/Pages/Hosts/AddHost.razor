@@ -36,7 +36,15 @@
     _ => Color.Success
     } " Icon="fas fa-sync-alt" Label="Test connection" Class="py-4 px-6 rounded-lg" ButtonType="ButtonType.Submit" />
     </MudItem>
-    <MudText Color="conn == -1 ? Color.Error : Color.Success" Text="conn == -1 ? 'Connection could not be established!' : 'Connection successful!'"></MudText>
+    
+        @if (conn == -1)
+        {
+            <MudText Color="Color.Error">Connection could not be established!</MudText>
+        }
+        else if(conn == 1)
+        {
+            <MudText Color="Color.Success">Connection successful!</MudText>
+        }
 </EditForm>
 <br />
 

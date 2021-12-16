@@ -32,8 +32,22 @@
     <br />
 
     <MudItem>
-        <MudFab Color="Color.Primary" Icon="fas fa-sync-alt" Label="Test connection" Class="py-4 px-6 rounded-lg" />
-    </MudItem>
+        <MudFab Color="conn switch
+                    {
+                    -1 => Color.Error,
+                    0 => Color.Primary,
+                    _ => Color.Success
+                    } " Icon="fas fa-sync-alt" Label="Test connection" Class="py-4 px-6 rounded-lg" ButtonType="ButtonType.Submit" />
+                    </MudItem>
+                    
+                        @if (conn == -1)
+                        {
+                            <MudText Color="Color.Error">Connection could not be established!</MudText>
+                        }
+                        else if(conn == 1)
+                        {
+                            <MudText Color="Color.Success">Connection successful!</MudText>
+                        }
 
     <br />
 
