@@ -83,7 +83,8 @@ namespace ProITM.Server.Controllers
         public async Task<IActionResult> DeleteImage(string imageId)
         {
             var image = await dbContext.Images
-                .AsNoTracking()
+                // Must track
+                //.AsNoTracking()
                 .FirstOrDefaultAsync(i => i.Id == imageId);
 
             if (image == null) return NotFound();
@@ -110,7 +111,8 @@ namespace ProITM.Server.Controllers
                     });
             }
 
-            dbContext.SaveChanges();
+            dbContext.Images.Remove(image);
+            await dbContext.SaveChangesAsync();
             return Ok();
         }
 

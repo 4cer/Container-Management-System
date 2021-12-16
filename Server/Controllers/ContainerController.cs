@@ -546,6 +546,7 @@ namespace ProITM.Server.Controllers
                         if (container == null)
                         {
                             dbc.State = "Unknown (No reply from Docker API)";
+                            continue;
                             //return NotFound();
                         }
                         dbc.IsRunning = (container.State.Equals("running")) ? true : false;
