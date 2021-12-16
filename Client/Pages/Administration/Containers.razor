@@ -47,10 +47,26 @@
                 <MudTd><MudIcon Icon="@Icons.Filled.Circle" Color="Color.Error"></MudIcon></MudTd>            
             }
 
-            <MudTd Class="actions-cell">
-                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewContainer(context)" />
-                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteContainer(context)" />
-            </MudTd>
+        <MudTd Class="actions-cell">
+            @if (loadingContainers != null && loadingContainers.Contains(context))
+            {
+                <MudProgressCircular Indeterminate="true" Size="Size.Small"></MudProgressCircular>
+            }
+            else
+            {
+                @if (context.IsRunning)
+                {
+
+                    <MudIconButton Icon="@Icons.Filled.StopCircle" Color="Color.Primary" OnClick="e => StopContainer(context)" />
+                }
+                else
+                {
+                    <MudIconButton Icon="@Icons.Filled.PlayCircle" Color="Color.Primary" OnClick="e => StartContainer(context)" />
+                }
+            }
+            <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewContainer(context)" />
+            <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteContainer(context)" />
+        </MudTd>
         </RowTemplate>
     </MudTable>
     @if (containers == null)
@@ -61,6 +77,7 @@
 
 @code {
     List<ContainerModel> containers;
+    List<ContainerModel> loadingContainers = new();
     private int selectedRowNumber = -1;
     private MudTable<ContainerModel> mudTable;
     private string FilterUser = String.Empty;
@@ -131,5 +148,31 @@
         if (string.IsNullOrWhiteSpace(searchString))
             return true;
         return container.OwnerName == searchString;
+    }
+
+    private async Task StopContainer(ContainerModel container)
+    {
+        loadingContainers.Add(container);
+        await ContSrvc.StopUsersContainer(container.Id);
+        bool refr = await ContSrvc.RefreshUserContainers();
+        if (refr)
+        {
+            containers = await ContSrvc.GetContainers(100);
+            loadingContainers.Remove(container);
+            StateHasChanged();
+        }
+    }
+
+    private async Task StartContainer(ContainerModel container)
+    {
+        loadingContainers.Add(container);
+        await ContSrvc.StartUsersContainer(container.Id);
+        bool refr = await ContSrvc.RefreshUserContainers();
+        if (refr)
+        {
+            containers = await ContSrvc.GetContainers(100);
+            loadingContainers.Remove(container);
+            StateHasChanged();
+        }
     }
 }
