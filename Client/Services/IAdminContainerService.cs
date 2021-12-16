@@ -11,6 +11,7 @@ namespace ProITM.Client.Services
     {
         public Task<List<ContainerModel>> GetUserContainers(string userid, int limit);
         public Task<List<ContainerModel>> GetContainers(int limit);
+        public Task<bool> RefreshAllContainers();
         public Task<ContainerModel> ContainerDetails(string containerId);
         // TODO may be better to implement as just Task
         public Task<HttpResponseMessage> StartUsersContainer(string containerid);
