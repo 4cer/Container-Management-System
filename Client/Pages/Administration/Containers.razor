@@ -65,7 +65,7 @@
                 }
             }
             <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewContainer(context)" />
-            <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteContainer(context)" />
+            <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteContainer(context)" Disabled="loadingContainers.Contains(context)" />
         </MudTd>
         </RowTemplate>
     </MudTable>
