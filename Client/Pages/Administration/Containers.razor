@@ -157,7 +157,7 @@
     {
         loadingContainers.Add(container);
         await ContSrvc.StopUsersContainer(container.Id);
-        bool refr = await ContSrvc.RefreshUserContainers();
+        bool refr = await ContSrvc.RefreshAllContainers();
         if (refr)
         {
             containers = await ContSrvc.GetContainers(100);
@@ -170,7 +170,7 @@
     {
         loadingContainers.Add(container);
         await ContSrvc.StartUsersContainer(container.Id);
-        bool refr = await ContSrvc.RefreshUserContainers();
+        bool refr = await ContSrvc.RefreshAllContainers();
         if (refr)
         {
             containers = await ContSrvc.GetContainers(100);
