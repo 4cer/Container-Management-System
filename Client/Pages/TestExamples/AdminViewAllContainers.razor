@@ -12,42 +12,20 @@
     <table class="table">
         <thead>
             <tr>
-                <th>
-                    Name
-                </th>
-                <th>
-                    Description
-                </th>
-                <th>
-                    Owner
-                </th>
-                <th>
-                    Runs?
-                </th>
-                <th>
-                    Delet?
-                </th>
-                <th>
-                    Port
-                </th>
-                <th>
-                    Id
-                </th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Owner</th>
+                <th>Actions</th>
+                <th>Id</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var con in containers)
             {
                 <tr>
-                    <td>
-                        @con.Name
-                    </td>
-                    <td>
-                        @con.Description
-                    </td>
-                    <td>
-                        @con.OwnerName
-                    </td>
+                    <td>@con.Name</td>
+                    <td>@con.Description</td>
+                    <td>@con.OwnerName</td>
                     <td>
                         @if (con.IsRunning)
                         {
@@ -57,31 +35,21 @@
                         {
                             <input class="btn btn-success" type="button" @onclick="(() => Start(con.Id))" value="Start" />
                         }
-                    </td>
-                    <td>
                         <input class="btn btn-danger" type="button" @onclick="(() => Delet(con.Id))" value="Delet" />
+                        <input class="btn btn-secondary ml-1" type="button" @onclick="(() => Detes(con.Id))" value="Detes" />
                     </td>
-                    <td>
-                        @foreach (var portBind in con.PortBindings)
-                        {
-                            <p>@portBind.PrivatePort @portBind.PublicPort</p>
-                        }
-                    </td>
-                    <td>
-                        @con.Id
-                    </td>
+                    <td>@con.Id</td>
                 </tr>
             }
             @if (!containers.Any())
             {
-                <tr><th colspan="6">There are no containers owned by this user...</th></tr>
+                <tr><th colspan="5">There are no containers owned by this user...</th></tr>
             }
         </tbody>
     </table>
 
     <input type="button" class="btn btn-danger" value="Refresh my containers" @onclick="(() => Refresh())" />
     <p>@refreshStat</p>
-
 }
 
 @code {
@@ -122,4 +90,11 @@
         containers = await acs.GetContainers(50);
         refreshStat = $"Refreshed {DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.f")}";
     }
+
+    protected async Task Detes(string id)
+    {
+        navMgr.NavigateTo($"/testing/cont/userViewDetes/{id}");
+        containers = await acs.GetContainers(50);
+    }
+
 }

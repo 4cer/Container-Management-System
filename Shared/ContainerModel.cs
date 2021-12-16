@@ -50,7 +50,10 @@ namespace ProITM.Shared
         public string OwnerName { get; set; }
 
         [NotMapped]
-        public Dictionary<ushort, string> PortBindUris { get; set; }
+        public Dictionary<ushort, string> PortBindUris { get; set; } = new();
+
+        [NotMapped]
+        public List<string> Commands { get; set; } = new();
 
         public override bool Equals(object obj)
         {

@@ -69,10 +69,7 @@
                     Runs?
                 </th>
                 <th>
-                    Delet?
-                </th>
-                <th>
-                    Port
+                    Actions
                 </th>
                 <th>
                     Id
@@ -101,12 +98,7 @@
                     </td>
                     <td>
                         <input class="btn btn-danger" type="button" @onclick="(() => Delet(con.Id))" value="Delet" />
-                    </td>
-                    <td>
-                        @foreach (var portBind in con.PortBindings)
-                        {
-                            <p>@portBind.PrivatePort @portBind.PublicPort</p>
-                        }
+                        <input class="btn btn-danger ml-1" type="button" @onclick="(() => Detes(con.Id))" value="Detes" />
                     </td>
                     <td>
                         @con.Id
@@ -152,6 +144,12 @@
     protected async Task Stop(string id)
     {
         _ = await acs.StopUsersContainer(id);
+        containers = await acs.GetContainers(50);
+    }
+
+    protected async Task Detes(string id)
+    {
+        navMgr.NavigateTo($"/testing/cont/userViewDetes/{id}");
         containers = await acs.GetContainers(50);
     }
 }
