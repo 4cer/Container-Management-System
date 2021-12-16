@@ -1,13 +1,15 @@
 ﻿@page "/manage/hosts/edit/{HostId}"
+@using System.Net
 @inject NavigationManager Navigation
 @inject IHostService HostSrvc
 @attribute [Authorize(Roles = "Admin")]
 
 <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 
-<MudText Typo="Typo.h2">Edit host</MudText>
+<h2>Edit host</h2>
 
-@if(Host != null){
+@if (Host != null)
+{
 
     <MudItem style="width: 410px">
         <MudTextField @bind-Value="Host.DisplayName" Label="Host display name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
@@ -34,18 +36,19 @@
     <br />
 
     <MudItem>
-        <MudFab Color="Color.Primary" Icon="@Icons.Filled.Save" Label="Save" Class="py-4 px-6 rounded-lg" OnClick="SaveChanges"/>
+        <MudFab Disabled="conn!=1" Color="Color.Primary" Icon="@Icons.Filled.Save" Label="Save" Class="py-4 px-6 rounded-lg" OnClick="SaveChanges" />
     </MudItem>
 }
 
 
 
 @code {
-    
-    
+
+
     [Parameter]
     public string HostId { get; set; }
     public HostModel Host { get; set; }
+    private int conn = 0;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -57,6 +60,11 @@
     {
         await HostSrvc.EditHost(Host);
         Navigation.NavigateTo("/manage/hosts");
+    }
+
+    private async Task Test()
+    {
+        conn = await HostSrvc.TestConnection(WebUtility.UrlEncode(Host.URI)) ? 1 : -1;
     }
 
 }

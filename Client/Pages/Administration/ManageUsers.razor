@@ -2,6 +2,7 @@
 @*attribute [Authorize(Roles = "Admin")]
 *@
 @inject IAdministrationService administrationService
+@inject IDialogService DialogService
 @inject NavigationManager navigationManager
 
 
@@ -74,9 +75,9 @@ else
                         <MudIconButton Icon="fas fa-angle-double-up" Color="Color.Success" @onclick="(() => ClickPromoteUser(context.Id))"></MudIconButton>
                     </MudTooltip>
                 }
-            <MudTooltip Text="Delete profile">
-                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" @onclick="(() => ClickDeleteUser(context.Id))"></MudIconButton>
-            </MudTooltip>
+                <MudTooltip Text="Delete profile">
+                    <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => ClickDeleteUser(context)"></MudIconButton>
+                </MudTooltip>
             </MudTd>
 
 
@@ -100,14 +101,23 @@ else
         users = await administrationService.GetUsers();
     }
 
-    protected async void ClickDeleteUser(string id)
+    async Task ClickDeleteUser(UserModel user)
     {
-        var result = await administrationService.DeleteUser(id);
-        if (result.IsSuccessStatusCode)
+        var parameters = new DialogParameters { ["user"] = user };
+
+        var dialog = DialogService.Show<DeleteUserDialog>("Delete User", parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
         {
-            navigationManager.NavigateTo($"manage/users");
+            //In a real world scenario we would reload the data from the source here since we "removed" it in the dialog already.
+            var deletedServer = result.Data.ToString();
+            var response = await administrationService.DeleteUser(user.Id);
+            if (response.IsSuccessStatusCode)
+            {
+                users.RemoveAll(item => item.Id.Equals(deletedServer));
+            }
         }
-        message = result;
     }
 
     protected async void ClickPromoteUser(string id)

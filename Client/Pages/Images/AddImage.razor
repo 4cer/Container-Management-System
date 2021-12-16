@@ -2,24 +2,24 @@
 @inject NavigationManager Navigation
 @inject IImageService service
 
-<MudText Typo="Typo.h2">Dodaj obraz</MudText>
+<h2>Add Image</h2>
 
 <MudItem style="width: 410px">
-    <MudTextField @bind-Value="newImage.DisplayName" Label="Nazwa obrazu" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    <MudTextField @bind-Value="newImage.DisplayName" Label="Image name" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
 </MudItem>
 
 <MudItem style="width: 410px">
-    <MudTextField @bind-Value="newImage.DockerImageName" Label="ID w DockerHub" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+    <MudTextField @bind-Value="newImage.DockerImageName" Label="Dockerhub Image ID" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
 </MudItem>
 
 <MudItem style="width: 410px">
-    <MudTextField @bind-Value="newImage.Description" Label="Opis obrazu" Variant="Variant.Text" Margin="Margin.Dense" Lines="3"></MudTextField>
+    <MudTextField @bind-Value="newImage.Description" Label="Image description" Variant="Variant.Text" Margin="Margin.Dense" Lines="3"></MudTextField>
 </MudItem>
 
 <br />
 
 <MudItem>
-    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Utwórz" Class="py-4 px-6 rounded-lg" OnClick="CreateImage" />
+    <MudFab Color="Color.Primary" Icon="@Icons.Material.Filled.Add" Label="Create" Class="py-4 px-6 rounded-lg" OnClick="CreateImage" />
 </MudItem>
 
 @code {
