@@ -9,7 +9,7 @@
 
 <div>
     @if (Container != null)
-    { 
+    {
         <MudTable Items="new List<ContainerModel>(){Container}" T="ContainerModel" Breakpoint="Breakpoint.Xl" style="width: 50%;" Bordered="true">
             <HeaderContent>
                 <MudTh>ID</MudTh>
@@ -33,7 +33,7 @@
                     <div>
                         @foreach (var p in context.PortBindUris)
                         {
-                            <span>port @p.Key: <a href="@p.Value">@p.Value</a> </span><br/>
+                            <span>port @p.Key: <a href="@p.Value">@p.Value</a> </span><br />
                         }
                     </div>
                 </MudTd>
@@ -42,18 +42,56 @@
     }
 </div>
 
+@if (logs != null)
+{
+    <br />
+    <h3>Container logs:</h3>
+    <div style="background-color:#000000; font-family:Consolas; color:#ffffff; padding:10px;">
+        @if (!IsStderr)
+        {
+            @((MarkupString)logs.Item1)
+        }
+        else
+        {
+            @((MarkupString)logs.Item2)
+        }
+    </div>
+
+    <hr />
+}
+else
+{
+    <p>Loading...</p>
+}
+
 @code {
     public ContainerModel Container { get; set; }
     [Parameter]
     public string ContainerId { get; set; }
+    Tuple<string, string> logs;
+    bool IsStderr = false;
 
     protected override async Task OnParametersSetAsync()
     {
-        Container = await Srvc.ContainerDetails(ContainerId);
+        try
+        {
+            logs = await Srvc.GetContainerLogs(ContainerId, "0", "0");
+            StateHasChanged();
+            Container = await Srvc.ContainerDetails(ContainerId);
+        }
+        catch (Exception)
+        {
+            logs = new Tuple<string, string>("CONTAINER NOT FOUND", "CONTAINER NOT FOUND");
+        }
     }
 
     protected override async void OnInitialized()
     {
-        
+
+    }
+
+    protected async Task ToggleStream()
+    {
+        IsStderr = !IsStderr;
     }
 }
