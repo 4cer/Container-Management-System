@@ -5,36 +5,38 @@
 @inject NavigationManager Navigation
 @inject IContainerService Srvc
 
-<style>
-    .container-details-table{
-        font-size: 16pt;
-    }
-    .container-details-table td:first-child{
-        font-weight: bold;
-    }
-</style>
-
-<h3>Szczegóły kontenera</h3>
+<h3>Container details</h3>
 
 <div>
     @if (Container != null)
     { 
-        <MudTable Items="new List<ContainerModel>(){Container}" T="ContainerModel" Breakpoint="Breakpoint.Xl" style="width: 30%;" Bordered="true">
+        <MudTable Items="new List<ContainerModel>(){Container}" T="ContainerModel" Breakpoint="Breakpoint.Xl" style="width: 50%;" Bordered="true">
             <HeaderContent>
-                <MudTh><b>ID</b></MudTh>
-                <MudTh><b>Name</b></MudTh>
-                <MudTh><b>Description</b></MudTh>
-                <MudTh><b>Port</b></MudTh>
-                <MudTh><b>Status</b></MudTh>
-                <MudTh><b>Original Image</b></MudTh>
+                <MudTh>ID</MudTh>
+                <MudTh>Name</MudTh>
+                <MudTh>Source image</MudTh>
+                <MudTh>Description</MudTh>
+                <MudTh>OS</MudTh>
+                <MudTh>State</MudTh>
+                <MudTh>Running</MudTh>
+                <MudTh>Ports</MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="ID">@context.Id</MudTd>
                 <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Source image">@context.DockerImageName</MudTd>
                 <MudTd DataLabel="Description">@context.Description</MudTd>
-                <MudTd DataLabel="Port">@context.PortNo</MudTd>
+                <MudTd DataLabel="OS"> <div><MudIcon Icon="@(context.IsWindows ? Icons.Custom.Brands.MicrosoftWindows : "fab fa-linux")" /> @(context.IsWindows ? "Windows" : "Linux")</div></MudTd>
                 <MudTd DataLabel="Status">@context.State</MudTd>
-                <MudTd DataLabel="Original Image">@context.Image</MudTd>
+                <MudTd DataLabel="Running"><MudIcon Icon="@Icons.Filled.Circle" Color="@(context.IsRunning ? Color.Success : Color.Error)"></MudIcon></MudTd>
+                <MudTd DataLabel="Ports">
+                    <div>
+                        @foreach (var p in context.PortBindings)
+                                            {
+                                                <span>@p.PublicPort : @p.PrivatePort</span>
+                                            }
+                    </div>
+                </MudTd>
             </RowTemplate>
         </MudTable>
     }
@@ -45,9 +47,13 @@
     [Parameter]
     public string ContainerId { get; set; }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        Container = await Srvc.ContainerDetails(ContainerId);
+    }
+
     protected override async void OnInitialized()
     {
-        var list = await Srvc.ListContainers(100);
-        Container = list.Find(c => c.Id == ContainerId);
+        
     }
 }

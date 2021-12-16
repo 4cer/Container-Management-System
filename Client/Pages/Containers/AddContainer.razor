@@ -39,10 +39,10 @@
         var port = newContainer.PortBindings[i];
 
         <MudItem>
-            <MudTextField @bind-Value="@port.PrivatePort" Label="Container port" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+            <MudTextField @bind-Value="@port.PublicPort" Label="Container port" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
         </MudItem>
         <MudItem>
-            <MudTextField @bind-Value="@port.PublicPort" Label="Target port" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
+            <MudTextField @bind-Value="@port.PrivatePort" Label="Target port" Variant="Variant.Text" Margin="Margin.Dense"></MudTextField>
         </MudItem>
         <MudItem>
             <MudFab Icon="@Icons.Filled.Remove" Size="Size.Small" Color="Color.Error" OnClick="() => newContainer.PortBindings.RemoveAt(index)"></MudFab>
