@@ -403,7 +403,7 @@ namespace ProITM.Server.Controllers
                     DNS = new[] { "8.8.8.8", "8.8.4.4" },
                     PortBindings = portBindings
                 },
-                Cmd = new List<string> { "nginx", "nginx-debug", "-g", "daemon off;" }
+                Cmd = model.Commands
             });
 
             model.Id = result.ID;
