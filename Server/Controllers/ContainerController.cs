@@ -358,9 +358,10 @@ namespace ProITM.Server.Controllers
             {
                 portBind.Host = host;
                 exposedPorts.Add(portBind.PublicPort.ToString() + "/tcp", default(EmptyStruct));
+                // TODO 275 Test private port/public port order
                 portBindings.Add(
-                    portBind.PublicPort.ToString()  +  "/tcp", new List<PortBinding>{
-                        new PortBinding { HostPort = portBind.PrivatePort.ToString() }
+                    portBind.PrivatePort.ToString()  +  "/tcp", new List<PortBinding>{
+                        new PortBinding { HostPort = portBind.PublicPort.ToString() + "/tcp" }
                     });
             }
 
@@ -373,7 +374,6 @@ namespace ProITM.Server.Controllers
                     DNS = new[] { "8.8.8.8", "8.8.4.4" },
                     PortBindings = portBindings
                 }
-                // TODO 195 bind port
             });
 
             model.Id = result.ID;

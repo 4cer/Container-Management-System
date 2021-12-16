@@ -28,6 +28,8 @@ namespace ProITM.Server.Controllers.Admin
         [HttpPost("create")]
         public async Task<IActionResult> AddHost(HostModel host)
         {
+            host.IP = "UNUSED";
+            host.Port = -1111;
             dbContext.Hosts.Add(host);
             await dbContext.SaveChangesAsync();
             return Ok("Added host to databse");
@@ -43,8 +45,8 @@ namespace ProITM.Server.Controllers.Admin
 
             foundHost.DisplayName = host.DisplayName;
             foundHost.IsWindows = host.IsWindows;
-            foundHost.IP = host.IP;
-            foundHost.Port = host.Port;
+            foundHost.IP = "UNUSED";
+            foundHost.Port = -1111;
             foundHost.URI = host.URI;
 
             if (await dbContext.SaveChangesAsync() == 1)
@@ -119,8 +121,11 @@ namespace ProITM.Server.Controllers.Admin
             {
                 try
                 {
-                    await client.System.PingAsync();
-                    return Ok(true);
+                    var response = await client.System.GetSystemInfoAsync();
+                    if (response.Containers >= 0)
+                        return Ok(true);
+                    //await client.System.PingAsync();
+                    return Ok(false);
                 }
                 catch (Exception)
                 {
