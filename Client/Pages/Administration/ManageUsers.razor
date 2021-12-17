@@ -119,6 +119,7 @@ else
                 Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
                 Snackbar.Add("User has been deleted successfully", Severity.Success);
             }
+            users = await administrationService.GetUsers();
         }
     }
 

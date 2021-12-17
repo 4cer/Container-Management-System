@@ -43,7 +43,8 @@
 
     private async void UpdateImage()
     {
-        var ret = await ImgSrvc.GetImageFromDockerHub(Image);
+        //var ret = await ImgSrvc.GetImageFromDockerHub(Image);
+        var ret = await ImgSrvc.EditImage(Image);
         Navigation.NavigateTo("/images");
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
         if (ret.IsSuccessStatusCode)

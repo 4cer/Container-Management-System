@@ -365,3 +365,4 @@ FodyWeavers.xsd
 /Server/Migrations/20211209204034_NEW_DATABSE.cs
 /Server/Migrations/20211209204034_NEW_DATABSE.Designer.cs
 /Server/Migrations
+/Server/Properties/PublishProfiles/AutoProfile.pubxml.user
