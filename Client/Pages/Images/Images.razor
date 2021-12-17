@@ -10,7 +10,7 @@
     <MudTable Items="images" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent" Hover="true" Dense="true"
               RowClassFunc="@SelectedRowClassFunc" OnRowClick="e => RowClickEvent(e)" @ref="mudTable" T="ImageModel">
         <HeaderContent>
-            <MudTh>ID</MudTh>
+            @*<MudTh>ID</MudTh>*@
             <MudTh>Image ID</MudTh>
             <MudTh>Name</MudTh>
             <MudTh>Description</MudTh>
@@ -19,7 +19,7 @@
             <MudTh>Actions</MudTh>
         </HeaderContent>
         <RowTemplate>
-            <MudTd>@context.Id</MudTd>
+            @*<MudTd>@context.Id</MudTd>*@
             <MudTd>@context.DockerImageName</MudTd>
             <MudTd>@context.DisplayName</MudTd>
             <MudTd>@context.Description</MudTd>
