@@ -25,5 +25,9 @@ namespace ProITM.Shared
             ContainerPortModel model = (ContainerPortModel)obj;
             return model.PrivatePort == this.PrivatePort && model.PublicPort == this.PublicPort;
         }
+        public override int GetHashCode()
+        {
+            return PrivatePort.GetHashCode()^PublicPort.GetHashCode();
+        }
     }
 }
