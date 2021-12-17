@@ -1,7 +1,15 @@
 ﻿@page "/"
 @inject NavigationManager Navigation
 
-Nothing here...
+<MudGrid Spacing="10">
+    
+    <MudPaper Class="pa-2" xs="6" Style="margin: 15px;">
+        <DonutChart></DonutChart>
+    </MudPaper>
+    <MudPaper Class="pa-2" xs="6" Style="margin: 15px;">
+        <BarChart></BarChart>
+    </MudPaper>
+</MudGrid>
 
 @code{
     

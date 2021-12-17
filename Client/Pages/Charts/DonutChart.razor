@@ -1,0 +1,18 @@
+﻿@inject IContainerService service
+<h2>Most popular DockerHub images</h2>
+<MudChart ChartType="ChartType.Donut" Width="300px" Height="300px" InputData="@data" InputLabels="@labels"></MudChart>
+@code {
+    //private int Index = -1; //default value cannot be 0 -> first selectedindex is 0.
+    public double[] data = { 2007, 1164, 1163, 957, 891, 889, 885, 796, 573, 508 };
+    public string[] labels = { "ubuntu", "centos", "nginx", "redis", "node", "postgres", "mysql", "mongo",
+        "debian", "jenkins" };
+
+    protected override Task OnInitializedAsync()
+    {
+        //tu sobie wczytaj dane z serwisu do data i labels
+        //data = await service.Get....();
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+}
