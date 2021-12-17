@@ -56,13 +56,19 @@ namespace ProITM.Client.Services
 
         public async Task<List<string>> CreateContainer(ContainerModel model)
         {
-            var result = await _httpClient.PostAsJsonAsync($"Container/create", model);
-            string serializedXml = result.Content.ReadAsStringAsync().Result;
-            List<string> listOfWarnings = new List<string>();
-            var mySerializer = new XmlSerializer(listOfWarnings.GetType());
-            var reader = new StringReader(serializedXml);
-            listOfWarnings = (List<String>)mySerializer.Deserialize(reader);
-            return listOfWarnings;
+            try
+            {
+                var result = await _httpClient.PostAsJsonAsync($"Container/create", model);
+                string serializedXml = result.Content.ReadAsStringAsync().Result;
+                List<string> listOfWarnings = new List<string>();
+                var mySerializer = new XmlSerializer(listOfWarnings.GetType());
+                var reader = new StringReader(serializedXml);
+                listOfWarnings = (List<String>)mySerializer.Deserialize(reader);
+                return listOfWarnings;
+            } catch (Exception)
+            {
+                return new List<string>();
+            }
 
         }
 
