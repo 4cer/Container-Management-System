@@ -65,10 +65,12 @@ namespace ProITM.Server.Controllers.Admin
             var host = dbContext.Hosts.First(h => h.Id == hostId);
 
             var containers = await dbContext.Containers
+                .AsNoTracking()
                 .Where(c => c.Machine.Id == host.Id)
                 .ToListAsync();
 
-            if (containers.Count > 0) return BadRequest($"Host in use by {containers.Count} containers");
+            if (containers.Any())
+                return BadRequest($"Host in use by {containers.Count} containers");
 
             dbContext.Hosts.Remove(host);
             await dbContext.SaveChangesAsync();
