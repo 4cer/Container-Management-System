@@ -6,6 +6,8 @@
 @inject AuthenticationStateProvider provider
 @inject ISnackbar Snackbar
 
+<link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
+
 <h2>Manage containers</h2>
 <div>
     <MudTable Items="containers" class="mat-elevation-z5" AllowSelection="true" SelectionChanged="SelectionChangedEvent" Hover="true" Dense="true" Filter="new Func<ContainerModel,bool>(FilterFunc1)"
@@ -27,6 +29,7 @@
             <MudTh>Owner</MudTh>
             <MudTh>Source image</MudTh>
             <MudTh>Description</MudTh>
+            <MudTh>OS</MudTh>
             <MudTh>State</MudTh>
             <MudTh>Running</MudTh>
             <MudTh>Actions</MudTh>
@@ -36,6 +39,18 @@
             <MudTd>@context.OwnerName</MudTd>
             <MudTd>@context.Image.DisplayName <span style="color: gray; font-style: italic">[@context.Image.DockerImageName]</span></MudTd>
             <MudTd>@context.Description</MudTd>
+            @if (context.Machine.IsWindows)
+            {
+                <MudTd>
+                    <MudIcon Icon="@Icons.Custom.Brands.MicrosoftWindows" />
+                </MudTd>
+            }
+            else
+            {
+                <MudTd>
+                    <MudIcon Icon="fab fa-linux" />
+                </MudTd>
+            }
             <MudTd>@context.State</MudTd>
             @*<MudTd>@context.Machine.DisplayName</MudTd>*@
             @if (context.IsRunning)
@@ -47,26 +62,26 @@
                 <MudTd><MudIcon Icon="@Icons.Filled.Circle" Color="Color.Error"></MudIcon></MudTd>
             }
 
-        <MudTd Class="actions-cell">
-            @if (loadingContainers != null && loadingContainers.Contains(context))
-            {
-                <MudProgressCircular Indeterminate="true" Size="Size.Small"></MudProgressCircular>
-            }
-            else
-            {
-                @if (context.IsRunning)
+            <MudTd Class="actions-cell">
+                @if (loadingContainers != null && loadingContainers.Contains(context))
                 {
-
-                    <MudIconButton Icon="@Icons.Filled.StopCircle" Color="Color.Primary" OnClick="e => StopContainer(context)" />
+                    <MudProgressCircular Indeterminate="true" Size="Size.Small"></MudProgressCircular>
                 }
                 else
                 {
-                    <MudIconButton Icon="@Icons.Filled.PlayCircle" Color="Color.Primary" OnClick="e => StartContainer(context)" />
+                    @if (context.IsRunning)
+                    {
+
+                        <MudIconButton Icon="@Icons.Filled.StopCircle" Color="Color.Primary" OnClick="e => StopContainer(context)" />
+                    }
+                    else
+                    {
+                        <MudIconButton Icon="@Icons.Filled.PlayCircle" Color="Color.Primary" OnClick="e => StartContainer(context)" />
+                    }
                 }
-            }
-            <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewContainer(context)" />
-            <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteContainer(context)" Disabled="loadingContainers.Contains(context)" />
-        </MudTd>
+                <MudIconButton Icon="@Icons.Filled.Visibility" Color="Color.Primary" OnClick="e => ViewContainer(context)" />
+                <MudIconButton Icon="@Icons.Filled.Delete" Color="Color.Error" OnClick="e => DeleteContainer(context)" Disabled="loadingContainers.Contains(context)" />
+            </MudTd>
         </RowTemplate>
     </MudTable>
     @if (containers == null)
