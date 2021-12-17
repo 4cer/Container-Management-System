@@ -30,6 +30,7 @@
             <MudTh>Source image</MudTh>
             <MudTh>Description</MudTh>
             <MudTh>OS</MudTh>
+            <MudTh>Host</MudTh>
             <MudTh>State</MudTh>
             <MudTh>Running</MudTh>
             <MudTh>Actions</MudTh>
@@ -51,6 +52,7 @@
                     <MudIcon Icon="fab fa-linux" />
                 </MudTd>
             }
+            <MudTd>@context.Machine.DisplayName</MudTd>
             <MudTd>@context.State</MudTd>
             @*<MudTd>@context.Machine.DisplayName</MudTd>*@
             @if (context.IsRunning)
