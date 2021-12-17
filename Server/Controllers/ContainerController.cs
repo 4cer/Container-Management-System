@@ -330,12 +330,12 @@ namespace ProITM.Server.Controllers
             string userId = User.FindFirst(x => x.Type.Equals(ClaimTypes.NameIdentifier))?.Value;
 
             // Construct model
-            var image = await dbContext.Images.SingleOrDefaultAsync(i => i.Id == model.DockerImageName);
-            dbContext.Attach(image);
-            model.Image = image;
+            // 308 We henceforth assume frontend passes image
+            //var image = await dbContext.Images.SingleOrDefaultAsync(i => i.Id == model.DockerImageName);
+            //dbContext.Attach(image);
+            //model.Image = image;
 
             // TODO 222 Check if machine has selected image, if not: pull by name
-
             dbContext.Attach(host);
             //var port = new ContainerPortModel() { Id = Guid.NewGuid().ToString(), Port = model.PortNo, Host = host };
             model.Machine = host;
@@ -346,19 +346,19 @@ namespace ProITM.Server.Controllers
             DockerClient dockerClient = host.GetDockerClient();
 
             // Find the image we're going to use, and if it's missing - download it
-            var imageFromDb = await dbContext.Images
-                .FirstOrDefaultAsync(i => i.Id == model.DockerImageName);
+            //var imageFromDb = await dbContext.Images
+            //    .FirstOrDefaultAsync(i => i.Id == model.DockerImageName);
 
-            if (imageFromDb == null) return NotFound();
+            if (model.Image == null) return NotFound();
 
             var images = await dockerClient.Images.ListImagesAsync(new ImagesListParameters());
-            if (images.FirstOrDefault(i => i.RepoTags.Count == 0 || i.RepoTags[0] == $"{imageFromDb.DockerImageName}:{imageFromDb.Version}") == null)
+            if (images.FirstOrDefault(i => i.RepoTags.Count == 0 || i.RepoTags[0] == $"{model.Image.DockerImageName}:{model.Image.Version}") == null)
             {
                 dockerClient.Images.CreateImageAsync(
                     new ImagesCreateParameters
                     {
-                        FromImage = imageFromDb.DockerImageName,
-                        Tag = imageFromDb.Version
+                        FromImage = model.Image.DockerImageName,
+                        Tag = model.Image.Version
                     }, null, new Progress<JSONMessage>()).Wait();
 
             }
