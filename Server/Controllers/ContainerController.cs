@@ -346,10 +346,13 @@ namespace ProITM.Server.Controllers
             DockerClient dockerClient = host.GetDockerClient();
 
             // Find the image we're going to use, and if it's missing - download it
-            //var imageFromDb = await dbContext.Images
+            //var imageFromDb = await dbContext.ImagesImag
             //    .FirstOrDefaultAsync(i => i.Id == model.DockerImageName);
 
             if (model.Image == null) return NotFound();
+
+            // Fix, attach model image
+            dbContext.Images.Attach(model.Image);
 
             var images = await dockerClient.Images.ListImagesAsync(new ImagesListParameters());
             if (images.FirstOrDefault(i => i.RepoTags.Count == 0 || i.RepoTags[0] == $"{model.Image.DockerImageName}:{model.Image.Version}") == null)
