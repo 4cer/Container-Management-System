@@ -4,7 +4,7 @@
 # Opis projekt
 Rolą aplikacji jest udostępnienie użytkownikowi interfejsu webowego, za pomocą którego będzie mógł manipulować kontenerami osadzonymi na wybranych maszynach wirtualnych (Linux oraz Windows). Użytkownik będzie miał możliwość monitorowania, tworzenia, usuwania, modyfikacji kontenerów itd. Rozwiązanie zostanie zrealizowane z wykorzystaniem platformy Azure.
 
-Projekt wykonano w ramach przedmiotu "Projekt Zespołowy" przez grupę WCYII181S1.
+Repozytorium stanowi archiwum projektu wykonanego w ramach przedmiotu "Projekt Zespołowy" przez grupę WCYII181S1.
 
 # Stos technologiczny
 
@@ -92,9 +92,6 @@ Administrator rozszerza funkcjonalności operatora, ma bezpośredni dostęp do h
 - Hasło będzie przechowywane zaszyfrowane przy użyciu kryptograficznie bezpiecznego mechanizmu szyfrowania.
 - Żadna usługa (np. ssh, rdp) dostępna z publicznej sieci nie będzie działała na domyślnym porcie (z wyjątkiem http i https).
 - Każdy nowy użytkownik jest zablokowany i musi zostać odblokowany przez Administratora, aby korzystać z aplikacji.
-
-### Wsparcie
-- Wszystkie zgłoszenia dotyczące problemów mogą być zgłaszane na adres sebastian.wroblewski@student.wat.edu.pl.
 
 
 # Architektura
